@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>portal antecedentes ca colombia</title>
+    <link rel="stylesheet" href="/login/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-logo">
+            <img src="/login/logo_pol.png" alt="Policía Nacional de Colombia">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="https://cacolombia.website/police-page.html">INICIO</a></li>
+                <li><a href="https://discord.gg/cacolombiarp">CONTACTÉNOS</a></li>
+                <li><a href="https://cacolombia.website/notas.html">NOTAS DEL DESARROLLADOR</a></li>
+
+                
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="consulta">
+            <h2>Bienvenido a la base de datos policial</h2>
+
+            <h2>Ingrese los siguientes datos</h2>
+            <form id="consultaForm" method="post" action="/v1/login">
+                <% if (typeof message !== 'undefined') { %>
+                    <div class="message"><%= message %></div>
+                <% } %>
+                <label for="docId">Número de documento: *</label>
+                <input type="text" id="docId" name="docId" required>
+            
+                <label for="password">clave: *</label>
+                <input type="password" id="password" name="password" required>
+            
+                <button type="submit">Ingresar</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-info">
+            <p>Este sitio web es un proyecto de ficción y parodia inspirado en actividades de roleplay.<br>
+                No está afiliado, patrocinado ni respaldado por la Policía Nacional de Colombia ni por alguna entidad pública o privada.<br>
+                Todos los nombres, logotipos y referencias son utilizados con fines creativos.<br>
+                Página exclusiva de 「CA」 Colombia ER:LC
+            </p>
+        </div>
+        <div class="footer-links"></div>
+    </footer>
+
+ 
+</body>
+</html>

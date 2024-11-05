@@ -227,7 +227,9 @@
             const cell = row.insertCell();
             cell.innerText = "N/A";
         });
+        setLoadingOff()
         return;
+
     }
 
     dataArray.forEach(data => {
@@ -235,6 +237,7 @@
         columns.forEach(column => {
             const cell = row.insertCell();
             cell.innerText = data[column] !== undefined ? data[column] : "N/A";  
+            
         });
     });
     setLoadingOff()

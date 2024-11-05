@@ -14,8 +14,8 @@ app.set('views', path.join(__dirname, './views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//router
 
+//database routes
 const routes = require('./routes/routes');
 app.use('/v1',routes)
 const login = require('./routes/login');
@@ -26,12 +26,15 @@ const allUserData = require('./routes/get_database_user_data');
 app.use('/v1',allUserData)
 const insert_database = require('./routes/insert_database');
 app.use('/v1',insert_database)
-
+//public routes
+const get_records = require('./public_routes/get_records')
+app.use('/public/v1', get_records)
+//session storage
 const sessionStore = new MySQLStore({}, db);
 sessionStore.on('error', function(error) {
     console.error('Session store error:', error);
 });
-
+//start server
 app.listen('8080',()=>{
     console.log('server started')
 })

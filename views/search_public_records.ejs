@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>portal antecedentes ca colombia</title>
+    <link rel="stylesheet" href="/search_public_records/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-logo">
+            <img src="/search_public_records/logo_pol.png" alt="Policía Nacional de Colombia">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/police-page.html">INICIO</a></li>
+                <li><a href="https://discord.gg/cacolombiarp">CONTACTÉNOS</a></li>
+                <li><a href="/notas.html">NOTAS DEL DESARROLLADOR</a></li>
+
+                
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="consulta">
+            <h2>Bienvenido al registro antecedentes penales</h2>
+            <h2>Ingrese los siguientes datos</h2>
+            <% if (typeof message !== 'undefined') { %>
+                <div class="message"><%= message %></div>
+            <% } %>
+            <form id="consultaForm" method="get" action="/public/v1/showRecords">
+                <label for="tipoDocumento">Tipo de documento: *</label>
+                <select id="tipoDocumento" name="type">
+                    <option value="cc">Cédula de Ciudadanía</option>
+                    <option value="pp">Pasaporte</option>
+                </select>
+            
+                <label for="numeroDocumento">Número de documento: *</label>
+                <input type="text" id="numeroDocumento" name="documentId" required>
+            
+                <button type="submit">Consultar</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-info">
+            <p>Este sitio web es un proyecto de ficción y parodia inspirado en actividades de roleplay.<br>
+                No está afiliado, patrocinado ni respaldado por la Policía Nacional de Colombia ni por alguna entidad pública o privada.<br>
+                Todos los nombres, logotipos y referencias son utilizados con fines creativos.<br>
+                Página exclusiva de 「CA」 Colombia ER:LC
+            </p>
+        </div>
+        <div class="footer-links"></div>
+    </footer>
+</body>
+</html>
+

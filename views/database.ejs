@@ -38,7 +38,7 @@
                       </label>
                       <div class="border"></div>
                       
-                      <button class="micButton"><svg viewBox="0 0 384 512" class="micIcon"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"></path></svg>
+                      <button class="micButton" onclick="getIdByDoc()"><svg viewBox="0 0 384 512" class="micIcon"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"></path></svg>
                       </button>
                       
                       </div>
@@ -50,7 +50,6 @@
         <div class="main-box">
             <div class="lateral-box">
                 <img id="avatar" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="Avatar">
-                <p><strong>Documento:</strong> <span id="tipodoc"></span></p>
                 <p><strong>Nombre:</strong> <span id="nombre"></span></p>
                 <p><strong>Apellido:</strong> <span id="apellido"></span></p>
                 <p><strong>Nacionalidad:</strong> <span id="nacionalidad"></span></p>
@@ -64,23 +63,44 @@
                 <p><span id="byc"></span></p>
             </div>
             <div class="right-content-box">
-              
                 <div class="table-container">
                     <label for="table-licencia">LICENCIA</label>
                     <table id="table-licencia">
                         <tr><th>LICENCIA DE CONDUCIR</th><th>CATEGORIA</th><th>FECHA DE EXPEDICIÓN</th><th>RESTRICCIONES</th></tr>
                     </table>
-                    <label for="table-antecedentes">LICENCIA</label>
-                    <table id="table-antecedentes">
-                        <tr><th>ANTECEDENTES</th><th>TIEMPO</th><th>AGENTE</th><th>RESTRICCIONES</th></tr>
+                    <br>
+                    <label for="table-vehiculos">VEHICULOS</label>
+                    <table id="table-vehiculos">
+                        <tr><th>NOMBRE</th><th>PLACA</th><th>COLOR</th></tr>
                     </table>
-                   
+                    <br>
+
+                    <label for="table-antecedentes">ANTECEDENTES</label>
+                    <table id="table-antecedentes">
+                        <tr><th>ANTECEDENTES</th><th>TIEMPO</th><th>AGENTE</th><th>FECHA DE REGISTRO</th></tr>
+                    </table>
+                    <br>
+
+                    <label for="table-multas">MULTAS</label>
+                    <table id="table-multas">
+                        <tr><th>ARTICULOS</th><th>PLACA</th><th>VALOR</th><th>AGENTE</th><th>FECHA DE REGISTRO</th></tr>
+                    </table>
+                    <br>
+
+                    <label for="table-observaciones">OBSERVACIONES</label>
+                    <table id="table-observaciones">
+                        <tr><th>OBSERVACIONES</th></tr>
+                    </table>
                 </div>
-              
             </div>
         </div>
       </div>
     </main>
+    
+    <div id="loading" class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+    </div>
 
     <footer>
         <div class="footer-info">
@@ -95,4 +115,132 @@
 
  
 </body>
+<script>
+    function setLoadingOn(){
+        document.getElementById('loading').style.display = 'flex';
+    }
+    function setLoadingOff(){
+        document.getElementById('loading').style.display = 'none';
+    }
+ async function getIdByDoc() {
+    setLoadingOn()
+    const i_value = document.getElementById('input').value;
+    const digitCount = i_value.length
+  
+    if (digitCount === 7) {
+         //case plate
+        
+         const response = await fetch(`/v1/plate?plate=${i_value}`)
+         if(!response.ok) {
+            setLoadingOff()
+            return  alert('no se encontró la placa')
+         }
+         const userId =await response.json()
+        if(userId.length === 0){
+            setLoadingOff()
+          return  alert('no se encontró esta placa')
+        }
+        fetchUserData(userId.owner)
+        
+
+       
+    } else {
+         //case userdocument
+          
+         const response = await fetch(`/v1/user?documentId=${i_value}`)
+         if(!response.ok) {
+            setLoadingOff()
+            return  alert('no se encontró el documento')
+         }
+         const userId =await response.json()
+        if(userId.length === 0){
+            setLoadingOff()
+          return  alert('no se encontró el documento')
+        }
+        fetchUserData(userId.userId)
+        
+         
+      
+    }
+}
+    async function fetchUserData(userident) {
+       
+        const params = new URLSearchParams({
+            userId: userident,
+            driverLicence: true,
+            vehicles: true,
+            arrestRecord: true,
+            tickets: true,
+            warnings: true
+        });
+
+        try {
+            const response = await fetch(`/v1/getUserData?${params}`);
+            if (!response.ok) {
+                setLoadingOff()
+                return alert('error al buscar los datos')
+            }
+            
+            const data = await response.json();
+
+            const documentData = data.documentData[0];
+           
+        if (documentData) {
+            document.getElementById('avatar').src = documentData.avatarUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+            document.getElementById('nombre').innerText = documentData.nombreic || 'N/A';
+            document.getElementById('apellido').innerText = documentData.apellidoic || 'N/A';
+            document.getElementById('nacionalidad').innerText = documentData.nacionalidadic || 'N/A';
+            document.getElementById('estatura').innerText = documentData.estaturaic || 'N/A';
+            document.getElementById('sexo').innerText = documentData.sexoic || 'N/A';
+            document.getElementById('fechanacimiento').innerText = documentData.fechadenacimiento || 'N/A';
+            document.getElementById('edad').innerText = documentData.edadic || 'N/A';
+            document.getElementById('gs').innerText = documentData.tipodesangre || 'N/A';
+            document.getElementById('username').innerText = documentData.username || 'N/A';
+            document.getElementById('ndoc').innerText = documentData.documentId || 'N/A';
+            document.getElementById('byc').innerText = documentData.byc || '';
+        }
+            
+            populateTable('table-licencia', data.driverLicence, ['status', 'tipo', 'exp', 'restriccion']);
+            populateTable('table-vehiculos', data.vehicles, ['nombre', 'placa', 'color']);
+            populateTable('table-antecedentes', data.arrestRecord, ['articulos', 'tiempo', 'agente', 'created_at']);
+            populateTable('table-multas', data.tickets, ['articulos', 'placa', 'valor', 'agente', 'created_at']);
+            populateTable('table-observaciones', data.warnings, ['observaciones']);
+        } catch (error) {
+            console.error(error);
+            setLoadingOff()
+            alert('Error al obtener los datos del usuario');
+        }
+    }
+
+    function populateTable(tableId, dataArray, columns) {
+    const table = document.getElementById(tableId);
+
+   
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
+
+    if (!dataArray || dataArray.length === 0) {
+      
+        const row = table.insertRow();
+        columns.forEach(() => {
+            const cell = row.insertCell();
+            cell.innerText = "N/A";
+        });
+        return;
+    }
+
+    dataArray.forEach(data => {
+        const row = table.insertRow();
+        columns.forEach(column => {
+            const cell = row.insertCell();
+            cell.innerText = data[column] !== undefined ? data[column] : "N/A";  
+        });
+    });
+    setLoadingOff()
+}
+</script>
+
 </html>
+
+

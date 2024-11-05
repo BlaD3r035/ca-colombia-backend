@@ -20,6 +20,12 @@ const routes = require('./routes/routes');
 app.use('/v1',routes)
 const login = require('./routes/login');
 app.use('/v1',login)
+const userDatas = require('./routes/get_ids');
+app.use('/v1',userDatas)
+const allUserData = require('./routes/get_database_user_data');
+app.use('/v1',allUserData)
+const insert_database = require('./routes/insert_database');
+app.use('/v1',insert_database)
 
 const sessionStore = new MySQLStore({}, db);
 sessionStore.on('error', function(error) {

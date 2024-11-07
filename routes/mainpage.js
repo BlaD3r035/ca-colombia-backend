@@ -2,11 +2,10 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
 const axios = require('axios');
-require('dotenv').config()
 
 //routes
-const serverId = process.env.SERVER_ID;
-const botToken = process.env.DISCORD_BOT_TOKEN;
+const serverId = '1042099714608345159';
+const botToken ='MTI3OTE2MDg0MjEwOTMyMTIzNg.G9lmz5.wL4Z5zba7QkQoyky70LwpOgrC_oOaYEZG_T-oA';
 
 
 router.get('/avatar/:userId', async (req, res) => {

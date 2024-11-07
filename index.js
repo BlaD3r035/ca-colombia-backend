@@ -1,10 +1,12 @@
 const express = require('express')
-const ejs = require('ejs')
 const session = require('express-session')
+const ejs = require('ejs')
+const cors  = require('cors')
 const MySQLStore = require('express-mysql-session')(session);
 const path = require('path');
 const app= express()
 const db = require('./db/db')
+app.use(cors())
 //public and views 
 app.use(express.static('public'))
 app.set('view engine', 'ejs');
@@ -24,9 +26,10 @@ const userDatas = require('./routes/get_ids');
 app.use('/v1',userDatas)
 const allUserData = require('./routes/get_database_user_data');
 app.use('/v1',allUserData)
-const insert_database = require('./routes/insert_database');
-app.use('/v1',insert_database)
+
 //public routes
+const mainpage = require('./routes/mainpage');
+app.use('/',mainpage)
 const get_records = require('./public_routes/get_records')
 app.use('/public/v1', get_records)
 //session storage

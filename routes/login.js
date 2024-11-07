@@ -32,7 +32,7 @@ router.post('/login', async (req, res) => {
     if(user.length === 0){
         return res.render('login',{message:'usuario incorrecto'})
     }else{
-        if(password ==='3001'|| password === '4001'){
+        if(password ==='DITRAMACONDO3001'|| password === 'PONALCIENAGA4001'|| password === 'CTIMELQUIADES8001'|| password === 'EJERCITOBUENDIA6001'){
             req.session.loggedin = true;                
             req.session.userdata = user[0];
             return res.redirect('/v1/dashboard')

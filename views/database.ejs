@@ -96,53 +96,60 @@
         </div>
       </div>
       <div class="form-buttons">
-        <button onclick="toggleForm('form-multas', 'form-arrestos')">Subir Multa</button>
-  
-    </div>
+          <button onclick="toggleForm('form-multas', 'form-arrestos')">Subir Multa</button>
+          <button onclick="toggleForm('form-arrestos', 'form-multas')">Subir Arresto</button>
+          <button onclick="cerrarSesion()" style="background-color: red; color: white;">Cerrar sesión</button>
+
+          
+    </div>  
      <div class="registros">
        
-         <div id="form-multas" class="form-container" style="display: none;">
-             <h2>Subir Multa</h2>
-             <form id="upload-ticket-form" >
+        <div id="form-multas" class="form-container" style="display: none;">
+            <h2>Subir Multa</h2>
+            <form id="upload-ticket-form">
                 <label for="selector">Tipo</label>
-                <select name="type" id="selector" class="styled-select">
+                <select name="type" id="selector" class="styled-select" required>
                     <option value="multa">Multa</option>
                     <option value="Comparendo">Comparendo</option>
                 </select>
-                 <label for="placa-multa">articulos:</label>
-                 <input type="text" id="articulos-multa" name="record" required>
-     
-                 <label for="placa-multa">Placa:</label>
-                 <input type="text" id="placa-multa" name="plate" required>
-     
-                 <label for="valor-multa">Valor:</label>
-                 <input type="number" id="valor-multa" name="value" required>
-                 <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
-                 <label for="">Información de la persona a procesar: <br> <strong id="name-form">Nombre:</strong> <br><strong id="lastName-form">Apellido:</strong> <br><strong id="documentId-form">Numero de documento:</strong> <br> </label> 
-
-
-                 <button type="submit">Subir Multa</button>
-             </form>
-         </div>
+                
+                <label for="articulos-multa">Artículos:</label>
+                <input type="text" id="articulos-multa" name="record" required>
+        
+                <label for="placa-multa">Placa:</label>
+                <input type="text" id="placa-multa" name="plate" required>
+        
+                <label for="valor-multa">Valor:</label>
+                <input type="number" id="valor-multa" name="value" required>
+        
+                <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
+        
+                <label for="">Información de la persona a procesar: <br> <strong id="name-form">Nombre:</strong> <br><strong id="lastName-form">Apellido:</strong> <br><strong id="documentId-form">Numero de documento:</strong> <br> </label>  
+        
+                <button type="submit">Subir Multa</button>
+            </form>
+        </div>
 
         
-         <div id="form-arrestos" class="form-container" style="display: none;">
-             <h2>Subir Arresto</h2>
-             <form id="upload-arrest-form" >
-                 <label for="articulo-arresto">Artículo:</label>
-                 <input type="text" id="articulo-arresto" name="articulo-arresto" required>
-     
-                 <label for="tiempo-arresto">Tiempo:</label>
-                 <input type="text" id="tiempo-arresto" name="tiempo-arresto" required>
-
-                 <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
-                 <label for="">Información de la persona a procesar: <br> <strong id="name-form2">Nombre:</strong> <br><strong id="lastName-form2">Apellido:</strong> <br><strong id="documentId-form2">Numero de documento:</strong> <br> </label> 
-
-                 
-                 
-                 <button type="submit">Subir Arresto</button>
-             </form>
-         </div>
+        <div id="form-arrestos" class="form-container" style="display: none;">
+            <h2>Subir Arresto</h2>
+            <form id="upload-arrest-form">
+                <label for="articulo-arresto">Artículo:</label>
+                <input type="text" id="articulo-arresto" name="record" required>
+            
+                <label for="tiempo-arresto">Tiempo en meses:</label>
+                <input type="number" id="tiempo-arresto" name="time" required>
+            
+                <label for="photo">Foto:</label>
+                <input type="file" id="photo" name="photo" required> 
+        
+                <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
+        
+                <label for="">Información de la persona a procesar: <br> <strong id="name-form2">Nombre:</strong> <br><strong id="lastName-form2">Apellido:</strong> <br><strong id="documentId-form2">Numero de documento:</strong> <br> </label>  
+        
+                <button type="submit">Subir Arresto</button>
+            </form>
+        </div>
      </div>
 
       
@@ -223,29 +230,64 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    
     arrestosForm.addEventListener('submit', function (event) {
-        event.preventDefault();
+    event.preventDefault();
+    setLoadingOn();
 
-        const data = {
+
+    const data = {
+        ticketData: {
             record: document.getElementById('articulo-arresto').value,
-            time: document.getElementById('tiempo-arresto').value,
-            agent: document.getElementById('agente-arresto').value,
-          
-        };
+            time: document.getElementById('tiempo-arresto').value
+        },
+        agentName: agentName,
+        pedData: personInfo
+    };
 
-        axios.post('/v1/sendrecord', data)
-            .then(response => {
-                console.log('Arresto subido:', response.data);
-                alert('Arresto subido exitosamente');
-                arrestosForm.reset();
-            })
-            .catch(error => {
-                console.error('Error al subir el arresto:', error);
-                alert('Hubo un error al subir el arresto');
-            });
+    const photo = document.getElementById('photo').files[0];
+
+
+    const formData = new FormData();
+    
+  
+    formData.append('data', JSON.stringify(data));
+    
+
+    formData.append('photo', photo);
+
+
+    axios.post('/v1/sendrecord', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+    .then(response => {
+        console.log('Arresto subido:', response.data);
+        setLoadingOff();
+        alert('Arresto subido exitosamente');
+        arrestosForm.reset();
+    })
+    .catch(error => {
+        console.error('Error al subir el arresto:', error);
+        setLoadingOff();
+        alert('Hubo un error al subir el arresto');
     });
 });
+});
+</script>
+<script>
+    function cerrarSesion() {
+   
+    axios.post('/v1/logout') 
+        .then(response => {
+        
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error al cerrar sesión:', error);
+            alert('Hubo un error al cerrar la sesión');
+        });
+}
 </script>
 <script src="/dashboard/getinfo.js"></script>
 

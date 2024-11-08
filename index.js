@@ -26,6 +26,8 @@ const userDatas = require('./routes/get_ids');
 app.use('/v1',userDatas)
 const allUserData = require('./routes/get_database_user_data');
 app.use('/v1',allUserData)
+const records = require('./routes/add_records_tickets');
+app.use('/v1',records)
 
 //public routes
 const mainpage = require('./routes/mainpage');

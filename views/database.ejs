@@ -22,7 +22,7 @@
             </ul>
         </nav>
     </header>
-
+    
     <main>
       <div class="maincontainer">
         <div class="headermain">
@@ -95,6 +95,57 @@
             </div>
         </div>
       </div>
+      <div class="form-buttons">
+        <button onclick="toggleForm('form-multas', 'form-arrestos')">Subir Multa</button>
+  
+    </div>
+     <div class="registros">
+       
+         <div id="form-multas" class="form-container" style="display: none;">
+             <h2>Subir Multa</h2>
+             <form id="upload-ticket-form" >
+                <label for="selector">Tipo</label>
+                <select name="type" id="selector" class="styled-select">
+                    <option value="multa">Multa</option>
+                    <option value="Comparendo">Comparendo</option>
+                </select>
+                 <label for="placa-multa">articulos:</label>
+                 <input type="text" id="articulos-multa" name="record" required>
+     
+                 <label for="placa-multa">Placa:</label>
+                 <input type="text" id="placa-multa" name="plate" required>
+     
+                 <label for="valor-multa">Valor:</label>
+                 <input type="number" id="valor-multa" name="value" required>
+                 <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
+                 <label for="">Información de la persona a procesar: <br> <strong id="name-form">Nombre:</strong> <br><strong id="lastName-form">Apellido:</strong> <br><strong id="documentId-form">Numero de documento:</strong> <br> </label> 
+
+
+                 <button type="submit">Subir Multa</button>
+             </form>
+         </div>
+
+        
+         <div id="form-arrestos" class="form-container" style="display: none;">
+             <h2>Subir Arresto</h2>
+             <form id="upload-arrest-form" >
+                 <label for="articulo-arresto">Artículo:</label>
+                 <input type="text" id="articulo-arresto" name="articulo-arresto" required>
+     
+                 <label for="tiempo-arresto">Tiempo:</label>
+                 <input type="text" id="tiempo-arresto" name="tiempo-arresto" required>
+
+                 <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
+                 <label for="">Información de la persona a procesar: <br> <strong id="name-form2">Nombre:</strong> <br><strong id="lastName-form2">Apellido:</strong> <br><strong id="documentId-form2">Numero de documento:</strong> <br> </label> 
+
+                 
+                 
+                 <button type="submit">Subir Arresto</button>
+             </form>
+         </div>
+     </div>
+
+      
     </main>
     
     <div id="loading" class="loading-container">
@@ -115,134 +166,88 @@
 
  
 </body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    function setLoadingOn(){
-        document.getElementById('loading').style.display = 'flex';
-    }
-    function setLoadingOff(){
-        document.getElementById('loading').style.display = 'none';
-    }
- async function getIdByDoc() {
-    setLoadingOn()
-    const i_value = document.getElementById('input').value;
-    const digitCount = i_value.length
+    
+    let personInfo;
+    let searchPerson;
+    const agentName='<%=userdata.nombreic%>'+" "+"<%=userdata.apellidoic%>";
+    function toggleForm(formId,formId2) {
+        if(!searchPerson){
+            return
+        }else{
+            document.getElementById('name-form').innerText = "Nombre:"+personInfo.nombreic
+            document.getElementById('lastName-form').innerText ="Apellido:"+personInfo.apellidoic
+            document.getElementById('documentId-form').innerText ="Numero de documento:"+personInfo.documentId
+            document.getElementById('name-form2').innerText = "Nombre:"+personInfo.nombreic
+            document.getElementById('lastName-form2').innerText ="Apellido:"+personInfo.apellidoic
+            document.getElementById('documentId-form2').innerText ="Numero de documento:"+personInfo.documentId
+        }
   
-    if (digitCount === 7) {
-         //case plate
-        
-         const response = await fetch(`/v1/plate?plate=${i_value}`)
-         if(!response.ok) {
-            setLoadingOff()
-            return  alert('no se encontró la placa')
-         }
-         const userId =await response.json()
-        if(userId.length === 0){
-            setLoadingOff()
-          return  alert('no se encontró esta placa')
-        }
-        fetchUserData(userId.owner)
-        
+    const form = document.getElementById(formId);
+    const form2 = document.getElementById(formId2);
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    form2.style.display = 'none'
+}
 
-       
-    } else {
-         //case userdocument
+document.addEventListener('DOMContentLoaded', function () {
+    const multasForm = document.getElementById('upload-ticket-form');
+    const arrestosForm = document.getElementById('upload-arrest-form');
+
+    // Función para enviar los datos de multas
+    multasForm.addEventListener('submit', function (event) {
+        setLoadingOn()
+        event.preventDefault();
+
+        const data = {
+            type: document.getElementById('selector').value,
+            record: document.getElementById('articulos-multa').value,
+            plate: document.getElementById('placa-multa').value,
+            value: document.getElementById('valor-multa').value,
           
-         const response = await fetch(`/v1/user?documentId=${i_value}`)
-         if(!response.ok) {
-            setLoadingOff()
-            return  alert('no se encontró el documento')
-         }
-         const userId =await response.json()
-        if(userId.length === 0){
-            setLoadingOff()
-          return  alert('no se encontró el documento')
-        }
-        fetchUserData(userId.userId)
-        
-         
-      
-    }
-}
-    async function fetchUserData(userident) {
-       
-        const params = new URLSearchParams({
-            userId: userident,
-            driverLicence: true,
-            vehicles: true,
-            arrestRecord: true,
-            tickets: true,
-            warnings: true
-        });
-
-        try {
-            const response = await fetch(`/v1/getUserData?${params}`);
-            if (!response.ok) {
-                setLoadingOff()
-                return alert('error al buscar los datos')
-            }
-            
-            const data = await response.json();
-
-            const documentData = data.documentData[0];
            
-        if (documentData) {
-            document.getElementById('avatar').src = documentData.avatarUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
-            document.getElementById('nombre').innerText = documentData.nombreic || 'N/A';
-            document.getElementById('apellido').innerText = documentData.apellidoic || 'N/A';
-            document.getElementById('nacionalidad').innerText = documentData.nacionalidadic || 'N/A';
-            document.getElementById('estatura').innerText = documentData.estaturaic || 'N/A';
-            document.getElementById('sexo').innerText = documentData.sexoic || 'N/A';
-            document.getElementById('fechanacimiento').innerText = documentData.fechadenacimiento || 'N/A';
-            document.getElementById('edad').innerText = documentData.edadic || 'N/A';
-            document.getElementById('gs').innerText = documentData.tipodesangre || 'N/A';
-            document.getElementById('username').innerText = documentData.username || 'N/A';
-            document.getElementById('ndoc').innerText = documentData.documentId || 'N/A';
-            document.getElementById('byc').innerText = documentData.byc || '';
-        }
-            
-            populateTable('table-licencia', data.driverLicence, ['status', 'tipo', 'exp', 'restriccion']);
-            populateTable('table-vehiculos', data.vehicles, ['nombre', 'placa', 'color']);
-            populateTable('table-antecedentes', data.arrestRecord, ['articulos', 'tiempo', 'agente', 'created_at']);
-            populateTable('table-multas', data.tickets, ['articulos', 'placa', 'valor', 'agente', 'created_at']);
-            populateTable('table-observaciones', data.warnings, ['observaciones']);
-        } catch (error) {
-            console.error(error);
-            setLoadingOff()
-            alert('Error al obtener los datos del usuario');
-        }
-    }
+        };
 
-    function populateTable(tableId, dataArray, columns) {
-    const table = document.getElementById(tableId);
-
-   
-    while (table.rows.length > 1) {
-        table.deleteRow(1);
-    }
-
-    if (!dataArray || dataArray.length === 0) {
-      
-        const row = table.insertRow();
-        columns.forEach(() => {
-            const cell = row.insertCell();
-            cell.innerText = "N/A";
-        });
-        setLoadingOff()
-        return;
-
-    }
-
-    dataArray.forEach(data => {
-        const row = table.insertRow();
-        columns.forEach(column => {
-            const cell = row.insertCell();
-            cell.innerText = data[column] !== undefined ? data[column] : "N/A";  
-            
-        });
+        axios.post('/v1/sendticket', {ticketData:data,agentName:agentName,pedData:personInfo})
+            .then(response => {
+                console.log('Multa subida:', response.data);
+                setLoadingOff()
+                alert('Multa subida exitosamente');
+                multasForm.reset(); 
+                
+            })
+            .catch(error => {
+                setLoadingOff()
+                console.error('Error al subir la multa:', error);
+                alert('Hubo un error al subir la multa');
+            });
     });
-    setLoadingOff()
-}
+
+    
+    arrestosForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const data = {
+            record: document.getElementById('articulo-arresto').value,
+            time: document.getElementById('tiempo-arresto').value,
+            agent: document.getElementById('agente-arresto').value,
+          
+        };
+
+        axios.post('/v1/sendrecord', data)
+            .then(response => {
+                console.log('Arresto subido:', response.data);
+                alert('Arresto subido exitosamente');
+                arrestosForm.reset();
+            })
+            .catch(error => {
+                console.error('Error al subir el arresto:', error);
+                alert('Hubo un error al subir el arresto');
+            });
+    });
+});
 </script>
+<script src="/dashboard/getinfo.js"></script>
 
 </html>
 

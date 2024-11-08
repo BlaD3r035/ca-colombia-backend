@@ -17,8 +17,11 @@
     "express": "^4.21.1",
     "express-mysql-session": "^3.0.3",
     "express-session": "^1.18.1",
+    "fs": "^0.0.1-security",
     "mysql2": "^3.11.3",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "pdfkit": "^0.15.1",
+    "unb-api": "^1.4.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

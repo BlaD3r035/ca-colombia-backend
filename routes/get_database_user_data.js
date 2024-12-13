@@ -14,6 +14,7 @@ router.get('/getUserData', async (req, res) => {
       const  arrestRecord= req.query.arrestRecord === 'true'
       const tickets= req.query.tickets === 'true'
       const  warnings= req.query.warnings === 'true'
+      const  byc= req.query.byc === 'true'
  
     //verify data
     if(!userId){
@@ -60,6 +61,12 @@ router.get('/getUserData', async (req, res) => {
             const [warningsResult] = await db.query('SELECT * FROM observaciones WHERE userId=? ',[userId])
             if (warningsResult.length > 0) {
                 responseData.warnings = warningsResult;
+            }
+        }
+        if(byc){
+            const [bycresult] = await db.query('SELECT * FROM busquedaycaptura WHERE userId=? ',[userId])
+            if (bycresult.length > 0) {
+                responseData.byc = bycresult;
             }
         }
 

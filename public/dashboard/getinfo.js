@@ -54,7 +54,8 @@ async function fetchUserData(userident) {
         vehicles: true,
         arrestRecord: true,
         tickets: true,
-        warnings: true
+        warnings: true,
+        byc:true,
     });
 
     try {
@@ -86,7 +87,8 @@ async function fetchUserData(userident) {
         document.getElementById('gs').innerText = documentData.tipodesangre || 'N/A';
         document.getElementById('username').innerText = documentData.username || 'N/A';
         document.getElementById('ndoc').innerText = documentData.documentId || 'N/A';
-        document.getElementById('byc').innerText = documentData.byc || '';
+
+        
     }
         
         populateTable('table-licencia', data.driverLicence, ['status', 'tipo', 'exp', 'restriccion']);
@@ -94,6 +96,7 @@ async function fetchUserData(userident) {
         populateTable('table-antecedentes', data.arrestRecord, ['articulos', 'tiempo', 'agente', 'created_at']);
         populateTable('table-multas', data.tickets, ['articulos', 'placa', 'valor', 'agente', 'created_at']);
         populateTable('table-observaciones', data.warnings, ['observaciones']);
+        populateTable('table-byc', data.byc, ['byc']);
     } catch (error) {
         console.error(error);
         setLoadingOff()
@@ -102,32 +105,40 @@ async function fetchUserData(userident) {
 }
 
 function populateTable(tableId, dataArray, columns) {
-const table = document.getElementById(tableId);
+    const table = document.getElementById(tableId);
 
+    // Limpiar las filas existentes excepto la cabecera
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
 
-while (table.rows.length > 1) {
-    table.deleteRow(1);
-}
+    // Mostrar "N/A" si no hay datos
+    if (!dataArray || dataArray.length === 0) {
+        const row = table.insertRow();
+        columns.forEach(() => {
+            const cell = row.insertCell();
+            cell.innerText = "N/A";
+        });
+        setLoadingOff();
+        return;
+    }
 
-if (!dataArray || dataArray.length === 0) {
-  
-    const row = table.insertRow();
-    columns.forEach(() => {
-        const cell = row.insertCell();
-        cell.innerText = "N/A";
+    // Rellenar la tabla con los datos
+    dataArray.forEach(data => {
+        const row = table.insertRow();
+        columns.forEach(column => {
+            const cell = row.insertCell();
+            if (column === "byc" && data[column] !== undefined) {
+               
+                cell.innerText ="EL SUJETO SE ENCUENTRA EN BÚSQUEDA Y CAPTURA, DETENGA AL SUJETO Y REALICE EL PROCEDIMIENTO PERTINENTE";
+                cell.style.color = "red";
+                cell.style.fontWeight = "bold";
+                cell.style.fontSize = "1.2em";
+            } else {
+                cell.innerText = data[column] !== undefined ? data[column] : "N/A";
+            }
+        });
     });
-    setLoadingOff()
-    return;
-
+    setLoadingOff();
 }
 
-dataArray.forEach(data => {
-    const row = table.insertRow();
-    columns.forEach(column => {
-        const cell = row.insertCell();
-        cell.innerText = data[column] !== undefined ? data[column] : "N/A";  
-        
-    });
-});
-setLoadingOff()
-}

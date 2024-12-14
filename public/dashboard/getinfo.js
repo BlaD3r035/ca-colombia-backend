@@ -128,13 +128,16 @@ function populateTable(tableId, dataArray, columns) {
         const row = table.insertRow();
         columns.forEach(column => {
             const cell = row.insertCell();
-            if (column === "byc" && data[column] !== undefined) {
+            if (column === "byc" && data[column] !== undefined && data[column] === 1) {
                
                 cell.innerText ="EL SUJETO SE ENCUENTRA EN BÚSQUEDA Y CAPTURA, DETENGA AL SUJETO Y REALICE EL PROCEDIMIENTO PERTINENTE";
                 cell.style.color = "red";
                 cell.style.fontWeight = "bold";
                 cell.style.fontSize = "1.2em";
-            } else {
+            } else if(column ==='byc'&&data[column] === 0){
+                cell.innerText ="N/A";
+            }
+            else {
                 cell.innerText = data[column] !== undefined ? data[column] : "N/A";
             }
         });

@@ -120,7 +120,7 @@ router.get('/auth/discord/callback', async (req, res) => {
         });
 
         const user = userResponse.data;
-        const loginResponse = await axios.post('http://localhost:8080/v1/login', { userId: user.id });
+        const loginResponse = await axios.post('https://cacolombia.website/v1/login', { userId: user.id });
 
         if (loginResponse.data === 'No_auth') {
             return res.redirect('/v1/login/error?error=No%20autorizado');

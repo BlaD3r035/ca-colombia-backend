@@ -90,7 +90,7 @@ async function fetchUserData(userident) {
         }
 
         populateTable('table-licencia', data.driverLicence, ['status', 'tipo', 'exp', 'restriccion']);
-        populateTable('table-vehiculos', data.vehicles, ['nombre', 'placa', 'color']);
+        populateTable('table-vehiculos', data.vehicles, ['nombre', 'placa', 'color','blindado']);
         populateTable('table-antecedentes', data.arrestRecord, ['articulos', 'tiempo', 'agente', 'created_at']);
         populateTable('table-multas', data.tickets, ['articulos', 'placa', 'valor', 'agente', 'created_at']);
         populateTable('table-observaciones', data.warnings, ['observaciones']);
@@ -105,12 +105,12 @@ async function fetchUserData(userident) {
 function populateTable(tableId, dataArray, columns) {
     const table = document.getElementById(tableId);
 
-    // Limpiar las filas existentes excepto la cabecera
+  
     while (table.rows.length > 1) {
         table.deleteRow(1);
     }
 
-    // Mostrar "N/A" si no hay datos
+   
     if (!dataArray || dataArray.length === 0) {
         const row = table.insertRow();
         columns.forEach(() => {
@@ -121,7 +121,7 @@ function populateTable(tableId, dataArray, columns) {
         return;
     }
 
-    // Rellenar la tabla con los datos
+  
     dataArray.forEach(data => {
         const row = table.insertRow();
         columns.forEach(column => {
@@ -133,8 +133,13 @@ function populateTable(tableId, dataArray, columns) {
                 cell.style.fontSize = "1.2em";
             } else if (column === 'byc' && data[column] === 0) {
                 cell.innerText = "N/A";
-            } else {
+            } else if(column === 'blindado' && data[column] !== null){
+                cell.innerText = "Blindado";
+            }else if(column === 'blindado' && data[column] === null){
+                cell.innerText = "Sin blindar";
+            }else{
                 cell.innerText = data[column] !== undefined ? data[column] : "N/A";
+
             }
         });
     });

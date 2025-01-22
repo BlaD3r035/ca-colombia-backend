@@ -46,27 +46,10 @@
               </svg>
               Ingresa con discord
             </button>
-            
             <br>
+            <p>(requieres tener un rol de policia, transito, fiscalia, inpec,cti o relacionados <br> para poder acceder a la base de datos 😁)</p>
 
-            <p>───────── o ─────────</p>
-            <br>
-
-            <h2>Ingrese los siguientes datos (Legacy)</h2>
-            <form id="consultaForm" method="post" action="/v1/login">
-                <% if (typeof message !== 'undefined') { %>
-                    <div class="message"><%= message %></div>
-                <% } %>
-                <label for="docId">Número de documento: *</label>
-                <input type="text" id="docId" name="docId" required>
-            
-                <label for="password">clave: *</label>
-                <input type="password" id="password" name="password" required>
-            
-                <button type="submit">Ingresar</button>
-            </form>
-            <br>
-            <p>El sistema de ingreso por datos se encuentra obsoleto <br> y será removido en la proxima actualización</p>
+         
         </section>
     </main>
 

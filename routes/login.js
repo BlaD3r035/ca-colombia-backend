@@ -41,7 +41,7 @@ router.post('/login', async (req, res) => {
 
     try {
         if (password && docId) {
-            const [user] = await db.query('SELECT * FROM cedulas WHERE documentId = ?', [docId]);
+            const [user] = await db.query('SELECT docId, userId FROM cedulas WHERE documentId = ?', [docId]);
             if (user.length === 0) {
                 return res.redirect('/v1/login/error?error=Usuario%20no%20encontrado');
             }
@@ -96,7 +96,7 @@ router.get('/auth/discord/callback', async (req, res) => {
     const code = req.query.code;
 
     if (!code) {
-        return res.redirect('/v1/login/error?error=C%C3%B3digo%20no%20proporcionado');
+        return res.redirect('/v1/login/error?error=Acceso%20no%20Autorizado');
     }
 
     try {

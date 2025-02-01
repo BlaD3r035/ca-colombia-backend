@@ -2,11 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
 const axios = require('axios');
-const { Client } = require('unb-api');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const path = require('path');
-const client = new Client('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfaWQiOiIxMjU5Njc3OTIzMzQ3MTM3NzQ4IiwiaWF0IjoxNzIwNDAxNTYxfQ.0mjjTZTrGQZ7X9dOdmRO4o1kI5FtRllZaPDrK26qGvY');
 
 
 router.post('/sendticket', async (req, res) => {
@@ -100,8 +98,35 @@ procedimiento establecido en el artículo 135 de la Ley 769 de 2002 modificado p
     const guildID = '1042099714608345159';
     const userID = pedData.userId;
     try {
-      await client.editUserBalance(guildID, userID, { cash: -ticketData.value });
-      await client.editUserBalance(guildID, "721510528215679058", { cash: +ticketData.value });
+      const [inventoryResult] = await db.query('SELECT object FROM inventory WHERE userId = ?', [userID]);
+      if(inventoryResult.length > 0){
+        inventory = inventoryResult[0].object;
+        inventory.money.bank -= ticketData.value;
+        await db.query('UPDATE inventory SET object = ? WHERE userId = ?', [JSON.stringify(inventory), userID]);
+
+         
+    const colombiaDate = new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' });
+    const formattedDate = new Date(colombiaDate);
+
+  
+    await db.query(
+      'INSERT INTO taxes (userId, type, description, value, date) VALUES (?, ?, ?, ?,?)',
+      [userID,'pago_multa_transito', `Pago multa de transito `, ticketData.value,formattedDate]
+    );
+    try{
+      const [userInventoryResult] = await db.query('SELECT userId, object FROM inventory WHERE userId = ? LIMIT 1', ['1035227795099492353']);
+      const inventory = userInventoryResult[0].object;
+      inventory.money.bank += ticketData.value
+      await db.query('UPDATE inventory SET object = ? WHERE userId = ?', [JSON.stringify(inventory),'1035227795099492353']);
+
+
+    }catch(err){
+      
+    }
+      }else{
+
+      }
+
     } catch (error) {
       console.error('Error al descontar el dinero', error);
       return res.status(500).json('No se pudo descontar el dinero del usuario');

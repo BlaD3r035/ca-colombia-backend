@@ -27,7 +27,7 @@ router.use(session({
 // Discord OAuth2 Config
 const CLIENT_ID = '1279160842109321236';
 const CLIENT_SECRET = 'XY6YNIj7tujHs7LLkThGOV9LU8tfUHHz';
-const REDIRECT_URI = 'https://cacolombia.website/v1/auth/discord/callback';
+const REDIRECT_URI = 'http://localhost:8080/v1/auth/discord/callback';
 const DISCORD_API_URL = 'https://discord.com/api';
 
 // Login Route
@@ -66,6 +66,7 @@ router.post('/login', async (req, res) => {
                     'Content-Type': 'application/json',
                 },
             });
+            console.log(response.data)
             const roleList = ['1042099715031961749', '1042099715052949535', '1042099715052949539', '1042099715052949538', '1042099715052949537', '1068770548311658577', '1229429878382919680'];
             const hasRole = response.data.roles.some(role => roleList.includes(role));
             
@@ -120,7 +121,7 @@ router.get('/auth/discord/callback', async (req, res) => {
         });
 
         const user = userResponse.data;
-        const loginResponse = await axios.post('https://cacolombia.website/v1/login', { userId: user.id });
+        const loginResponse = await axios.post('http://localhost:8080/v1/login', { userId: user.id });
 
         if (loginResponse.data === 'No_auth') {
             return res.redirect('/v1/login/error?error=No%20autorizado');

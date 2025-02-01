@@ -1,7 +1,74 @@
+
+async function addTaxesTransaction(userId, type, description, value) {
+  try {
+
+    if (!userId || typeof userId !== 'string') {
+      throw new Error('El senderId es obligatorio y debe ser un string.');
+    }
+
+   
+    if (!value || typeof value !== 'number' || value <= 0) {
+      throw new Error('El valor (value) es obligatorio, debe ser un número y mayor que cero.');
+    }
+
+    
+    if (!description || typeof description !== 'string' || description.trim().length === 0) {
+      throw new Error('La razón (reason) es obligatoria y debe ser una cadena de texto no vacía.');
+    }
+
+    
+    const colombiaDate = new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' });
+    const formattedDate = new Date(colombiaDate);
+
+  
+    await db.query(
+      'INSERT INTO taxes (userId, type, description, value, date) VALUES (?, ?, ?, ?,?)',
+      [userId, type, description, value,formattedDate]
+    );
+    try{
+      const [userInventoryResult] = await db.query('SELECT userId, object FROM inventory WHERE userId = ? LIMIT 1', ['1035227795099492353']);
+      const inventory = userInventoryResult[0].object;
+      inventory.money.bank += value
+      await db.query('UPDATE inventory SET object = ? WHERE userId = ?', [JSON.stringify(inventory),'1035227795099492353']);
+
+      const [userInventory] = await db.query('SELECT object FROM inventory WHERE userId = ? LIMIT 1', [userId]);
+
+      if (userInventory.length === 0) {
+        return
+      }
+
+      const inventoryuser = userInventory[0].object;
+
+      inventoryuser.money.bank -= value;
+      await db.query('UPDATE inventory SET object = ? WHERE userId = ?', [JSON.stringify(inventoryuser), userId]);
+
+
+
+
+    }catch(err){
+      console.log('problema tratando de añadir los fondos de las taxes en la cuenta de la dian')
+    }
+
+    
+  } catch (err) {
+    if (err.code === 'ER_BAD_FIELD_ERROR') {
+      console.log('Error de base de datos: campo inválido en la consulta.');
+    } else if (err.code === 'ER_NO_DEFAULT_FOR_FIELD') {
+      console.log('Error de base de datos: un campo obligatorio no tiene valor.');
+    } else {
+      console.log('Error guardando la taxes trans: ' + err.message);
+    }
+  }
+}
+
+
+//MULTA CODE 
+
 const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
 const axios = require('axios');
+
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const path = require('path');
@@ -92,52 +159,21 @@ procedimiento establecido en el artículo 135 de la Ley 769 de 2002 modificado p
       ]
     };
 
+
     await axios.post(discordWebhookUrl, discordMessage);
 
-    // Modificar balance de usuario
-    const guildID = '1042099714608345159';
-    const userID = pedData.userId;
-    try {
-      const [inventoryResult] = await db.query('SELECT object FROM inventory WHERE userId = ?', [userID]);
-      if(inventoryResult.length > 0){
-        inventory = inventoryResult[0].object;
-        inventory.money.bank -= ticketData.value;
-        await db.query('UPDATE inventory SET object = ? WHERE userId = ?', [JSON.stringify(inventory), userID]);
+    await addTaxesTransaction(pedData.userId,ticketData.type,`Pago de ${ticketData.type} por ${ticketData.value}`, parseInt(ticketData.value))
 
-         
-    const colombiaDate = new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' });
-    const formattedDate = new Date(colombiaDate);
-
-  
-    await db.query(
-      'INSERT INTO taxes (userId, type, description, value, date) VALUES (?, ?, ?, ?,?)',
-      [userID,'pago_multa_transito', `Pago multa de transito `, ticketData.value,formattedDate]
-    );
-    try{
-      const [userInventoryResult] = await db.query('SELECT userId, object FROM inventory WHERE userId = ? LIMIT 1', ['1035227795099492353']);
-      const inventory = userInventoryResult[0].object;
-      inventory.money.bank += ticketData.value
-      await db.query('UPDATE inventory SET object = ? WHERE userId = ?', [JSON.stringify(inventory),'1035227795099492353']);
-
-
-    }catch(err){
-      
-    }
-      }else{
-
-      }
-
-    } catch (error) {
-      console.error('Error al descontar el dinero', error);
-      return res.status(500).json('No se pudo descontar el dinero del usuario');
-    }
-
-    // Responder con la URL del PDF
+    
     return res.status(200).json({ message: 'Ticket saved successfully', pdfUrl: `/pdfs/multas/${multaId}.pdf` });
   } catch (e) {
-    console.error('Error saving data: ', e);
+    console.log('Error saving data: ', e);
     return res.status(500).json('Problem saving data');
   }
 });
 
 module.exports = router;
+
+
+
+

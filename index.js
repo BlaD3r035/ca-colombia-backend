@@ -30,7 +30,9 @@ const Ticket = require('./routes/add_records_tickets');
 app.use('/v1',Ticket)
 const records = require('./routes/add_records');
 app.use('/v1',records)
-
+//DENUNCIAS 
+const dennciaadd = require('./routes/denuncias/denuncias')
+app.use('/v1/denuncias',dennciaadd)
 //public routes
 const mainpage = require('./routes/mainpage');
 app.use('/',mainpage)

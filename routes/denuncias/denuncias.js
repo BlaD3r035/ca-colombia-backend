@@ -29,7 +29,6 @@ async function sendWebhook(denuncia) {
 
     try {
         await axios.post(webhookdiscord, { embeds: [embed] });
-        console.log("✅ Webhook enviado correctamente.");
     } catch (error) {
         console.error("❌ Error enviando el webhook:", error);
     }

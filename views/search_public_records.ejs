@@ -5,55 +5,516 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/dashboard/logoponal.png" type="image/png">
     <title>CA Colombia | Base de Datos</title>
-    <link rel="stylesheet" href="/search_public_records/styles.css">
-</head>
-<body>
-    <header>
-        <div class="header-logo">
-            <img src="/search_public_records/logo_pol.png" alt="Policía Nacional de Colombia">
-        </div>
-        <nav>
-            <ul>
-                <li><a href="/police-page.html">INICIO</a></li>
-                <li><a href="https://discord.gg/cacolombiarp">CONTACTÉNOS</a></li>
-                <li><a href="/notas.html">NOTAS DEL DESARROLLADOR</a></li>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        :root {
+            --ponal-green: #004830;
+            --ponal-gold: #BF9B30;
+            --ponal-blue: #00205B;
+        }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
 
+        .header-container {
+            background: linear-gradient(to right, #004830, #004028, #003820);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .consulta-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 72, 48, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 72, 48, 0.1);
+        }
+
+        .consulta-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 72, 48, 0.15);
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            background: linear-gradient(to right, var(--ponal-gold), #D4AF37);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            filter: blur(8px);
+        }
+
+        .logo-container:hover::before {
+            opacity: 0.2;
+        }
+
+        .logo-container img {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .logo-container:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        nav a {
+            position: relative;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--ponal-gold);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--ponal-gold);
+        }
+
+        nav a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .message {
+            background: linear-gradient(135deg, #fff5f5, #fee2e2);
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 10px rgba(153, 27, 27, 0.1);
+        }
+
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 72, 48, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(191, 155, 48, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .form-container {
+            position: relative;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            border-top: 2px solid var(--ponal-gold);
+            border-right: 2px solid var(--ponal-gold);
+        }
+
+        .form-container::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            border-bottom: 2px solid var(--ponal-gold);
+            border-left: 2px solid var(--ponal-gold);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 1rem;
+            top: -0.5rem;
+            padding: 0 0.5rem;
+            background: white;
+            color: var(--ponal-green);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .input-group select,
+        .input-group input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            border: 2px solid rgba(0, 72, 48, 0.15);
+            border-radius: 1rem;
+            background-color: white;
+            transition: all 0.3s ease;
+            appearance: none;
+            color: #1a1a1a;
+        }
+
+        .input-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23004830'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.5rem;
+            padding-right: 3rem;
+        }
+
+        .input-group select:hover,
+        .input-group input:hover {
+            border-color: var(--ponal-green);
+        }
+
+        .input-group select:focus,
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--ponal-green);
+            box-shadow: 0 0 0 4px rgba(0, 72, 48, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(135deg, var(--ponal-green), #015c3d);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        button[type="submit"]:hover::before {
+            left: 100%;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 85, 30, 0.3);
+        }
+
+        button[type="submit"] svg {
+            transition: transform 0.3s ease;
+        }
+
+        button[type="submit"]:hover svg {
+            transform: translateX(4px);
+        }
+
+        /* Estilos para menú móvil */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(to right, #004830, #003820);
+            transition: all 0.4s ease-in-out;
+            padding-top: 5rem;
+            z-index: 40;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1.1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mobile-menu a:hover {
+            background: rgba(191, 155, 48, 0.1);
+            color: var(--ponal-gold);
+        }
+
+        /* Animación del botón hamburguesa */
+        .hamburger {
+            width: 24px;
+            height: 20px;
+            position: relative;
+            cursor: pointer;
+            z-index: 50;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 9px; }
+        .hamburger span:nth-child(3) { top: 18px; }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg);
+            top: 9px;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg);
+            top: 9px;
+        }
+
+        /* Mejoras responsivas */
+        @media (max-width: 768px) {
+            .consulta-card {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .header-container {
+                padding: 0.5rem 1rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .input-group label {
+                font-size: 0.8rem;
+            }
+
+            .input-group select,
+            .input-group input {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            button[type="submit"] {
+                width: 100%;
+                padding: 0.75rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            main {
+                padding-top: 5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h3 {
+                font-size: 1rem;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 1000,
+                offset: 100,
+                once: true,
+                disable: 'mobile',
+                easing: 'ease-out-cubic'
+            });
+
+            // Funcionalidad del menú hamburguesa
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const body = document.body;
+
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                body.classList.toggle('overflow-hidden');
+            });
+
+            // Cerrar menú al hacer click en un enlace
+            const mobileLinks = mobileMenu.getElementsByTagName('a');
+            Array.from(mobileLinks).forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    body.classList.remove('overflow-hidden');
+                });
+            });
+
+            // Cerrar menú al redimensionar la ventana
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    hamburger.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    body.classList.remove('overflow-hidden');
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="background-pattern"></div>
+    
+    <header class="header-container">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="logo-container">
+                    <img src="/search_public_records/logo_ponal.png" alt="Policía Nacional de Colombia" 
+                         class="h-16 w-auto">
+                </div>
                 
-            </ul>
-        </nav>
+                <!-- Navegación desktop -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="/police-page.html" class="tracking-wide hover:text-[#BF9B30]">INICIO</a>
+                    <a href="https://discord.gg/cacolombiarp" class="tracking-wide hover:text-[#BF9B30]">CONTACTÉNOS</a>
+                    <a href="/notas.html" class="tracking-wide hover:text-[#BF9B30]">NOTAS DEL DESARROLLADOR</a>
+                </nav>
+
+                <!-- Botón hamburguesa -->
+                <div class="hamburger md:hidden" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menú móvil -->
+        <div class="mobile-menu md:hidden" id="mobile-menu">
+            <nav class="flex flex-col">
+                <a href="/police-page.html" class="hover:text-[#BF9B30]">INICIO</a>
+                <a href="https://discord.gg/cacolombiarp" class="hover:text-[#BF9B30]">CONTACTÉNOS</a>
+                <a href="/notas.html" class="hover:text-[#BF9B30]">NOTAS DEL DESARROLLADOR</a>
+            </nav>
+        </div>
     </header>
 
-    <main>
-        <section class="consulta">
-            <h2>Bienvenido al registro antecedentes penales</h2>
-            <h2>Ingrese los siguientes datos</h2>
+    <main class="max-w-4xl mx-auto px-6 pt-32 pb-20">
+        <section class="consulta-card rounded-2xl p-10" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-semibold text-[#004830] mb-3">Sistema de Consulta de Antecedentes</h2>
+                <div class="w-20 h-1 bg-[#BF9B30] mx-auto mb-4"></div>
+                <h3 class="text-lg text-gray-600">Ingrese la información solicitada para realizar la consulta</h3>
+            </div>
+
             <% if (typeof message !== 'undefined') { %>
-                <div class="message"><%= message %></div>
+                <div class="message" role="alert">
+                    <%= message %>
+                </div>
             <% } %>
-            <form id="consultaForm" method="get" action="/public/v1/showRecords">
-                <label for="tipoDocumento">Tipo de documento: *</label>
-                <select id="tipoDocumento" name="type">
-                    <option value="cc">Cédula de Ciudadanía</option>
-                    <option value="pp">Pasaporte</option>
-                </select>
-            
-                <label for="numeroDocumento">Número de documento: *</label>
-                <input type="text" id="numeroDocumento" name="documentId" required>
-            
-                <button type="submit">Consultar</button>
-            </form>
+
+            <div class="form-container">
+                <form id="consultaForm" method="get" action="/public/v1/showRecords" class="space-y-8">
+                    <div class="input-group">
+                        <label for="tipoDocumento">Tipo de documento *</label>
+                        <select id="tipoDocumento" name="type" required>
+                            <option value="cc">Cédula de Ciudadanía</option>
+                            <option value="pp">Pasaporte</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="numeroDocumento">Número de documento *</label>
+                        <input 
+                            type="text" 
+                            id="numeroDocumento" 
+                            name="documentId" 
+                            required 
+                            placeholder="Ingrese el número de documento"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div class="text-center pt-6">
+                        <button type="submit" class="group">
+                            <span>Realizar Consulta</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </section>
     </main>
 
-    <footer>
-        <div class="footer-info">
-            <p>Este sitio web es un proyecto de ficción y parodia inspirado en actividades de roleplay.<br>
+    <footer class="bg-gradient-to-b from-[#004830] to-[#003820] text-white py-12">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="mb-8">
+                <img src="/search_public_records/logo_ponal.png" alt="Logo" class="h-16 mx-auto mb-4">
+                <div class="w-16 h-1 bg-[#BF9B30] mx-auto mb-4"></div>
+            </div>
+            <p class="text-sm leading-relaxed text-gray-300 max-w-2xl mx-auto">
+                Este sitio web es un proyecto de ficción y parodia inspirado en actividades de roleplay.<br>
                 No está afiliado, patrocinado ni respaldado por la Policía Nacional de Colombia ni por alguna entidad pública o privada.<br>
                 Todos los nombres, logotipos y referencias son utilizados con fines creativos.<br>
-                Página exclusiva de 「CA」 Colombia ER:LC
+                <span class="text-[#BF9B30] font-medium">Página exclusiva de 「CA」 Colombia ER:LC</span>
             </p>
         </div>
-        <div class="footer-links"></div>
     </footer>
 </body>
 </html>

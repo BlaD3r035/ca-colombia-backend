@@ -37,7 +37,6 @@ function cooldownMiddleware(req, res, next) {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cooldownMiddleware)
 
 //database routes
 const routes = require('./routes/routes');
@@ -49,12 +48,12 @@ app.use('/v1',userDatas)
 const allUserData = require('./routes/get_database_user_data');
 app.use('/v1',allUserData)
 const Ticket = require('./routes/add_records_tickets');
-app.use('/v1',Ticket)
+app.use('/v1',cooldownMiddleware,Ticket)
 const records = require('./routes/add_records');
-app.use('/v1',records)
+app.use('/v1',cooldownMiddleware,records)
 //DENUNCIAS 
 const dennciaadd = require('./routes/denuncias/denuncias')
-app.use('/v1/denuncias',dennciaadd)
+app.use('/v1/denuncias',cooldownMiddleware,dennciaadd)
 //public routes
 const mainpage = require('./routes/mainpage');
 app.use('/',mainpage)

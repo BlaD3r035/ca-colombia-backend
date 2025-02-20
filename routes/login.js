@@ -5,7 +5,6 @@ const MySQLStore = require('express-mysql-session')(session);
 const db = require('../db/db');
 const axios = require('axios');
 const querystring = require('querystring');
-
 // Session configuration
 const sessionStore = new MySQLStore({}, db);
 
@@ -66,7 +65,7 @@ router.post('/login', async (req, res) => {
                     'Content-Type': 'application/json',
                 },
             });
-            console.log(response.data)
+        
             const roleList = ['1042099715031961749', '1042099715052949535', '1042099715052949539', '1042099715052949538', '1042099715052949537', '1068770548311658577', '1229429878382919680'];
             const hasRole = response.data.roles.some(role => roleList.includes(role));
             

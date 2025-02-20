@@ -2,10 +2,10 @@ const mysql = require('mysql2');
 
 const pool = mysql.createPool({
     connectionLimit: 10,
-    host: '38.46.216.61',
-    user: 'cacolom1_backend',
-    password: 'c].QOXc+gX!J',
-    database: 'cacolom1_bot'
+    host: '38.46.216.103',
+    user: 'cacolomb_policedatabase',
+    password: 'XF3dLqe9KP-x',
+    database: 'cacolomb_bot'
 }).promise();
 
 pool.getConnection()

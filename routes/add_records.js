@@ -95,9 +95,9 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
                         { name: 'Arrestado', value: `<@${pedData.userId}>`, inline: false },
                         { name: 'Articulos', value: ticketData.record, inline: false },
                         { name: 'Tiempo', value: `${ticketData.time}`, inline: false },
-                        { name: 'Notificación', value: `https://cacolombia.website/pdfs/antecedentes/${multaId}.pdf`, inline: false }
+                        { name: 'Notificación', value: `https://cacolombia.com/pdfs/antecedentes/${multaId}.pdf`, inline: false }
                     ],
-                    image: { url: `https://cacolombia.website/fotos-antecedentes/${multaId}.jpg` }, 
+                    image: { url: `https://cacolombia.com/fotos-antecedentes/${multaId}.jpg` }, 
                     footer: {
                         text: '「CA」 Colombia ER:LC',
                         icon_url: 'https://media.discordapp.net/attachments/1047946669079134249/1176943871595397172/Nuevo_Logo.png?format=webp&quality=lossless'

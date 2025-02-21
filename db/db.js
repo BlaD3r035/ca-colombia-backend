@@ -4,7 +4,7 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     host: '38.46.216.103',
     user: 'cacolomb_policedatabase',
-    password: '~;Ah&2O]nK3=',
+    password: 'XF3dLqe9KP-x',
     database: 'cacolomb_bot'
 }).promise();
 

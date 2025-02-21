@@ -14,30 +14,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views'));
 
 //middlewarte
-const cooldowns = new Map();
-const COOLDOWN_TIME = 5000; 
 
-function cooldownMiddleware(req, res, next) {
-    const key = req.ip + req.originalUrl; 
-    const now = Date.now();
-
-    if (cooldowns.has(key)) {
-        const lastRequestTime = cooldowns.get(key);
-        if (now - lastRequestTime < COOLDOWN_TIME) {
-            return res.status(429).json({ message: "Por favor, espera antes de volver a intentarlo." });
-        }
-    }
-
-    cooldowns.set(key, now);
-    setTimeout(() => cooldowns.delete(key), COOLDOWN_TIME); 
-    next();
-}
 
 
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cooldownMiddleware)
 
 //database routes
 const routes = require('./routes/routes');

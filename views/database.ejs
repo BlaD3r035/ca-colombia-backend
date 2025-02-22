@@ -152,7 +152,7 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <img src="/dashboard/logo_pol.png" alt="Logo" class="h-8 md:h-12">
+                    <img id="logoponalepico777" src="/dashboard/logo_pol.png" alt="Logo" class="h-8 md:h-12">
                 </div>
                 <div class="md:hidden">
                     <button id="mobile-menu-button" class="text-gray-700 hover:text-green-600 p-2">
@@ -175,12 +175,7 @@
             <div class="search-options-box">
                
                 <nav>
-                      <div class="InputContainer">
-                        <input type="text" name="text" class="input" id="input" placeholder="Buscar placa o documento">
-                        
-                        <label for="input" class="labelforsearch">
-                     
-                      </label>
+                      
                       <div class="border"></div>
                       
                       <button class="search-button" onclick="getIdByDoc()">
@@ -250,7 +245,7 @@
                     
                             <div class="min-w-full inline-block align-middle">
                                 <div class="overflow-x-auto border rounded-lg">
-                                    <table class="min-w-full divide-y divide-gray-200">
+                                    <table id="table-licencia" class="min-w-full divide-y divide-gray-200">
                                         <tr><th>LICENCIA DE CONDUCIR</th><th>CATEGORIA</th><th>FECHA DE EXPEDICIÓN</th><th>RESTRICCIONES</th></tr>
                                     </table>
                                 </div>
@@ -260,7 +255,7 @@
                             <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">VEHICULOS</h3>
                             <div class="min-w-full inline-block align-middle">
                                 <div class="overflow-x-auto border rounded-lg">
-                                    <table class="min-w-full divide-y divide-gray-200">
+                                    <table id="table-vehiculos" class="min-w-full divide-y divide-gray-200">
                                         <tr><th>NOMBRE</th><th>PLACA</th><th>COLOR</th><th>BLINDADO</th></tr>
                                     </table>
                                 </div>
@@ -270,7 +265,7 @@
                             <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">ANTECEDENTES</h3>
                             <div class="min-w-full inline-block align-middle">
                                 <div class="overflow-x-auto border rounded-lg">
-                                    <table class="min-w-full divide-y divide-gray-200">
+                                    <table id="table-antecedentes" class="min-w-full divide-y divide-gray-200">
                                         <tr><th>ANTECEDENTES</th><th>TIEMPO</th><th>AGENTE</th><th>FECHA DE REGISTRO</th></tr>
                                     </table>
                                 </div>
@@ -280,7 +275,7 @@
                             <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">MULTAS</h3>
                             <div class="min-w-full inline-block align-middle">
                                 <div class="overflow-x-auto border rounded-lg">
-                                    <table class="min-w-full divide-y divide-gray-200">
+                                    <table id="table-multas" class="min-w-full divide-y divide-gray-200">
                                         <tr><th>ARTICULOS</th><th>PLACA</th><th>VALOR</th><th>AGENTE</th><th>FECHA DE REGISTRO</th></tr>
                                     </table>
                                 </div>
@@ -290,7 +285,7 @@
                             <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">OBSERVACIONES</h3>
                             <div class="min-w-full inline-block align-middle">
                                 <div class="overflow-x-auto border rounded-lg">
-                                    <table class="min-w-full divide-y divide-gray-200">
+                                    <table id="table-observaciones" class="min-w-full divide-y divide-gray-200">
                                         <tr><th>OBSERVACIONES</th></tr>
                                     </table>
                                 </div>
@@ -300,7 +295,7 @@
                             <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">BUSQUEDA Y CAPTURA</h3>
                             <div class="min-w-full inline-block align-middle">
                                 <div class="overflow-x-auto border rounded-lg">
-                                    <table class="min-w-full divide-y divide-gray-200">
+                                    <table id="table-byc" class="min-w-full divide-y divide-gray-200">
                                         <tr><th>estado</th></tr>
                                     </table>
                                 </div>

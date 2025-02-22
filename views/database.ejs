@@ -6,13 +6,157 @@
     <link rel="icon" href="/dashboard/logoponal.png" type="image/png">
     <title>CA Colombia | Base de Datos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="/dashboard/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .initial-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #004830 0%, #003820 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .initial-loading.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            margin: 1.5rem auto;
+            border: 4px solid rgba(191, 155, 48, 0.3);
+            border-top: 4px solid #BF9B30;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .loading-subtext {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            color: #BF9B30;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .loading-progress {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #BF9B30, #E5BC3C);
+            transition: width 3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(191, 155, 48, 0.5);
+        }
+
+        .loading-message {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .loading-content {
+                padding: 1.5rem;
+            }
+            
+            .loading-logo {
+                width: 90px;
+                height: 90px;
+            }
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        body.loaded {
+            overflow: auto;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <div class="header-logo">
-            <img src="/login/logo_pol.png" alt="Policía Nacional de Colombia">
+<body class="bg-gray-100 min-h-screen">
+    <div class="initial-loading">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Base de Datos PONAL</div>
+            <div class="loading-subtext">Sistema de Información Policial</div>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="loading-message">Inicializando sistema...</div>
         </div>
+    </div>
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <img src="/dashboard/logo_pol.png" alt="Logo" class="h-8 md:h-12">
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-green-600 p-2">
+                        <i class="fas fa-bars"></i>
         <nav>
             <ul>
                 <li><a href="https://cacolombia.com/police-page.html">INICIO</a></li>
@@ -42,275 +186,469 @@
                       <button class="search-button" onclick="getIdByDoc()">
                         <i class="fa-solid fa-magnifying-glass" style="color: #007b5f;"></i>
                     </button>
-                      
-                      </div>
-                </nav>
-          
-            </div>
-            
-        </div>
-        <div class="main-box">
-            <div class="lateral-box">
-                <img id="avatar" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="Avatar">
-                <p><strong>Nombre:</strong> <span id="nombre"></span></p>
-                <p><strong>Apellido:</strong> <span id="apellido"></span></p>
-                <p><strong>Nacionalidad:</strong> <span id="nacionalidad"></span></p>
-                <p><strong>Estatura:</strong> <span id="estatura"></span> cm</p>
-                <p><strong>Sexo:</strong> <span id="sexo"></span></p>
-                <p><strong>Fecha de Nacimiento:</strong> <span id="fechanacimiento"></span></p>
-                <p><strong>Edad:</strong> <span id="edad"></span></p>
-                <p><strong>G.S:</strong> <span id="gs"></span></p>
-                <p><strong>Username:</strong> <span id="username"></span></p>
-                <p><strong>Numero de documento:</strong> <span id="ndoc"></span></p>
-            </div>
-            <div class="right-content-box">
-                <div class="table-container">
-                    <label for="table-licencia">LICENCIA</label>
-                    <table id="table-licencia">
-                        <tr><th>LICENCIA DE CONDUCIR</th><th>CATEGORIA</th><th>FECHA DE EXPEDICIÓN</th><th>RESTRICCIONES</th></tr>
-                    </table>
-                    <br>
-                    <label for="table-vehiculos">VEHICULOS</label>
-                    <table id="table-vehiculos">
-                        <tr><th>NOMBRE</th><th>PLACA</th><th>COLOR</th><th>BLINDADO</th></tr>
-                    </table>
-                    <br>
-
-                    <label for="table-antecedentes">ANTECEDENTES</label>
-                    <table id="table-antecedentes">
-                        <tr><th>ANTECEDENTES</th><th>TIEMPO</th><th>AGENTE</th><th>FECHA DE REGISTRO</th></tr>
-                    </table>
-                    <br>
-
-                    <label for="table-multas">MULTAS</label>
-                    <table id="table-multas">
-                        <tr><th>ARTICULOS</th><th>PLACA</th><th>VALOR</th><th>AGENTE</th><th>FECHA DE REGISTRO</th></tr>
-                    </table>
-                    <br>
-
-                    <label for="table-observaciones">OBSERVACIONES</label>
-                    <table id="table-observaciones">
-                        <tr><th>OBSERVACIONES</th></tr>
-                    </table>
-                    <br>
-                    <label for="table-byc">BUSQUEDA Y CAPTURA</label>
-                    <table id="table-byc">
-                        <tr><th>estado</th></tr>
-                    </table>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="https://cacolombia.com/police-page.html" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">INICIO</a>
+                    <a href="https://discord.gg/cacolombiarp" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">CONTACTO</a>
+                    <a href="https://cacolombia.com/notas.html" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">NOTAS</a>
                 </div>
             </div>
         </div>
-      </div>
-      <div class="form-buttons">
-          <button onclick="toggleForm('form-multas', 'form-arrestos')">Subir Multa</button>
-          <button onclick="toggleForm('form-arrestos', 'form-multas')">Subir Arresto</button>
-          <button onclick="cerrarSesion()" style="background-color: red; color: white;">Cerrar sesión</button>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="https://cacolombia.com/police-page.html" class="block text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium">INICIO</a>
+                <a href="https://discord.gg/cacolombiarp" class="block text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium">CONTACTO</a>
+                <a href="https://cacolombia.com/notas.html" class="block text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium">NOTAS</a>
+            </div>
+        </div>
+    </nav>
+    <main class="max-w-7xl mx-auto p-2 sm:p-4 my-4 sm:my-8">
+        <div class="bg-white rounded-[1rem] sm:rounded-[2rem] shadow-xl overflow-hidden border-4 sm:border-8 border-gray-800 max-w-4xl mx-auto">
+            <div class="bg-gray-800 p-1 sm:p-2 flex justify-between items-center">
+                <div class="w-16 sm:w-20 h-1 bg-gray-600 rounded-full mx-auto"></div>
+            </div>
 
+            <div class="p-3 sm:p-6 bg-gray-50">
+                <div class="bg-white rounded-lg shadow-md p-2 sm:p-4 mb-4 sm:mb-6">
+                    <div class="flex items-center bg-gray-100 rounded-lg p-2">
+                        <input type="text" id="input" placeholder="Buscar placa o documento" 
+                               class="w-full flex-1 bg-transparent border-none focus:outline-none px-2 sm:px-4 text-sm sm:text-base">
+                        <button onclick="getIdByDoc()" 
+                                class="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-[minmax(250px,300px),1fr] gap-4 sm:gap-6">
+
+                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                        <div class="flex flex-col items-center">
+                            <img id="avatar" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                                 class="w-24 sm:w-32 h-24 sm:h-32 rounded-full mb-4 border-4 border-green-600">
+                          
+                            <div class="w-full space-y-2 text-sm sm:text-base">
+                                <p><strong>Nombre:</strong> <span id="nombre"></span></p>
+                                <p><strong>Apellido:</strong> <span id="apellido"></span></p>
+                                <p><strong>Nacionalidad:</strong> <span id="nacionalidad"></span></p>
+                                <p><strong>Estatura:</strong> <span id="estatura"></span> cm</p>
+                                <p><strong>Sexo:</strong> <span id="sexo"></span></p>
+                                <p><strong>Fecha de Nacimiento:</strong> <span id="fechanacimiento"></span></p>
+                                <p><strong>Edad:</strong> <span id="edad"></span></p>
+                                <p><strong>G.S:</strong> <span id="gs"></span></p>
+                                <p><strong>Username:</strong> <span id="username"></span></p>
+                                <p><strong>Numero de documento:</strong> <span id="ndoc"></span></p>
+                            </div>
+                        </div>
+                    </div>
+
+              
+                    <div class="space-y-4 sm:space-y-6">
           
-    </div>  
-     <div class="registros">
-       
-        <div id="form-multas" class="form-container" style="display: none;">
-            <h2>Subir Multa</h2>
-            <form id="upload-ticket-form">
-                <label for="selector">Tipo</label>
-                <select name="type" id="selector" class="styled-select" required>
-                    <option value="multa">Multa</option>
-                    <option value="Comparendo">Comparendo</option>
-                </select>
+                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
+                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">LICENCIA</h3>
+                    
+                            <div class="min-w-full inline-block align-middle">
+                                <div class="overflow-x-auto border rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tr><th>LICENCIA DE CONDUCIR</th><th>CATEGORIA</th><th>FECHA DE EXPEDICIÓN</th><th>RESTRICCIONES</th></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
+                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">VEHICULOS</h3>
+                            <div class="min-w-full inline-block align-middle">
+                                <div class="overflow-x-auto border rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tr><th>NOMBRE</th><th>PLACA</th><th>COLOR</th><th>BLINDADO</th></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
+                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">ANTECEDENTES</h3>
+                            <div class="min-w-full inline-block align-middle">
+                                <div class="overflow-x-auto border rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tr><th>ANTECEDENTES</th><th>TIEMPO</th><th>AGENTE</th><th>FECHA DE REGISTRO</th></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
+                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">MULTAS</h3>
+                            <div class="min-w-full inline-block align-middle">
+                                <div class="overflow-x-auto border rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tr><th>ARTICULOS</th><th>PLACA</th><th>VALOR</th><th>AGENTE</th><th>FECHA DE REGISTRO</th></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
+                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">OBSERVACIONES</h3>
+                            <div class="min-w-full inline-block align-middle">
+                                <div class="overflow-x-auto border rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tr><th>OBSERVACIONES</th></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
+                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">BUSQUEDA Y CAPTURA</h3>
+                            <div class="min-w-full inline-block align-middle">
+                                <div class="overflow-x-auto border rounded-lg">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tr><th>estado</th></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 border-t border-gray-200 pt-6">
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="toggleForm('form-multas', 'form-arrestos')" 
+                                class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Subir Multa</span>
+                        </button>
+                        <button onclick="toggleForm('form-arrestos', 'form-multas')"
+                                class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
+                            <i class="fas fa-handcuffs"></i>
+                            <span>Subir Arresto</span>
+                        </button>
+                        <button onclick="cerrarSesion()"
+                                class="flex items-center justify-center gap-2 bg-red-600 text-white px-6 py-2.5 rounded-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Cerrar sesión</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="registros mt-4 sm:mt-8 space-y-4">
+     
+            <div id="form-multas" class="max-w-lg mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-md hidden">
+                <h2>Subir Multa</h2>
+                <form id="upload-ticket-form">
+                    <label for="selector">Tipo</label>
+                    <select name="type" id="selector" class="styled-select" required>
+                        <option value="multa">Multa</option>
+                        <option value="Comparendo">Comparendo</option>
+                    </select>
+                    
+                    <label for="articulos-multa">Artículos:</label>
+                    <input type="text" id="articulos-multa" name="record" required>
+            
+                    <label for="placa-multa">Placa:</label>
+                    <input type="text" id="placa-multa" name="plate" required>
+            
+                    <label for="valor-multa">Valor:</label>
+                    <input type="number" id="valor-multa" name="value" required>
+            
+                    <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
+            
+                    <label for="">Información de la persona a procesar: <br> <strong id="name-form">Nombre:</strong> <br><strong id="lastName-form">Apellido:</strong> <br><strong id="documentId-form">Numero de documento:</strong> <br> </label>  
+            
+                    <button type="submit">Subir Multa</button>
+                </form>
+            </div>
+            <div id="form-arrestos" class="max-w-lg mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-md hidden">
+                <h2>Subir Arresto</h2>
+                <form id="upload-arrest-form">
+                    <label for="articulo-arresto">Artículo:</label>
+                    <input type="text" id="articulo-arresto" name="record" required>
                 
-                <label for="articulos-multa">Artículos:</label>
-                <input type="text" id="articulos-multa" name="record" required>
-        
-                <label for="placa-multa">Placa:</label>
-                <input type="text" id="placa-multa" name="plate" required>
-        
-                <label for="valor-multa">Valor:</label>
-                <input type="number" id="valor-multa" name="value" required>
-        
-                <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
-        
-                <label for="">Información de la persona a procesar: <br> <strong id="name-form">Nombre:</strong> <br><strong id="lastName-form">Apellido:</strong> <br><strong id="documentId-form">Numero de documento:</strong> <br> </label>  
-        
-                <button type="submit">Subir Multa</button>
-            </form>
-        </div>
-
-        
-        <div id="form-arrestos" class="form-container" style="display: none;">
-            <h2>Subir Arresto</h2>
-            <form id="upload-arrest-form">
-                <label for="articulo-arresto">Artículo:</label>
-                <input type="text" id="articulo-arresto" name="record" required>
+                    <label for="tiempo-arresto">Tiempo en meses:</label>
+                    <input type="number" id="tiempo-arresto" name="time" required>
+                
+                    <label for="photo">Foto:</label>
+                    <input type="file" id="photo" name="photo" required> 
             
-                <label for="tiempo-arresto">Tiempo en meses:</label>
-                <input type="number" id="tiempo-arresto" name="time" required>
+                    <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
             
-                <label for="photo">Foto:</label>
-                <input type="file" id="photo" name="photo" required> 
-        
-                <label for="">Información del agente encargado: <br> <strong>Nombre:<%=userdata.nombreic%></strong> <br><strong>Apellido:<%=userdata.apellidoic%></strong> <br><strong>Numero de documento:<%=userdata.documentId%></strong> <br> </label> 
-        
-                <label for="">Información de la persona a procesar: <br> <strong id="name-form2">Nombre:</strong> <br><strong id="lastName-form2">Apellido:</strong> <br><strong id="documentId-form2">Numero de documento:</strong> <br> </label>  
-        
-                <button type="submit">Subir Arresto</button>
-            </form>
+                    <label for="">Información de la persona a procesar: <br> <strong id="name-form2">Nombre:</strong> <br><strong id="lastName-form2">Apellido:</strong> <br><strong id="documentId-form2">Numero de documento:</strong> <br> </label>  
+            
+                    <button type="submit">Subir Arresto</button>
+                </form>
+            </div>
         </div>
-     </div>
-
-      
     </main>
-    
-    <div id="loading" class="loading-container">
-        <div class="spinner"></div>
-        <p>Cargando...</p>
-    </div>
 
-    <footer>
-        <div class="footer-info">
-            <label id="parragraf">Este sitio web es un proyecto de ficción y parodia inspirado en actividades de roleplay.<br>
-                No está afiliado, patrocinado ni respaldado por la Policía Nacional de Colombia ni por alguna entidad pública o privada.<br>
-                Todos los nombres, logotipos y referencias son utilizados con fines creativos.<br>
-                Página exclusiva de 「CA」 Colombia ER:LC
-            </label>
+
+    <footer class="bg-gradient-to-b from-[#004830] to-[#003820] text-white mt-20">
+        <div class="max-w-7xl mx-auto px-4 pt-16 pb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <img src="/dashboard/logo_ponal.png" alt="Logo PONAL" class="h-12 w-auto">
+                        <div>
+                            <h3 class="text-lg font-bold">Policía Nacional</h3>
+                            <p class="text-sm text-[#BF9B30]">República de Colombia</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Comprometidos con la seguridad y el bienestar de todos los ciudadanos.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 text-[#BF9B30]">Enlaces Rápidos</h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="https://cacolombia.com/police-page.html" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group">
+                                <span class="w-1 h-1 bg-[#BF9B30] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                Inicio
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://discord.gg/cacolombiarp" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group">
+                                <span class="w-1 h-1 bg-[#BF9B30] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                Contacto
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://cacolombia.com/notas.html" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group">
+                                <span class="w-1 h-1 bg-[#BF9B30] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                Documentación
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group">
+                                <span class="w-1 h-1 bg-[#BF9B30] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                CA Colombia
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 text-[#BF9B30]">Servicios</h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="https://www.cacolombia.com/public/v1/showRecords" onclick="redirectToPublicPage()" class="text-gray-300 hover:text-white transition-colors duration-300 flex items-center group">
+                                <span class="w-1 h-1 bg-[#BF9B30] rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                Consulta de Antecedentes
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 text-[#BF9B30]">Redes Sociales</h4>
+                    <div class="flex space-x-4">
+                        <a href="https://discord.gg/cacolombiarp" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#BF9B30] transition-colors duration-300 group">
+                            <svg class="w-5 h-5 text-gray-300 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                        © 2025 [CA] Colombia ER:LC. Todos los derechos reservados.
+                    </p>
+                    <div class="flex flex-col text-center md:text-right">
+                        <p class="text-sm text-gray-400 mb-1">Este sitio web es un proyecto de ficción y parodia.</p>
+                        <p class="text-sm text-gray-400">No está afiliado a ninguna entidad oficial.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="footer-links"></div>
     </footer>
 
- 
-</body>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script>
-    
-    let personInfo;
-    let searchPerson;
-    const agentName='<%=userdata.nombreic%>'+" "+"<%=userdata.apellidoic%>";
-    function toggleForm(formId,formId2) {
-        if(!searchPerson){
-            return
-        }else{
-            document.getElementById('name-form').innerText = "Nombre:"+personInfo.nombreic
-            document.getElementById('lastName-form').innerText ="Apellido:"+personInfo.apellidoic
-            document.getElementById('documentId-form').innerText ="Numero de documento:"+personInfo.documentId
-            document.getElementById('name-form2').innerText = "Nombre:"+personInfo.nombreic
-            document.getElementById('lastName-form2').innerText ="Apellido:"+personInfo.apellidoic
-            document.getElementById('documentId-form2').innerText ="Numero de documento:"+personInfo.documentId
-        }
-  
-    const form = document.getElementById(formId);
-    const form2 = document.getElementById(formId2);
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
-    form2.style.display = 'none'
-}
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('input'); 
-    const searchButton = document.querySelector('.search-button'); 
+   
+    <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-4 border-green-600 border-t-transparent"></div>
+            <p class="text-gray-700">Cargando...</p>
+        </div>
+    </div>
 
-    // Escuchar el evento keydown en el input
-    searchInput.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') { 
-            event.preventDefault(); 
-            searchButton.click(); 
-        }
+
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        let personInfo;
+        let searchPerson;
+        const agentName='<%=userdata.nombreic%>'+" "+"<%=userdata.apellidoic%>";
+        function toggleForm(formId,formId2) {
+            if(!searchPerson){
+                return
+            }else{
+                document.getElementById('name-form').innerText = "Nombre:"+personInfo.nombreic
+                document.getElementById('lastName-form').innerText ="Apellido:"+personInfo.apellidoic
+                document.getElementById('documentId-form').innerText ="Numero de documento:"+personInfo.documentId
+                document.getElementById('name-form2').innerText = "Nombre:"+personInfo.nombreic
+                document.getElementById('lastName-form2').innerText ="Apellido:"+personInfo.apellidoic
+                document.getElementById('documentId-form2').innerText ="Numero de documento:"+personInfo.documentId
+            }
+      
+        const form = document.getElementById(formId);
+        const form2 = document.getElementById(formId2);
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        form2.style.display = 'none'
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('input'); 
+        const searchButton = document.querySelector('.search-button'); 
+
+        // Escuchar el evento keydown en el input
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') { 
+                event.preventDefault(); 
+                searchButton.click(); 
+            }
+        });
     });
-});
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const multasForm = document.getElementById('upload-ticket-form');
+        const arrestosForm = document.getElementById('upload-arrest-form');
 
+        // Función para enviar los datos de multas
+        multasForm.addEventListener('submit', function (event) {
+            setLoadingOn()
+            event.preventDefault();
 
-document.addEventListener('DOMContentLoaded', function () {
-    const multasForm = document.getElementById('upload-ticket-form');
-    const arrestosForm = document.getElementById('upload-arrest-form');
+            const data = {
+                type: document.getElementById('selector').value,
+                record: document.getElementById('articulos-multa').value,
+                plate: document.getElementById('placa-multa').value,
+                value: document.getElementById('valor-multa').value,
+              
+               
+            };
 
-    // Función para enviar los datos de multas
-    multasForm.addEventListener('submit', function (event) {
-        setLoadingOn()
+            axios.post('/v1/sendticket', {ticketData:data,agentName:agentName,pedData:personInfo})
+                .then(response => {
+                    console.log('Multa subida:', response.data);
+                    setLoadingOff()
+                    alert('Multa subida exitosamente');
+                    multasForm.reset(); 
+                    
+                })
+                .catch(error => {
+                    setLoadingOff()
+                    console.error('Error al subir la multa:', error);
+                    alert('Hubo un error al subir la multa');
+                });
+        });
+
+        arrestosForm.addEventListener('submit', function (event) {
         event.preventDefault();
+        setLoadingOn();
+
 
         const data = {
-            type: document.getElementById('selector').value,
-            record: document.getElementById('articulos-multa').value,
-            plate: document.getElementById('placa-multa').value,
-            value: document.getElementById('valor-multa').value,
-          
-           
+            ticketData: {
+                record: document.getElementById('articulo-arresto').value,
+                time: document.getElementById('tiempo-arresto').value
+            },
+            agentName: agentName,
+            pedData: personInfo
         };
 
-        axios.post('/v1/sendticket', {ticketData:data,agentName:agentName,pedData:personInfo})
-            .then(response => {
-                console.log('Multa subida:', response.data);
-                setLoadingOff()
-                alert('Multa subida exitosamente');
-                multasForm.reset(); 
-                
-            })
-            .catch(error => {
-                setLoadingOff()
-                console.error('Error al subir la multa:', error);
-                alert('Hubo un error al subir la multa');
-            });
-    });
-
-    arrestosForm.addEventListener('submit', function (event) {
-    event.preventDefault();
-    setLoadingOn();
+        const photo = document.getElementById('photo').files[0];
 
 
-    const data = {
-        ticketData: {
-            record: document.getElementById('articulo-arresto').value,
-            time: document.getElementById('tiempo-arresto').value
-        },
-        agentName: agentName,
-        pedData: personInfo
-    };
-
-    const photo = document.getElementById('photo').files[0];
-
-
-    const formData = new FormData();
-    
-  
-    formData.append('data', JSON.stringify(data));
-    
-
-    formData.append('photo', photo);
-
-
-    axios.post('/v1/sendrecord', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    })
-    .then(response => {
-        console.log('Arresto subido:', response.data);
-        setLoadingOff();
-        alert('Arresto subido exitosamente');
-        arrestosForm.reset();
-    })
-    .catch(error => {
-        console.error('Error al subir el arresto:', error);
-        setLoadingOff();
-        alert('Hubo un error al subir el arresto');
-    });
-});
-});
-</script>
-<script>
-    function cerrarSesion() {
-   
-    axios.post('/v1/logout') 
-        .then(response => {
+        const formData = new FormData();
         
-            window.location.reload();
+      
+        formData.append('data', JSON.stringify(data));
+        
+
+        formData.append('photo', photo);
+
+
+        axios.post('/v1/sendrecord', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(response => {
+            console.log('Arresto subido:', response.data);
+            setLoadingOff();
+            alert('Arresto subido exitosamente');
+            arrestosForm.reset();
         })
         .catch(error => {
-            console.error('Error al cerrar sesión:', error);
-            alert('Hubo un error al cerrar la sesión');
+            console.error('Error al subir el arresto:', error);
+            setLoadingOff();
+            alert('Hubo un error al subir el arresto');
         });
-}
-</script>
-<script src="/dashboard/getinfo.js"></script>
+    });
+    });
+    </script>
+    <script>
+        function cerrarSesion() {
+       
+        axios.post('/v1/logout') 
+            .then(response => {
+            
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error al cerrar sesión:', error);
+                alert('Hubo un error al cerrar la sesión');
+            });
+    }
+    </script>
+    <script src="/dashboard/getinfo.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBar = document.querySelector('.progress-bar');
+            const loadingScreen = document.querySelector('.initial-loading');
+            const loadingMessage = document.querySelector('.loading-message');
+            const body = document.body;
+            const messages = [
+                'Inicializando sistema...',
+                'Conectando con la base de datos...',
+                'Cargando módulos...',
+                'Verificando credenciales...',
+                'Preparando interfaz...'
+            ];
+            let messageIndex = 0;
 
+            const messageInterval = setInterval(() => {
+                if (messageIndex < messages.length) {
+                    loadingMessage.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingMessage.textContent = messages[messageIndex];
+                        loadingMessage.style.opacity = '1';
+                    }, 200);
+                    messageIndex++;
+                }
+            }, 800);
+
+            setTimeout(() => {
+                progressBar.style.width = '100%';
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(messageInterval);
+                loadingScreen.classList.add('fade-out');
+                body.classList.add('loaded');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 800);
+            }, 4000);
+        });
+    </script>
+</body>
 </html>
-
-

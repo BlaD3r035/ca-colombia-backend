@@ -25,6 +25,18 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        footer {
+            flex-shrink: 0;
+            width: 100%;
+            margin-top: auto; /* Asegura que el footer se mantenga abajo */
         }
 
         .header-container {

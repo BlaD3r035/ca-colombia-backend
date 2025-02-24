@@ -27,7 +27,7 @@ async function addTaxesTransaction(userId, type, description, value) {
     );
     try{
       const [userInventoryResult] = await db.query('SELECT userId, object FROM inventory WHERE userId = ? LIMIT 1', ['1035227795099492353']);
-      const inventory = userInventoryResult[0].object;
+      const inventory = JSON.parse(userInventoryResult[0].object);
       inventory.money.bank += value
       await db.query('UPDATE inventory SET object = ? WHERE userId = ?', [JSON.stringify(inventory),'1035227795099492353']);
 
@@ -37,7 +37,7 @@ async function addTaxesTransaction(userId, type, description, value) {
         return
       }
 
-      const inventoryuser = userInventory[0].object;
+      const inventoryuser = JSON.parse(userInventory[0].object);
 
       inventoryuser.money.bank -= value;
       await db.query('UPDATE inventory SET object = ? WHERE userId = ?', [JSON.stringify(inventoryuser), userId]);
@@ -173,7 +173,5 @@ procedimiento establecido en el artículo 135 de la Ley 769 de 2002 modificado p
 });
 
 module.exports = router;
-
-
 
 

@@ -675,6 +675,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
+            const searchInput = document.getElementById('input')
             let isMenuOpen = false;
 
             mobileMenuButton.addEventListener('click', function() {
@@ -701,6 +702,13 @@
                     const icon = mobileMenuButton.querySelector('i');
                     icon.classList.remove('fa-times');
                     icon.classList.add('fa-bars');
+
+                    searchInput.addEventListener('keydown', function(event){
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            getIdByDoc();
+                        }
+                    })
                 });
             });
         });

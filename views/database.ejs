@@ -221,25 +221,25 @@
                                  class="w-32 h-32 rounded-full mb-4 border-4 border-green-600 object-cover">
                             <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm w-full">
                                 <div><strong>Nombre:</strong></div>
-                                <div id="nombre">Messi</div>
+                                <div id="nombre"></div>
                                 <div><strong>Apellido:</strong></div>
-                                <div id="apellido">Ronaldo</div>
+                                <div id="apellido"></div>
                                 <div><strong>Nacionalidad:</strong></div>
-                                <div id="nacionalidad">Helicoptero apache</div>
+                                <div id="nacionalidad"></div>
                                 <div><strong>Estatura:</strong></div>
-                                <div><span id="estatura">190</span> cm</div>
+                                <div><span id="estatura"></span> cm</div>
                                 <div><strong>Sexo:</strong></div>
-                                <div id="sexo">hombre</div>
+                                <div id="sexo"></div>
                                 <div><strong>F. Nacimiento:</strong></div>
-                                <div id="fechanacimiento">1/09/1939</div>
+                                <div id="fechanacimiento"></div>
                                 <div><strong>Edad:</strong></div>
-                                <div id="edad">86</div>
+                                <div id="edad"></div>
                                 <div><strong>G.S:</strong></div>
-                                <div id="gs">A+</div>
+                                <div id="gs"></div>
                                 <div><strong>Username:</strong></div>
-                                <div id="username">PintorAustriaco</div>
+                                <div id="username"></div>
                                 <div><strong>Documento:</strong></div>
-                                <div id="ndoc">19391939</div>
+                                <div id="ndoc"></div>
                             </div>
                         </div>
                     </div>
@@ -811,6 +811,7 @@
             setLoadingOff();
             alert('Arresto subido exitosamente');
             arrestosForm.reset();
+            removeImage()
         })
         .catch(error => {
             console.error('Error al subir el arresto:', error);

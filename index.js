@@ -21,6 +21,7 @@ app.set('views', path.join(__dirname, './views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+
 //database routes
 const routes = require('./routes/routes');
 app.use('/v1',routes)

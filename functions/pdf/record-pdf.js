@@ -38,17 +38,17 @@ const generateHtmlRecord = (ticketData, agentName, pedData, multaId) => {
     <table>
       <tr><th colspan="2">Información del Proceso</th></tr>
       <tr>
-  <td><strong>Fecha de Registro:</strong></td>
-  <td>${new Date().toLocaleString('en-CA', { 
-      year: 'numeric', 
-      month: '2-digit', 
-      day: '2-digit', 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      second: '2-digit',
-      hour12: false 
-  }).replace(',', '')}</td>
-</tr>
+        <td><strong>Fecha de Registro:</strong></td>
+        <td>${new Date().toLocaleString('en-CA', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit',
+            hour12: false 
+        }).replace(',', '')}</td>
+      </tr>
       <tr><td><strong>Motivo:</strong></td><td>${ticketData.record}</td></tr>
       <tr><td><strong>Tipo de proceso:</strong></td><td>Registro de Encarcelamiento</td></tr>
       <tr><td><strong>Tiempo:</strong></td><td>${ticketData.time} meses desde la generación de este documento</td></tr>
@@ -57,8 +57,6 @@ const generateHtmlRecord = (ticketData, agentName, pedData, multaId) => {
     <p>Esta consulta es válida siempre y cuando el número de identificación y nombres, correspondan con el documento de identidad registrado y solo aplica para el territorio colombiano de acuerdo a lo establecido en el ordenamiento constitucional.</p>
     <p>Este documento puede ser usado como material probatorio para demostrar la validez del registro penal de antecedentes.</p>
     
-    <h3>Foto del Registro:</h3>
-    <img src="https://cacolombia.com/fotos-antecedentes/${multaId}.jpg" alt="Foto del Registro" style="width:250px;height:auto;">
     
     <div class="footer">Este documento es generado automáticamente. No requiere firma.</div>
   </div>

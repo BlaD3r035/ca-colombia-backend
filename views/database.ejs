@@ -672,46 +672,46 @@
     <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg flex items-center space-x-4">
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const searchInput = document.getElementById('input')
-            let isMenuOpen = false;
+    document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const searchInput = document.getElementById('input');
+    let isMenuOpen = false;
 
-            mobileMenuButton.addEventListener('click', function() {
-                isMenuOpen = !isMenuOpen;
-                mobileMenu.classList.toggle('hidden');
-                
-                // Animate icon
-                const icon = this.querySelector('i');
-                if (isMenuOpen) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
+    searchInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            getIdByDoc();
+        }
+    });
 
-            // Cerrar menú al hacer clic en un enlace
-            const mobileLinks = mobileMenu.querySelectorAll('a');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                    isMenuOpen = false;
-                    const icon = mobileMenuButton.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
+    mobileMenuButton.addEventListener('click', function() {
+        isMenuOpen = !isMenuOpen;
+        mobileMenu.classList.toggle('hidden');
+        
+        // Animate icon
+        const icon = this.querySelector('i');
+        if (isMenuOpen) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+    });
 
-                    searchInput.addEventListener('keydown', function(event){
-                        if (event.key === 'Enter') {
-                            event.preventDefault();
-                            getIdByDoc();
-                        }
-                    })
-                });
-            });
+    // Cerrar menú al hacer clic en un enlace
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            isMenuOpen = false;
+            const icon = mobileMenuButton.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
         });
+    });
+});
     </script>
 
     <!-- Scripts -->

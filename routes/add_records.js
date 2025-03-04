@@ -3,10 +3,10 @@ const router = express.Router();
 const db = require('../db/db');
 const axios = require('axios');
 const fs = require('fs');
-const PDFDocument = require('pdfkit');
 const path = require('path');
 const multer = require('multer');
-
+const pdf = require('html-pdf');
+const generateHtmlRecord = require('../functions/pdf/record-pdf');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -17,7 +17,6 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-  
     cb(null, 'temp-file.jpg');
   },
 });
@@ -29,7 +28,6 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
     const photo = req.file;
     
     if (!ticketData || !agentName || !pedData || !pedData.userId || !photo) {
-       
         console.log('Error, falta foto o datos');
         return res.status(404).json('Datos o foto no proporcionados');
     }
@@ -56,32 +54,13 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
           fs.mkdirSync(path.dirname(pdfPath), { recursive: true });
         }
 
-        const doc = new PDFDocument();
-        doc.pipe(fs.createWriteStream(pdfPath));
-
-        doc.fontSize(20).text('REGISTRO ANTECEDENTES PENALES Y REQUERIMIENTOS JUDICIALES', { align: 'center' });
-        doc.moveDown().fontSize(14).text(`Respetado(a) señor(a) ${pedData.nombreic} ${pedData.apellidoic}`);
-        doc.moveDown().text(`La Entidad encargada de generar el reporte penal le informa: Que siendo ${time} Se ha generado un reporte penal por: ${ticketData.record}.`);
-        doc.moveDown().fontSize(14).text('Información del Ciudadano:', { underline: true });
-        doc.fontSize(12).text(`- Documento de identidad: ${pedData.documentId}`);
-        doc.text(`- Nombre: ${pedData.nombreic} ${pedData.apellidoic}`);
-        doc.text(`- Fecha de nacimiento: ${pedData.fechadenacimiento}`);
-        doc.moveDown().fontSize(14).text('Información del Agente:', { underline: true });
-        doc.fontSize(12).text(`- Nombre del Agente: ${agentName}`);
-        doc.moveDown().fontSize(14).text('Información del proceso:', { underline: true });
-        doc.text(`- Fecha del Registro: ${new Date().toLocaleDateString()}`);
-        doc.text(`- Motivo: ${ticketData.record}`);
-        doc.text(`- Tipo de proceso: Registro de Encarcelamiento`);
-        doc.text(`- Tiempo: ${ticketData.time} meses desde la generación de este documento`);
-        
-     
-
-        doc.moveDown().fontSize(14).text('Esta consulta es válida siempre y cuando el número de identificación y nombres, correspondan con el documento de identidad registrado y solo aplica para el territorio colombiano de acuerdo a lo establecido en el ordenamiento constitucional.', { align: 'center' });
-        doc.moveDown().fontSize(14).text('Este documento se puede usar como material probatorio para demostrar la validez del registro penal de antecedentes.', { align: 'center' });
-        
-        doc.moveDown().text('Foto del Registro:', { align: 'center' });
-        doc.image(photoPath, { fit: [250, 300], align: 'center' });
-        doc.end();
+        const htmlContent = generateHtmlRecord(ticketData, agentName, pedData);
+        pdf.create(htmlContent).toFile(pdfPath, (err, result) => {
+            if (err) {
+                console.error('Error generating PDF:', err);
+                return res.status(500).json('Problem generating PDF');
+            }
+        });
 
         const discordWebhookUrl = 'https://discord.com/api/webhooks/1304544112086745089/R_A2gPPTSwnB5alDkk4kyW_c7QLYVli4bDymnbaPlK2JsTjeqcWrx4JY1ifQiNEF8M64';
         const discordMessage = {
@@ -108,7 +87,6 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
 
         await axios.post(discordWebhookUrl, discordMessage);
 
-        // Responder con la URL del PDF
         return res.status(200).json({ message: 'Record saved successfully', pdfUrl: `/pdfs/antecedentes/${multaId}.pdf` });
     } catch (e) {
         console.error('Error saving data: ', e);

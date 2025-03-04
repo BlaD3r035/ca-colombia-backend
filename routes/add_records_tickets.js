@@ -72,7 +72,8 @@ const axios = require('axios');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const path = require('path');
-
+const pdf = require('html-pdf');
+const generateHtmlTicket = require('../functions/pdf/ticket-pdf')
 
 router.post('/sendticket', async (req, res) => {
   const { ticketData, agentName, pedData } = req.body;
@@ -90,82 +91,49 @@ router.post('/sendticket', async (req, res) => {
 
     const multaId = saveInfo.insertId; 
     const pdfPath = path.join(__dirname, `../public/pdfs/multas/${multaId}.pdf`);
+    const htmlContent = generateHtmlTicket(ticketData, agentName, pedData);
 
-    if (!fs.existsSync(path.dirname(pdfPath))) {
-      fs.mkdirSync(path.dirname(pdfPath), { recursive: true });
-    }
-
-    
-    const doc = new PDFDocument();
-    doc.pipe(fs.createWriteStream(pdfPath));
-
-   
-    doc.fontSize(20).text('REGISTRO DE MULTA/COMPARENDO CIUDADANO', { align: 'center' });
-
-   
-    doc.moveDown().fontSize(14).text(`Respetado(a) señor(a) ${pedData.nombreic} ${pedData.apellidoic}`);
-    doc.moveDown().text(`La Secretaría Distrital de Movilidad le informa que, en cumplimiento del
-procedimiento establecido en el artículo 135 de la Ley 769 de 2002 modificado por el Artículo 22 de la Ley 1383 de 2010, le fue realizada la siguiente orden de comparendo por ${ticketData.record}.`);
-
-   
-    doc.moveDown().fontSize(14).text('Información del Ciudadano:', { underline: true });
-    doc.fontSize(12).text(`- Documento de identidad: ${pedData.documentId}`);
-    doc.text(`- Nombre: ${pedData.nombreic} ${pedData.apellidoic}`);
-    doc.text(`- Fecha de nacimiento: ${pedData.fechadenacimiento}`);
-    doc.text(`- Placa del Vehículo (si aplica): ${ticketData.plate || 'N/A'}`);
-
-    
-    doc.moveDown().fontSize(14).text('Información del Agente:', { underline: true });
-    doc.fontSize(12).text(`- Nombre del Agente: ${agentName}`);
-    
-
-    doc.moveDown().fontSize(14).text('Información del proceso:', { underline: true });
-    doc.text(`- Fecha del Registro: ${new Date().toLocaleDateString()}`);
-    doc.text(`- Motivo: ${ticketData.record}`);
-    doc.text(`- Tipo de proceso: ${ticketData.type}`);
-    doc.text(`- valor total: ${ticketData.value}`);
-
-   
-    doc.moveDown().fontSize(14).text('Estado de Pago:', { underline: true });
-    doc.fontSize(12).text('- Estado: Pagado');
-
-   
-    doc.moveDown().fontSize(14).text('Este documento se puede usar como material probatorio para la demostración de validez de este proceso. DITRA CALI.', { align: 'center' });
-
-    
-    doc.end();
-
-  
-    const discordWebhookUrl = 'https://discord.com/api/webhooks/1266611079627280468/jcWBFH7mx8Ur5reL588kfm0e505TTMyudxcpyZH5jFG8qIs-ygHwy6vz3c53balaznTd';
-    const discordMessage = {
-        content:`<@${pedData.userId}>`,
-      embeds: [
-        {
-          title: ticketData.type === 'multa' ? 'REGISTRO MULTA' : 'COMPARENDO',
-          color: ticketData.type === 'multa' ? 0x00FF00 : 0xFFFF00,
-          thumbnail: { url: pedData.avatarUrl },
-          fields: [
-            { name: 'Multado', value: `<@${pedData.userId}>`, inline: false },
-            { name: 'Articulos', value: ticketData.record, inline: false },
-            { name: 'Valor', value: `$${ticketData.value}`, inline: false },
-            { name: 'Placa', value: ticketData.plate, inline: false },
-            { name: 'Notificación', value:`https://cacolombia.com/pdfs/multas/${multaId}.pdf`, inline: false }
-          ],
-          footer: {
-            text: '「CA」 Colombia ER:LC',
-            icon_url: 'https://media.discordapp.net/attachments/1047946669079134249/1176943871595397172/Nuevo_Logo.png?ex=672e5065&is=672cfee5&hm=dbe7d9c45ba1c184c0224d2f262918d3c5b5ad3a59b3d6532d8e716263c516ec&=&format=webp&quality=lossless&width=379&height=379'
+    pdf.create(htmlContent).toFile(pdfPath, async (err) => {
+      
+      if (err) {
+        console.error('Error generating PDF:', err);
+        return res.status(500).json('Error generating PDF');
+      }
+      const discordWebhookUrl = 'https://discord.com/api/webhooks/1266611079627280468/jcWBFH7mx8Ur5reL588kfm0e505TTMyudxcpyZH5jFG8qIs-ygHwy6vz3c53balaznTd';
+      const discordMessage = {
+          content:`<@${pedData.userId}>`,
+        embeds: [
+          {
+            title: ticketData.type === 'multa' ? 'REGISTRO MULTA' : 'COMPARENDO',
+            color: ticketData.type === 'multa' ? 0x00FF00 : 0xFFFF00,
+            thumbnail: { url: pedData.avatarUrl },
+            fields: [
+              { name: 'Multado', value: `<@${pedData.userId}>`, inline: false },
+              { name: 'Articulos', value: ticketData.record, inline: false },
+              { name: 'Valor', value: `$${ticketData.value}`, inline: false },
+              { name: 'Placa', value: ticketData.plate, inline: false },
+              { name: 'Notificación', value:`https://cacolombia.com/pdfs/multas/${multaId}.pdf`, inline: false }
+            ],
+            footer: {
+              text: '「CA」 Colombia ER:LC',
+              icon_url: 'https://media.discordapp.net/attachments/1047946669079134249/1176943871595397172/Nuevo_Logo.png?ex=672e5065&is=672cfee5&hm=dbe7d9c45ba1c184c0224d2f262918d3c5b5ad3a59b3d6532d8e716263c516ec&=&format=webp&quality=lossless&width=379&height=379'
+            }
           }
-        }
-      ]
-    };
+        ]
+      };
+  
+  
+      await axios.post(discordWebhookUrl, discordMessage);
+  
+      await addTaxesTransaction(pedData.userId,ticketData.type,`Pago de ${ticketData.type} por ${ticketData.value}`, parseInt(ticketData.value))
+  
+      
+      return res.status(200).json({ message: 'Ticket saved successfully', pdfUrl: `/pdfs/multas/${multaId}.pdf` });
 
-
-    await axios.post(discordWebhookUrl, discordMessage);
-
-    await addTaxesTransaction(pedData.userId,ticketData.type,`Pago de ${ticketData.type} por ${ticketData.value}`, parseInt(ticketData.value))
-
+    })
     
-    return res.status(200).json({ message: 'Ticket saved successfully', pdfUrl: `/pdfs/multas/${multaId}.pdf` });
+  
+   
   } catch (e) {
     console.log('Error saving data: ', e);
     return res.status(500).json('Problem saving data');

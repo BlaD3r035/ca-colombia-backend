@@ -15,6 +15,10 @@ const swaggerOptions = {
         url:'https://cacolombia.com/',
         description:'Ca colombia url'
       },
+      {
+        url:'http://localhost:8080/',
+        description:'localhost'
+      },
      
     ],
   },

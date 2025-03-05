@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /createdenuncia:
+ * /v1/denuncias/createdenuncia:
  *   post:
  *     summary: Crear una denuncia
  *     description: Registra una nueva denuncia en la base de datos y la notifica vía Discord.

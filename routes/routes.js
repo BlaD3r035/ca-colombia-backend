@@ -7,20 +7,10 @@ const { render } = require('ejs');
 //session
 const sessionStore = new MySQLStore({}, db);
 
-sessionStore.on('error', function(error) {
-    console.error('Session store error:', error);
-});
 
-router.use(session({
-    key: 'user_session',
-    secret: 'Xsdh19XfdjEeKLdjPorfbewd12', 
-    resave: false,
-    saveUninitialized: false,
-    store: sessionStore,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24 
-    }
-}));
+const sessionMiddleware = require('../Middleware/sessionConfig');
+router.use(sessionMiddleware);
+
 //functions
 //functions
 function isAuthenticated(req, res, next) {

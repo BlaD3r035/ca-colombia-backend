@@ -175,7 +175,7 @@ router.post('/changelicence', async (req, res) => {
             removeDate = newDate.toISOString().slice(0, 19).replace('T', ' ');
             await db.query('UPDATE licencia SET status = ?, removeAt = ? WHERE userId = ?', [status, removeDate, userId]);
         } else if (status === "Valida") {
-            await db.query('UPDATE licencia SET status = ?, editAt = NULL, removeAt = NULL WHERE userId = ?', [status, userId]);
+            await db.query('UPDATE licencia SET status = ?, editAt = NULL WHERE userId = ?', [status, userId]);
         }
 
         sendLicenceWebhook(userId, status, reason, req.session.userdata, newDate);

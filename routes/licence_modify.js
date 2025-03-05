@@ -103,9 +103,13 @@
  *             example:
  *               message: "Server error"
  */
+const axios = require('axios');
 const express = require('express')
 const router = express.Router()
 const db = require('../db/db')
+const sessionMiddleware = require('../Middleware/sessionConfig');
+
+router.use(sessionMiddleware);
 
 router.get('/licence', async(req,res) =>{
     if(!req.query.userId){
@@ -130,41 +134,84 @@ try{
 
 router.post('/changelicence', async (req, res) => {
     try {
+        if (!req.session) {
+            return res.status(401).json({ message: "No session" });
+        }
+        const roles = req.session.roles;
+        const is_transit = roles.some((role) => role === '1042099715052949535');
+        if (!is_transit) {
+            return res.status(401).json({ message: "No role" });
+        }
         if (!req.body) {
             return res.status(400).json({ message: "No data provided" });
         }
 
-        const { userId, status, reason } = req.body;
-
+        const { userId, status, reason, date } = req.body;
         if (!userId) {
             return res.status(400).json({ message: "userId not provided" });
         }
-
         const validStatuses = ["Valida", "Suspendida", "Cancelada"];
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ message: "Invalid status. Use: Valida, Suspendida, or Cancelada" });
         }
-
         if (!reason) {
             return res.status(400).json({ message: "Reason not provided" });
         }
 
-        const [licence] = await db.query('SELECT * FROM licencia WHERE userId = ?', [userId]);
+        let editDate = null;
+        let removeDate = null;
+        let newDate = new Date();
 
-        if (licence.length === 0) {
-            return res.status(404).json({ message: "No licence found" });
+        if (status === "Suspendida") {
+            if (!date || date.length === 0) {
+                newDate.setDate(newDate.getDate() + 7);
+            } else {
+                newDate = new Date(date);
+            }
+            editDate = newDate.toISOString().slice(0, 19).replace('T', ' ');
+            await db.query('UPDATE licencia SET editAt = ? WHERE userId = ?', [editDate, userId]);
+        } else if (status === "Cancelada") {
+            newDate.setDate(newDate.getDate() + 45);
+            removeDate = newDate.toISOString().slice(0, 19).replace('T', ' ');
+            await db.query('UPDATE licencia SET removeAt = ? WHERE userId = ?', [removeDate, userId]);
+        } else if (status === "Valida") {
+            await db.query('UPDATE licencia SET editAt = NULL WHERE userId = ?', [userId]);
         }
 
-        await db.query('UPDATE licencia SET status = ?, reason = ? WHERE userId = ?', [status, reason, userId]);
+        sendLicenceWebhook(userId, status, reason, req.session.userdata, newDate);
 
         return res.status(200).json({ message: "Licence updated successfully" });
-
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: "Server error" });
     }
 });
 
-
+async function sendLicenceWebhook(userId, status, reason, session, date) {
+    try {
+        const webhookUrl = 'https://discord.com/api/webhooks/1346951134010671206/PPWYPh5MfmN1GUn6VrZo1lIjKJ3w64uhUIiLS0LGSwutG2S30qvJBkB6aeCuvRne8q6n'; 
+        const payload = {
+            content: `<@${userId}>`,
+            embeds: [
+                {
+                    title: "🚨 Licencia Actualizada 🚨",
+                    description: `Se cambió el estado de tu licencia de conducir. En caso de **SUSPENSIÓN**, la licencia estará suspendida hasta la fecha indicada. En caso de **CANCELACIÓN**, se le retirará la licencia y no podrá solicitar una nueva hasta la fecha indicada.`,
+                    color: 16711680,
+                    fields: [
+                        { name: "Usuario ID", value: `<@${userId}>`, inline: true },
+                        { name: "Nuevo Estado", value: status, inline: true },
+                        { name: "Razón", value: reason, inline: false },
+                        { name: "Fecha Finalización", value: date.toISOString(), inline: false },
+                        { name: "Agente", value: `<@${session.userId}> - ${session.nombreic} ${session.apellidoic}`, inline: false }
+                    ],  
+                    timestamp: new Date().toISOString()
+                }
+            ]
+        };
+        await axios.post(webhookUrl, payload);
+    } catch (error) {
+        console.error("Error al enviar el webhook:", error);
+    }
+}
 
 module.exports = router

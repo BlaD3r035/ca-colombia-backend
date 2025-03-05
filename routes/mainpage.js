@@ -1,3 +1,48 @@
+/**
+ * @swagger
+ * /v1/avatar/{userId}:
+ *   get:
+ *     summary: Get Roblox avatar
+ *     description: Retrieves the headshot avatar of a Roblox user by their user ID.
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The Roblox user ID.
+ *     responses:
+ *       302:
+ *         description: Redirects to the user's avatar image.
+ *       404:
+ *         description: Avatar not found.
+ *       500:
+ *         description: Error fetching avatar.
+ */
+
+/**
+ * @swagger
+ * /v1/miembros:
+ *   get:
+ *     summary: Get Discord server member count
+ *     description: Retrieves the approximate member count of a Discord server.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the member count.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalMembers:
+ *                   type: integer
+ *                   example: 150
+ *       500:
+ *         description: Error fetching server members.
+ */
+
+
+
 const express = require('express');
 const router = express.Router();
 const db = require('../db/db');

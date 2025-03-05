@@ -1,4 +1,5 @@
 
+
 async function addTaxesTransaction(userId, type, description, value) {
   try {
 
@@ -77,6 +78,7 @@ const generateHtmlTicket = require('../functions/pdf/ticket-pdf')
 
 router.post('/sendticket', async (req, res) => {
   const { ticketData, agentName, pedData } = req.body;
+
 
   if (!ticketData || !agentName || !pedData || !pedData.userId) {
     return res.status(404).json('No data provided');

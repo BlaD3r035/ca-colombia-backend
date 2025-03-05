@@ -1,3 +1,86 @@
+/**
+ * @swagger
+ * /createdenuncia:
+ *   post:
+ *     summary: Crear una denuncia
+ *     description: Registra una nueva denuncia en la base de datos y la notifica vía Discord.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - documentId
+ *               - dateEchos
+ *               - hour
+ *               - description
+ *               - medium
+ *               - place
+ *               - descriptionPlace
+ *               - victim
+ *               - otherVictim
+ *               - victimizerInfo
+ *               - witnesses
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nombre del denunciante
+ *               documentId:
+ *                 type: string
+ *                 description: Identificación del denunciante
+ *               dateEchos:
+ *                 type: date
+ *                 format: date
+ *                 description: Fecha del incidente (YYYY-MM-DD)
+ *               hour:
+ *                 type: time
+ *                 description: Hora del incidente (HH:MM o HH:MM:SS)
+ *               description:
+ *                 type: string
+ *                 description: Descripción del incidente
+ *               medium:
+ *                 type: string
+ *                 description: Medio en el que ocurrió el delito
+ *               place:
+ *                 type: string
+ *                 description: Lugar del incidente
+ *               descriptionPlace:
+ *                 type: string
+ *                 description: Descripción del lugar
+ *               victim:
+ *                 type: string
+ *                 description: Indica si el denunciante es la víctima
+ *               otherVictim:
+ *                 type: string
+ *                 description: Indica si hay otras víctimas involucradas
+ *               victimizerInfo:
+ *                 type: string
+ *                 description: Información sobre el victimario
+ *               witnesses:
+ *                 type: string
+ *                 description: Información sobre testigos
+ *     responses:
+ *       201:
+ *         description: Denuncia creada exitosamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Denuncia created successfully"
+ *       400:
+ *         description: Datos inválidos o faltantes
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Missing required field: name"
+ *       500:
+ *         description: Error al guardar la denuncia
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Error saving denuncia"
+ */
 const express = require('express');
 const router = express.Router();
 const db = require('../../db/db');

@@ -7,12 +7,18 @@ const MySQLStore = require('express-mysql-session')(session);
 const path = require('path');
 const app= express()
 const db = require('./db/db')
-app.use(cors())
+const corsOptions = {
+    origin: 'https://cacolombia.com', 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true 
+};
+app.use(cors(corsOptions));
 //public and views 
 app.use(express.static('public'))
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views'));
-
+const swaggerDocs = require('./docs/swagger');
+swaggerDocs(app);
 //middlewarte
 
 

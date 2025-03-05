@@ -1,3 +1,58 @@
+/**
+ * @swagger
+ * /v1/getUserData:
+ *   get:
+ *     summary: Retrieve user data from multiple sources
+ *     parameters:
+ *       - name: userId
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to fetch data for
+ *       - name: driverLicence
+ *         in: query
+ *         schema:
+ *           type: boolean
+ *         description: Include driver's license data
+ *       - name: vehicles
+ *         in: query
+ *         schema:
+ *           type: boolean
+ *         description: Include vehicle data
+ *       - name: arrestRecord
+ *         in: query
+ *         schema:
+ *           type: boolean
+ *         description: Include arrest record data
+ *       - name: tickets
+ *         in: query
+ *         schema:
+ *           type: boolean
+ *         description: Include tickets data
+ *       - name: warnings
+ *         in: query
+ *         schema:
+ *           type: boolean
+ *         description: Include warnings data
+ *       - name: byc
+ *         in: query
+ *         schema:
+ *           type: boolean
+ *         description: Include search and capture records
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       404:
+ *         description: User not found or userId not provided
+ *       500:
+ *         description: Internal server error
+ */
+
 const express = require('express');
 const router = express.Router();
 const db = require('../db/db');

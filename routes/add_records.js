@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
@@ -25,6 +27,7 @@ const upload = multer({ storage });
 
 router.post('/sendrecord', upload.single('photo'), async (req, res) => {
     const { ticketData, agentName, pedData } = JSON.parse(req.body.data); 
+
     const photo = req.file;
     
     if (!ticketData || !agentName || !pedData || !pedData.userId || !photo) {

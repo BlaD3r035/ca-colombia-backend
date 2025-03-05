@@ -169,13 +169,13 @@ router.post('/changelicence', async (req, res) => {
                 newDate = new Date(date);
             }
             editDate = newDate.toISOString().slice(0, 19).replace('T', ' ');
-            await db.query('UPDATE licencia SET editAt = ? WHERE userId = ?', [editDate, userId]);
+            await db.query('UPDATE licencia SET status = ?, editAt = ? WHERE userId = ?', [status, editDate, userId]);
         } else if (status === "Cancelada") {
             newDate.setDate(newDate.getDate() + 45);
             removeDate = newDate.toISOString().slice(0, 19).replace('T', ' ');
-            await db.query('UPDATE licencia SET removeAt = ? WHERE userId = ?', [removeDate, userId]);
+            await db.query('UPDATE licencia SET status = ?, removeAt = ? WHERE userId = ?', [status, removeDate, userId]);
         } else if (status === "Valida") {
-            await db.query('UPDATE licencia SET editAt = NULL WHERE userId = ?', [userId]);
+            await db.query('UPDATE licencia SET status = ?, editAt = NULL, removeAt = NULL WHERE userId = ?', [status, userId]);
         }
 
         sendLicenceWebhook(userId, status, reason, req.session.userdata, newDate);
@@ -186,7 +186,6 @@ router.post('/changelicence', async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 });
-
 async function sendLicenceWebhook(userId, status, reason, session, date) {
     try {
         const webhookUrl = 'https://discord.com/api/webhooks/1346951134010671206/PPWYPh5MfmN1GUn6VrZo1lIjKJ3w64uhUIiLS0LGSwutG2S30qvJBkB6aeCuvRne8q6n'; 

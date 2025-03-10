@@ -37,6 +37,8 @@ const records = require('./routes/add_records');
 app.use('/v1', records);
 const licence = require('./routes/licence_modify');
 app.use('/v1', licence);
+const impoundments = require('./routes/Impoundments')
+app.use('/v1',impoundments)
 const denunciaAdd = require('./routes/denuncias/denuncias');
 app.use('/v1/denuncias', denunciaAdd);
 

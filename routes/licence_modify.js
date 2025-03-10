@@ -157,6 +157,11 @@ router.post('/changelicence', async (req, res) => {
         if (!reason) {
             return res.status(400).json({ message: "Reason not provided" });
         }
+         
+        const [licence] = await db.query('SELECT userId FROM licencia WHERE userId = ?',[userId])
+        if(licence.length === 0){
+         return res.status(404).json({message:"no licence finded"})
+        }
 
         let editDate = null;
         let removeDate = null;

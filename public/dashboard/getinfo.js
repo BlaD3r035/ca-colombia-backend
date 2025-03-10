@@ -90,7 +90,7 @@ async function fetchUserData(userident) {
         }
 
         populateTable('table-licencia', data.driverLicence, ['status', 'tipo', 'exp', 'restriccion']);
-        populateTable('table-vehiculos', data.vehicles, ['nombre', 'placa', 'color','blindado']);
+        populateTable('table-vehiculos', data.vehicles, ['nombre', 'placa', 'color','blindado','status']);
         populateTable('table-antecedentes', data.arrestRecord, ['articulos', 'tiempo', 'agente', 'created_at']);
         populateTable('table-multas', data.tickets, ['articulos', 'placa', 'valor', 'agente', 'created_at']);
         populateTable('table-observaciones', data.warnings, ['observaciones']);

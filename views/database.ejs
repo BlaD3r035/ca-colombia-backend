@@ -400,20 +400,25 @@
 </main>
                 <div class="mt-6 border-t border-gray-200 pt-6">
                     <div class="flex flex-wrap justify-center gap-3">
-                        <button onclick="toggleForm('form-multas', 'form-arrestos','form-licencia')" 
+                        <button onclick="toggleForm('form-multas', 'form-arrestos','form-licencia','form-incautacion')" 
                                 class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
                             <i class="fas fa-file-invoice-dollar"></i>
                             <span>Subir Multa</span>
                         </button>
-                        <button onclick="toggleForm('form-arrestos', 'form-multas','form-licencia')"
+                        <button onclick="toggleForm('form-arrestos', 'form-multas','form-licencia','form-incautacion')"
                                 class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
                             <i class="fas fa-handcuffs"></i>
                             <span>Subir Arresto</span>
                         </button>
-                        <button onclick="toggleForm('form-licencia','form-multas', 'form-arrestos')"
+                        <button onclick="toggleForm('form-licencia','form-multas', 'form-arrestos','form-incautacion')"
                         class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
                     <i class="fas fa-file"></i>
                     <span>Licencia de Conducción</span>
+                </button>
+                <button onclick="toggleForm('form-incautacion','form-multas', 'form-arrestos','form-licencia')"
+                        class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
+                    <i class="fas fa-file"></i>
+                    <span>Incautación</span>
                 </button>
                         <button onclick="cerrarSesion()"
                                 class="flex items-center justify-center gap-2 bg-red-600 text-white px-6 py-2.5 rounded-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
@@ -661,6 +666,85 @@
             </div>
         </form>
     </div>
+     <!-- Formulario de incautaciones -->
+     <div id="form-incautacion" class="max-w-lg mx-auto bg-white rounded-xl shadow-lg hidden overflow-hidden">
+        <div class="bg-green-600 p-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                <i class="fas fa-handcuffs"></i>
+                Registrar Incautación
+            </h2>
+        </div>
+
+        <form id="upload-incautacion-form" class="p-6 space-y-6">
+            <div class="space-y-4">
+                <div>
+                    <label for="articulo-incautacion" class="block text-sm font-medium text-gray-700 mb-1">Placa del vehiculo</label>
+                    <input type="text" id="articulo-incautacion" name="plate" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                </div>
+
+               
+
+                <div>
+    <label for="photo-inc" class="block text-sm font-medium text-gray-700 mb-1">Evidencia Fotográfica</label>
+    <div class="mt-1 flex flex-col items-center">
+        <div id="preview-container-inc" class="hidden w-full mb-4">
+            <img id="preview-image-inc" class="max-w-full h-auto rounded-lg shadow-lg" src="" alt="Vista previa">
+            <button type="button" onclick="removeImage()" class="mt-2 text-red-600 hover:text-red-700 text-sm flex items-center gap-1">
+                <i class="fas fa-times"></i>
+                Eliminar imagen
+            </button>
+        </div>
+        <div id="drop-zone-inc" class="w-full flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-green-500 transition-colors">
+            <div class="space-y-1 text-center">
+                <i class="fas fa-camera text-4xl text-gray-400"></i>
+                <div class="flex text-sm text-gray-600">
+                    <label for="photo-inc" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+                        <span>Subir archivo</span>
+                        <input id="photo-inc" name="photo" type="file" class="sr-only" accept="image/*" required>
+                    </label>
+                    <p class="pl-1">o arrastrar y soltar</p>
+                </div>
+                <p class="text-xs text-gray-500">PNG, JPG, GIF hasta 10MB</p>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+                <div class="border-b pb-3">
+                    <h3 class="font-medium text-gray-700">Información del Agente</h3>
+                    <div class="text-sm text-gray-600 mt-1">
+                        <p><strong>Nombre:</strong> <%=userdata.nombreic%></p>
+                        <p><strong>Apellido:</strong> <%=userdata.apellidoic%></p>
+                        <p><strong>Documento:</strong> <%=userdata.documentId%></p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-gray-700">Información del Detenido</h3>
+                    <div class="text-sm text-gray-600 mt-1">
+                        <p><strong id="name-form4">Nombre:</strong></p>
+                        <p><strong id="lastName-form4">Apellido:</strong></p>
+                        <p><strong id="documentId-form4">Documento:</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="toggleForm('form-arrestos', 'form-multas','form-licencia')"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
+                    Cancelar
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all flex items-center gap-2">
+                    <i class="fas fa-save"></i>
+                    Registrar incautacion
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
     </main>
 
@@ -802,7 +886,7 @@
         let personInfo;
         let searchPerson;
         const agentName='<%=userdata.nombreic%>'+" "+"<%=userdata.apellidoic%>";
-        function toggleForm(formId,formId2,formId3) {
+        function toggleForm(formId,formId2,formId3,formId4) {
             if(!searchPerson){
                 return
             }else{
@@ -815,14 +899,19 @@
                 document.getElementById('name-form3').innerText = "Nombre:"+personInfo.nombreic
                 document.getElementById('lastName-form3').innerText ="Apellido:"+personInfo.apellidoic
                 document.getElementById('documentId-form3').innerText ="Numero de documento:"+personInfo.documentId
+                document.getElementById('name-form4').innerText = "Nombre:"+personInfo.nombreic
+                document.getElementById('lastName-form4').innerText ="Apellido:"+personInfo.apellidoic
+                document.getElementById('documentId-form4').innerText ="Numero de documento:"+personInfo.documentId
             }
       
         const form = document.getElementById(formId);
         const form2 = document.getElementById(formId2);
         const form3 = document.getElementById(formId3);
+        const form4 = document.getElementById(formId4);
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
         form2.style.display = 'none'
         form3.style.display = 'none'
+        form4.style.display = 'none'
     }
    
     document.addEventListener('DOMContentLoaded', function () {
@@ -842,6 +931,7 @@
         const multasForm = document.getElementById('upload-ticket-form');
         const arrestosForm = document.getElementById('upload-arrest-form');
         const licenciaForm = document.getElementById('upload-licence-form');
+        const incform = document.getElementById('upload-incautacion-form');
 
         // Función para enviar los datos de multas
         multasForm.addEventListener('submit', function (event) {
@@ -957,6 +1047,62 @@
             alert('Hubo un error al subir el arresto');
         });
     });
+    //incautacion
+        incform.addEventListener('submit', function (event) {
+        event.preventDefault();
+        setLoadingOn();
+
+
+        const data = {
+                
+                plate: document.getElementById('articulo-incautacion').value,
+                status:"incautado",
+                userId:personInfo.userId
+       
+        };
+
+        const photo = document.getElementById('photo-inc').files[0];
+
+
+        const formData = new FormData();
+        
+      
+        formData.append('data', JSON.stringify(data));
+        
+
+        formData.append('photo', photo);
+
+
+        axios.post('/v1/changevehiclestatus', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(response => {
+            console.log('Incautación subida:', response.data);
+            setLoadingOff();
+            alert('Incautación subido exitosamente');
+            incform.reset(); 
+            removeImage()
+        })
+        .catch(error => {
+        setLoadingOff();
+        if (error.response) {
+            if (error.response.status === 404 && error.response.data?.message) {
+                alert(`Error 404: ${error.response.data.message} \n Si el error es: "no vehicle finded" significa que la persona no tiene registrado un vehiculo con esa placa a su nombre`);
+            }else{
+                if(error.response.status === 401 && error.response.data?.message){
+                    alert(`Error 401:${error.response.data.message} \n Si el error es No role significa que no tienes el rol de transito para usar esta funcion`)
+                }else {
+                alert('Hubo un error al incautar el vehiculo');
+            }
+            }
+        } else {
+            alert('Error de conexión con el servidor');
+        }
+        console.error('Error al incautar el vehiculo:', error);
+    });
+    });
     });
     </script>
     <script>
@@ -1020,6 +1166,10 @@
         const photoInput = document.getElementById('photo');
         const previewContainer = document.getElementById('preview-container');
         const previewImage = document.getElementById('preview-image');
+        const dropZoneinc = document.getElementById('drop-zone-inc');
+        const photoInputinc = document.getElementById('photo-inc');
+        const previewContainerinc = document.getElementById('preview-container-inc');
+        const previewImageinc = document.getElementById('preview-image-inc');
 
         // Función para mostrar la previsualización
         function showPreview(file) {
@@ -1063,7 +1213,51 @@
                 showPreview(file);
             }
         });
+        //INCAUTACIONEESSSSS
+        function showPreview(file) {
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImageinc.src = e.target.result;
+                    previewContainerinc.classList.remove('hidden');
+                    dropZoneinc.classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Manejar selección de archivo
+        photoInputinc.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                showPreview(file);
+            }
+        });
+
+        // Manejar drag and drop
+        dropZoneinc.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZoneinc.classList.add('border-green-500');
+        });
+
+        dropZoneinc.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dropZoneinc.classList.remove('border-green-500');
+        });
+
+        dropZoneinc.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZoneinc.classList.remove('border-green-500');
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                photoInputinc.files = e.dataTransfer.files;
+                showPreview(file);
+            }
+        });
     });
+
+    
 
     // Función para eliminar la imagen
     function removeImage() {
@@ -1071,11 +1265,19 @@
         const previewContainer = document.getElementById('preview-container');
         const dropZone = document.getElementById('drop-zone');
         const previewImage = document.getElementById('preview-image');
+        const photoInput2 = document.getElementById('photo-inc');
+        const previewContainer2 = document.getElementById('preview-container-inc');
+        const dropZone2 = document.getElementById('drop-zone-inc');
+        const previewImage2 = document.getElementById('preview-image-inc');
 
         photoInput.value = '';
         previewImage.src = '';
         previewContainer.classList.add('hidden');
         dropZone.classList.remove('hidden');
+        photoInput2.value = '';
+        previewImage2.src = '';
+        previewContainer2.classList.add('hidden');
+        dropZone2.classList.remove('hidden');
     }
 </script>
 </body>

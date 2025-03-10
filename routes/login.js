@@ -12,7 +12,7 @@ router.use(sessionMiddleware);
 // Discord OAuth2 Config
 const CLIENT_ID = '1279160842109321236';
 const CLIENT_SECRET = 'XY6YNIj7tujHs7LLkThGOV9LU8tfUHHz';
-const REDIRECT_URI = 'http://localhost:8080/v1/auth/discord/callback';
+const REDIRECT_URI = 'https://cacolombia.com/v1/auth/discord/callback';
 const DISCORD_API_URL = 'https://discord.com/api';
  const BOT_TOKEN ="MTI3OTE2MDg0MjEwOTMyMTIzNg.G9lmz5.wL4Z5zba7QkQoyky70LwpOgrC_oOaYEZG_T-oA"
 

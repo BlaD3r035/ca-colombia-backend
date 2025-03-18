@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const session = require('express-session');
 const ejs = require('ejs');
@@ -6,6 +7,7 @@ const MySQLStore = require('express-mysql-session')(session);
 const path = require('path');
 const app = express();
 const db = require('./db/db');
+
 
 // Configuración de CORS
 app.use(cors())

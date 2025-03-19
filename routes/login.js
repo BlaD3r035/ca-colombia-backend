@@ -12,7 +12,7 @@ router.use(sessionMiddleware);
 // Discord OAuth2 Config
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = 'https://cacolombia.com/v1/auth/discord/callback';
+const REDIRECT_URI = process.env.REDIRECT_URI;
 const DISCORD_API_URL =process.env.DISCORD_API_URL;
  const BOT_TOKEN =process.env.BOT_TOKEN;
 

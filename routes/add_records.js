@@ -65,7 +65,7 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
             }
         });
 
-        const discordWebhookUrl = 'https://discord.com/api/webhooks/1304544112086745089/R_A2gPPTSwnB5alDkk4kyW_c7QLYVli4bDymnbaPlK2JsTjeqcWrx4JY1ifQiNEF8M64';
+        const discordWebhookUrl = process.env.RECORDS_URL_WEBHOOK;
         const discordMessage = {
             content: `<@${pedData.userId}>`,
             embeds: [

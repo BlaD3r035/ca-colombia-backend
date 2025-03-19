@@ -49,8 +49,8 @@ const db = require('../db/db');
 const axios = require('axios');
 
 //routes
-const serverId = '1042099714608345159';
-const botToken ='MTI3OTE2MDg0MjEwOTMyMTIzNg.G9lmz5.wL4Z5zba7QkQoyky70LwpOgrC_oOaYEZG_T-oA';
+const serverId = process.env.SERVER_DISCORD_ID;
+const botToken =process.env.BOT_TOKEN;
 
 
 router.get('/avatar/:userId', async (req, res) => {

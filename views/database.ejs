@@ -1216,7 +1216,7 @@
             }
         });
         //INCAUTACIONEESSSSS
-        function showPreview(file) {
+        function showPreview2(file) {
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -1232,7 +1232,7 @@
         photoInputinc.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file && file.type.startsWith('image/')) {
-                showPreview(file);
+                showPreview2(file);
             }
         });
 
@@ -1254,7 +1254,7 @@
             const file = e.dataTransfer.files[0];
             if (file && file.type.startsWith('image/')) {
                 photoInputinc.files = e.dataTransfer.files;
-                showPreview(file);
+                showPreview2(file);
             }
         });
     });

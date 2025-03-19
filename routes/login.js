@@ -10,11 +10,11 @@ const sessionMiddleware = require('../Middleware/sessionConfig');
 router.use(sessionMiddleware);
 
 // Discord OAuth2 Config
-const CLIENT_ID = '1279160842109321236';
-const CLIENT_SECRET = 'XY6YNIj7tujHs7LLkThGOV9LU8tfUHHz';
-const REDIRECT_URI = 'https://cacolombia.com/v1/auth/discord/callback';
-const DISCORD_API_URL = 'https://discord.com/api';
- const BOT_TOKEN ="MTI3OTE2MDg0MjEwOTMyMTIzNg.G9lmz5.wL4Z5zba7QkQoyky70LwpOgrC_oOaYEZG_T-oA"
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI;
+const DISCORD_API_URL =process.env.DISCORD_API_URL;
+ const BOT_TOKEN =process.env.BOT_TOKEN;
 
 const GUILD_ID = '1042099714608345159';
 const ALLOWED_ROLES = [
@@ -34,7 +34,7 @@ router.get('/auth/discord', (req, res) => {
 // Discord Callback Route
 router.get('/auth/discord/callback', async (req, res) => {
     const code = req.query.code;
-    if (!code) return res.redirect('/v1/login/error?error=Acceso%20no%20Autorizado');
+    if (!code) return res.redirect('/v1/login?error=Acceso%20no%20Autorizado');
 
     try {
         const tokenResponse = await axios.post(
@@ -56,13 +56,13 @@ router.get('/auth/discord/callback', async (req, res) => {
         
         const userId = userResponse.data.id;
         const [user] = await db.query('SELECT * FROM cedulas WHERE userId = ?', [userId]);
-        if (user.length === 0) return res.redirect('/v1/login/error?error=No%20autorizado');
+        if (user.length === 0) return res.redirect('/v1/login?error=No%20autorizado');
 
         const guildMemberResponse = await axios.get(`${DISCORD_API_URL}/guilds/${GUILD_ID}/members/${userId}`, {
             headers: { Authorization: `Bot ${BOT_TOKEN}` }
         });
 
-        if (!hasRequiredRole(guildMemberResponse.data.roles)) return res.redirect('/v1/login/error?error=No%20autorizado');
+        if (!hasRequiredRole(guildMemberResponse.data.roles)) return res.redirect('/v1/login?error=No%20autorizado');
         
         req.session.loggedin = true;
         req.session.userdata = user[0];
@@ -71,7 +71,7 @@ router.get('/auth/discord/callback', async (req, res) => {
         return res.redirect('/v1/dashboard');
     } catch (error) {
         console.error('Error durante la autenticación con Discord:', error);
-        return res.redirect('/v1/login/error?error=Error%20en%20autenticaci%C3%B3n');
+        return res.redirect('/v1/login?error=Error%20en%20autenticaci%C3%B3n');
     }
 });
 

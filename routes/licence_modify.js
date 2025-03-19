@@ -193,7 +193,7 @@ router.post('/changelicence', async (req, res) => {
 });
 async function sendLicenceWebhook(userId, status, reason, session, date) {
     try {
-        const webhookUrl = 'https://discord.com/api/webhooks/1346951134010671206/PPWYPh5MfmN1GUn6VrZo1lIjKJ3w64uhUIiLS0LGSwutG2S30qvJBkB6aeCuvRne8q6n'; 
+        const webhookUrl = process.env.RUNT_URL_WEBHOOK; 
         const payload = {
             content: `<@${userId}>`,
             embeds: [

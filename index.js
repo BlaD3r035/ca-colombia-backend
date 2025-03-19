@@ -7,7 +7,8 @@ const MySQLStore = require('express-mysql-session')(session);
 const path = require('path');
 const app = express();
 const db = require('./db/db');
-
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
 
 // Configuración de CORS
 app.use(cors())
@@ -43,7 +44,8 @@ const impoundments = require('./routes/Impoundments')
 app.use('/v1',impoundments)
 const denunciaAdd = require('./routes/denuncias/denuncias');
 app.use('/v1/denuncias', denunciaAdd);
-
+const runt = require('./routes/runt/login')
+app.use('/v1/runt',runt)
 // Rutas públicas
 const mainpage = require('./routes/mainpage');
 app.use('/', mainpage);
@@ -57,6 +59,6 @@ sessionStore.on('error', function(error) {
 });
 
 // Iniciar servidor
-app.listen(8080, () => {
+app.listen(process.env.PORT || 8080, () => {
     console.log('🚀 Server started on port 8080');
 });

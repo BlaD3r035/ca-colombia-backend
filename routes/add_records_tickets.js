@@ -101,7 +101,7 @@ router.post('/sendticket', async (req, res) => {
         console.error('Error generating PDF:', err);
         return res.status(500).json('Error generating PDF');
       }
-      const discordWebhookUrl = 'https://discord.com/api/webhooks/1266611079627280468/jcWBFH7mx8Ur5reL588kfm0e505TTMyudxcpyZH5jFG8qIs-ygHwy6vz3c53balaznTd';
+      const discordWebhookUrl = process.env.TICKETS_URL_WEBHOOK;
       const discordMessage = {
           content:`<@${pedData.userId}>`,
         embeds: [

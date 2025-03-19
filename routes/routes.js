@@ -6,7 +6,8 @@ const db = require('../db/db');
 const { render } = require('ejs');
 //session
 const sessionStore = new MySQLStore({}, db);
-
+const jwt = require('jsonwebtoken')
+const SECRET_KEY= process.env.SECRET_KEY
 
 const sessionMiddleware = require('../Middleware/sessionConfig');
 router.use(sessionMiddleware);
@@ -19,6 +20,18 @@ function isAuthenticated(req, res, next) {
     } else {
         
         return res.redirect('/v1/login'); 
+    }
+}
+function iscookieAuth(req, res, next) {
+    if (req.cookies.runt_token) {
+        const decoded = jwt.decode(req.cookies.runt_token,SECRET_KEY)
+        if(decoded.userId){
+            return next(); 
+        }
+        return res.status(401).json({message:"no authorized"})
+    } else {
+        
+        return res.redirect('/v1/runt/login'); 
     }
 }
 //routes
@@ -35,5 +48,19 @@ router.get('/login', (req, res) => {
 
 router.get('/dashboard', isAuthenticated, (req, res) => {
     res.render('database',{userdata: req.session.userdata})
+})
+router.get('/runt',(req,res) =>{
+    return res.redirect('/v1/runt/login')
+})
+router.get('/runt/login',(req,res)=>{
+    if (req.cookies.runt_token) {
+        const decoded = jwt.decode(req.cookies.runt_token,SECRET_KEY)
+        if(decoded.userId){
+          return res.redirect('/v1/runt/dashboard')
+        }}
+        return res.render('runt_login')
+})
+router.get('/runt/dashboard',iscookieAuth,(req,res)=>{
+   return res.render('runt_dashboard')
 })
 module.exports = router

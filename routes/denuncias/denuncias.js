@@ -86,7 +86,7 @@ const router = express.Router();
 const db = require('../../db/db');
 const axios = require('axios');
 
-const webhookdiscord = 'https://discord.com/api/webhooks/1082094635171729438/4nKs-4ssqr87JV1sj9HHIlZQt-rYqKKDhMOCmI9_1OVgAy8cQDSayzkWeTjYechsmx6G';
+const webhookdiscord = process.env.DENUNCIAS_URL_WEBHOOK;
 
 async function sendWebhook(denuncia) {
     const embed = {

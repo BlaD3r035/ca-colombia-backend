@@ -10,7 +10,7 @@ sessionStore.on('error', function (error) {
 
 const sessionMiddleware = session({
     key: 'user_session',
-    secret: 'Xsdh19XfdjEeKLdjPorfbewd12',
+    secret: process.env.COCKIE_KEY,
     resave: false,
     saveUninitialized: false,
     store: sessionStore,

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/runt/RUNT_logo.png" type="image/png">
+    <title>CA Colombia | RUNT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <style>
+        :root {
+            --ponal-green: #253777;
+            --ponal-green-light: #405cbe;
+            --ponal-green-dark: #213991;
+            --ponal-gold: #405cbe;
+            --ponal-gold-light: #7b91e0;
+            --ponal-gold-dark: #263b88;
+        }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        footer {
+            flex-shrink: 0;
+            width: 100%;
+            margin-top: auto; /* Asegura que el footer se mantenga abajo */
+        }
+
+        .header-container {
+            background: linear-gradient(to right, var(--ponal-green), var(--ponal-green-dark));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 72, 48, 0.08);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(0, 72, 48, 0.1);
+        }
+
+        .discord-button {
+            position: relative;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+        }
+
+        .discord-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 0.75rem;
+            padding: 2px;
+            background: linear-gradient(to right, var(--ponal-gold), var(--ponal-gold-light));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .discord-button:hover::before {
+            opacity: 1;
+        }
+
+        .discord-button svg {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            fill: currentColor;
+            transition: transform 0.3s ease;
+        }
+
+        .discord-button:hover svg {
+            transform: scale(1.1);
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        nav a:hover {
+            color: var(--ponal-gold-light);
+            background: #6785f1;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(to right, var(--ponal-green), var(--ponal-green-dark));
+            transition: all 0.3s ease-in-out;
+            padding-top: 5rem;
+            z-index: 40;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1.1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mobile-menu a:hover {
+            background: rgba(191, 155, 48, 0.1);
+            color: var(--ponal-gold);
+        }
+
+        footer {
+            background: linear-gradient(to bottom, var(--ponal-green), var(--ponal-green-dark));
+        }
+
+        /* Mejoras visuales */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--ponal-gold), var(--ponal-gold-light));
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Corrección del menú hamburguesa */
+        .hamburger {
+            display: block;
+            width: 24px;
+            height: 20px;
+            position: relative;
+            z-index: 50;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 2px;
+            background-color: white;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        @media (min-width: 768px) {
+            .hamburger {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .discord-button div {
+                width: 100%;
+                justify-content: center;
+                padding: 0.875rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0.5rem 1rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .login-card {
+                padding: 1.25rem;
+            }
+
+            .discord-button div {
+                padding: 0.75rem 1.25rem;
+            }
+            
+            .discord-button svg {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .discord-button span {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header-container">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="logo-container">
+                    <img src="/runt/RUNT_logo.png" alt="RUNT" 
+                         class="h-16 w-auto">
+                </div>
+                
+                <!-- Navegación desktop -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="https://cacolombia.com/" class="text-white tracking-wide hover:text-[#BF9B30]">INICIO</a>
+                    <a href="https://discord.gg/cacolombiarp" class="text-white tracking-wide hover:text-[#BF9B30]">CONTACTÉNOS</a>
+                    <a href="https://cacolombia.com/notas.html" class="text-white tracking-wide hover:text-[#BF9B30]">NOTAS DEL DESARROLLADOR</a>
+                </nav>
+
+                <!-- Botón hamburguesa -->
+                <div class="hamburger md:hidden cursor-pointer" id="hamburger">
+                    <span class="block w-6 h-0.5 bg-white mb-1.5"></span>
+                    <span class="block w-6 h-0.5 bg-white mb-1.5"></span>
+                    <span class="block w-6 h-0.5 bg-white"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menú móvil -->
+        <div class="mobile-menu md:hidden" id="mobile-menu">
+            <nav class="flex flex-col">
+                <a href="https://cacolombia.com/">INICIO</a>
+                <a href="https://discord.gg/cacolombiarp">CONTACTÉNOS</a>
+                <a href="https://cacolombia.com/notas.html">NOTAS DEL DESARROLLADOR</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 pt-32 pb-20">
+        <section class="info-card bg-white shadow-lg rounded-2xl p-8 mb-10" data-aos="fade-up">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-semibold text-[#405cbe]">¿Registro Único Nacional de Tránsito?</h2>
+                <div class="w-20 h-1 bg-[#405cbe] mx-auto my-3"></div>
+                <p class="text-gray-600">Desde este portal podrás hacer todos los tramites relacionados con el registro de transito terrestre</p>
+            </div>
+        
+            <div class="grid md:grid-cols-3 gap-6 text-center">
+                <div class="p-6 border border-gray-200 rounded-xl">
+                    <h3 class="font-medium text-lg text-[#405cbe]">Registro vehicular.</h3>
+                    <p class="text-gray-500 text-sm">Registra, Traspasa y gestiona tus vehiculos.</p>
+                </div>
+        
+                <div class="p-6 border border-gray-200 rounded-xl">
+                    <h3 class="font-medium text-lg text-[#405cbe]">Gestiona tus licencias.</h3>
+                    <p class="text-gray-500 text-sm">Gestiona y mantente al dia con tu licencia de conducir.</p>
+                </div>
+        
+                <div class="p-6 border border-gray-200 rounded-xl">
+                    <h3 class="font-medium text-lg text-[#405cbe]">Paga tus deudas</h3>
+                    <p class="text-gray-500 text-sm">Paga las deudas que tengas con el RUNT.</p>
+                </div>
+            </div>
+        </section>
+
+       <section class="login-card rounded-2xl p-10" data-aos="fade-up">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-semibold text-[#405cbe] mb-3">Inicio de Sesión</h2>
+        <div class="w-20 h-1 bg-[#405cbe] mx-auto mb-4"></div>
+    </div>
+
+    <form id="login-form" class="space-y-6">
+        <div>
+            <label for="documentId" class="block text-gray-700 font-medium">Número de Documento</label>
+            <input type="text" id="documentId" name="documentId" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-[#405cbe] focus:border-[#405cbe]" required>
+        </div>
+        <button type="button" onclick="requestLoginCode()" class="w-full bg-[#405cbe] text-white font-semibold py-3 rounded-lg hover:bg-[#405cbe] transition">Solicitar Código</button>
+    </form>
+
+    <form id="verify-form" class="space-y-6 hidden">
+        <div>
+            <label for="code" class="block text-gray-700 font-medium">Código de Verificación</label>
+            <input type="text" id="code" name="code" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-[#405cbe] focus:border-[#405cbe]" required>
+        </div>
+        <input type="hidden" id="userId" name="userId">
+        <button type="button" onclick="verifyLogin()" class="w-full bg-[#405cbe] text-white font-semibold py-3 rounded-lg hover:bg-[#405cbe] transition">Verificar Código</button>
+    </form>
+</section>
+    </main>
+
+    <footer class="bg-gradient-to-b from-[#243880] to-[#243880] text-white mt-12 py-8">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p class="text-sm leading-relaxed text-gray-300">
+                Este sitio web es un proyecto de ficción y parodia inspirado en actividades de roleplay.<br>
+                No está afiliado, patrocinado ni respaldado por RUNT a ni por alguna entidad pública o privada.<br>
+                Todos los nombres, logotipos y referencias son utilizados con fines creativos.<br>
+                Página exclusiva de 「CA」 Colombia ER:LC
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 1000,
+                offset: 100,
+                once: true,
+                disable: 'mobile',
+                easing: 'ease-out-cubic'
+            });
+    
+            // Funcionalidad del menú hamburguesa
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const body = document.body;
+    
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                body.classList.toggle('overflow-hidden');
+            });
+    
+            // Cerrar menú al hacer click en un enlace
+            const mobileLinks = mobileMenu.getElementsByTagName('a');
+            Array.from(mobileLinks).forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    body.classList.remove('overflow-hidden');
+                });
+            });
+    
+            // Cerrar menú al redimensionar la ventana
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    hamburger.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    body.classList.remove('overflow-hidden');
+                }
+            });
+        });
+    
+        async function requestLoginCode() {
+            const documentId = document.getElementById('documentId').value;
+            const button = document.querySelector('#login-form button');
+    
+            if (!documentId) {
+                alert('Por favor, ingresa tu número de documento.');
+                return;
+            }
+    
+            disableButton(button);
+    
+            try {
+                const response = await fetch('/v1/runt/login-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ documentId })
+                });
+                const data = await response.json();
+    
+                if (response.ok) {
+                    document.getElementById('userId').value = data.userId;
+                    document.getElementById('login-form').classList.add('hidden');
+                    document.getElementById('verify-form').classList.remove('hidden');
+                    alert('Código enviado con éxito. Revisa tu Discord.');
+                } else {
+                    console.log(response.status)
+                    if(response.status === 404){
+                        alert('no se encontró el documento ')
+                    }else{
+
+                        alert('Error enviando el código. Recuerda tener activado los mensajes privados para que el bot te pueda enviar el token');
+                    }
+                }
+            } catch (error) {
+                alert('Hubo un error en la solicitud.');
+            } finally {
+                enableButton(button);
+            }
+        }
+    
+        async function verifyLogin() {
+            const userId = document.getElementById('userId').value;
+            const code = document.getElementById('code').value;
+            const button = document.querySelector('#verify-form button');
+    
+            if (!userId || !code) {
+                alert('Por favor, ingresa el código de verificación.');
+                return;
+            }
+    
+            disableButton(button);
+    
+            try {
+                const response = await fetch('/v1/runt/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, code: parseInt(code) })
+                });
+                const data = await response.json();
+    
+                if (response.ok) {
+                    
+                    window.location.href = '/v1/runt/dashboard';
+                } else {
+                    alert(data.message || 'Error verificando el código.');
+                }
+            } catch (error) {
+                alert('Hubo un error en la solicitud.');
+            } finally {
+                enableButton(button);
+            }
+        }
+    
+        function disableButton(button) {
+            button.disabled = true;
+            button.innerHTML = '<span class="loader"></span> Procesando...';
+        }
+    
+        function enableButton(button) {
+            button.disabled = false;
+            button.innerHTML = button.getAttribute('data-original-text');
+        }
+    
+        document.querySelectorAll('button').forEach(button => {
+            button.setAttribute('data-original-text', button.innerHTML);
+        });
+    </script>
+    <style>
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #405cbe;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+    
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>

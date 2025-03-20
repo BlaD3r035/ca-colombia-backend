@@ -1,6 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById("pay-impoundment").style.display = 'none';
+    document.getElementById("vehicle-register").style.display = 'none';
    setLoadingOn()
    const response = await fetch(`/v1/getUserData?userId=${userId}&driverLicence=true&vehicles=true&tickets=true`)
     if (!response.ok) {
@@ -30,6 +31,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     try{
         const plate = document.getElementById("plate-impoundment").value;
         const inv =await getinventory(userId)
+       if(!inv){
+           return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
+        }
         const newMoney = inv.money.bank - 10000000
         if(newMoney < 0){
             document.getElementById("pay-impoundment-form").reset();
@@ -64,6 +68,62 @@ document.addEventListener('DOMContentLoaded', async function() {
    
 
 });
+  document.getElementById('register-vehicle-form').addEventListener('submit',async function(event){
+    event.preventDefault();
+    try{
+       const plate =   document.getElementById('plate-register').value
+       const model =  document.getElementById('register-vehicle-model').value
+       const color = document.getElementById('color-register').value
+       const inv = await getinventory(userId)
+       if(!inv){
+           return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
+        }
+       const items = inv.items
+       const existitem = items.find(item => item.name === model)
+       if(!existitem){
+           document.getElementById('register-vehicle-form').reset();
+           return alert("No tienes este modelo en tu inventario.")
+       }
+       const platecheck = await getVehicle(plate)
+       if(platecheck){
+           document.getElementById('register-vehicle-form').reset();
+           return alert("Ya existe un vehiculo registrado con esta placa.")
+       }
+       const r2q = await fetch('/v1/runt/addvehicle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, plate, model, color })
+        });
+        const responseData = await r2q.json()
+        if(r2q.ok){
+            document.getElementById('register-vehicle-form').reset();
+            existitem.quantity -=1
+            const upditem =  existitem.quantity > 0?items: items.filter(item => item.name !== model);
+            inv.items = upditem
+            await editinventory(userId, inv);
+            window.location.reload();
+            return alert("Vehiculo registrado con éxito.");
+
+
+        }
+        if(r2q.status === 400){
+            document.getElementById('register-vehicle-form').reset();
+            return alert("Ya existe un vehiculo registrado con esta placa." )
+        }
+        if(r2q.status === 500){
+            document.getElementById('register-vehicle-form').reset();
+            return alert("Error al registrar el vehiculo. ")
+        }
+
+    }catch(e){
+        document.getElementById('register-vehicle-form').reset();
+        console.log(e)
+        return alert("Error al registrar el vehiculo. " )
+    }
+  })
+
 })
 
 function setLoadingOff() {
@@ -120,7 +180,9 @@ async function updateVehicles(vehicles) {
     const vehiclesTableBody = document.getElementById('tablaVehiculos');
     const tarjetasVehiculos = document.getElementById("tarjetasVehiculos");
     vehiclesTableBody.innerHTML = ''; 
-
+    if(!vehicles || vehicles.length === 0){
+        return;
+    }
     vehicles.forEach(vehicle => {
         const row = document.createElement('tr');
         row.classList.add('border', 'border-gray-300');
@@ -150,6 +212,9 @@ async function updateMultas(multas) {
     const tarjetasMultas = document.getElementById("tarjetasMultas");
     ticketsTableBody.innerHTML = ''; 
     tarjetasMultas.innerHTML = '';
+    if(!multas || multas.length === 0){
+        return;
+    }
 
     const ultimasMultas = multas.slice(-5);
 
@@ -193,8 +258,13 @@ async function updateMultas(multas) {
 
 async function getinventory(userId){
     const response = await fetch(`/v1/getinventory?userId=${userId}`)
+    if(response.status === 404){
+        return false
+    }
     if (!response.ok) {
-        return alert("Error al buscar los datos del usuario,recargue la pagina o contacte con soporte tecnico.");
+         alert("Error al buscar los datos del usuario,recargue la pagina o contacte con soporte tecnico.");
+        return false
+    
     }
     const jsondata = await response.json()
     document.querySelectorAll('.account-money').forEach((elemento, index) => {
@@ -226,14 +296,56 @@ async function editinventory(userId, object) {
 async function serverReq(req) {
     if(!req){
         document.getElementById("pay-impoundment").style.display = 'none';
+        document.getElementById("vehicle-register").style.display = 'none';
 
     }
     if(req ==='pagar_incautados'){
+        document.getElementById("vehicle-register").style.display = 'none';
         getinventory(userId)
         document.getElementById("pay-impoundment").style.display = 'flex';
-        getinventory(userId)
+
+    }
+    if(req === 'registrar_vehiculo'){
+        document.getElementById("pay-impoundment").style.display = 'none';
+        loadVehicleModels(userId)
+        document.getElementById("vehicle-register").style.display = 'flex';
 
     }
     
 }
 
+async function loadVehicleModels() {
+    try {
+        const inventory = await getinventory(userId);
+        if(!inventory){
+            return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
+        }
+        const modelSelect = document.getElementById("register-vehicle-model");
+
+        modelSelect.innerHTML = ''; 
+        if (inventory && inventory.items.length > 0) {
+            inventory.items.forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.name;
+                option.textContent = item.name;
+                modelSelect.appendChild(option);
+            });
+        } else {
+            
+        }
+    } catch (error) {
+        console.error("Error al cargar modelos:", error);
+        alert("No se pudieron cargar los modelos del inventario.");
+    }
+}
+
+async function getVehicle(plate){
+    const response = await fetch('/v1/plate?plate='+plate)
+    if(response.status === 404){
+        return false
+    }else{
+        return true
+    }
+    return false
+
+}

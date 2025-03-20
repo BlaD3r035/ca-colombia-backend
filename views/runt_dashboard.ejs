@@ -427,7 +427,7 @@
             <div class="grid md:grid-cols-3 gap-6 text-center">
                 <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('examen_licencia')">
                     <h3 class="font-medium text-lg text-[#405cbe]">Realizar examen de licencia</h3>
-                    <p class="text-gray-500 text-sm">Paga y realiza tu examen para obtener tu licencia de conducir.</p>
+                    <p class="text-gray-500 text-sm">Paga y realiza tu examen para obtener tu licencia de conducir. (EN DESARROLLO)</p>
                 </div>
         
                 <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('pagar_incautados')">
@@ -465,6 +465,34 @@
         <p class="text-gray-500 text-sm"><strong>Valor de la transacción:</strong> <span>10.000.000</span> Pesos</p>
         <div class="flex space-x-2">
           <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Pagar</button>
+          <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+</div>
+
+
+<div id="vehicle-register" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Registra un vehiculo</h2>
+      <p class="text-gray-600 mb-4">Rellena el siguiente formulario.</p>
+      <form id="register-vehicle-form" class="space-y-4">
+        <div>
+          <label for="plate" class="block text-gray-700 font-medium">Placa del vehículo</label>
+          <input type="text" id="plate-register" name="plate" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Ej: ABC-123" required>
+        </div>
+        <div>
+          <label for="register-vehicle-model" class="block text-gray-700 font-medium">Modelo del vehiculo</label>
+          <select id="register-vehicle-model" name="register-vehicle-model" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+          </select>
+        </div>
+        <div>
+            <label for="color" class="block text-gray-700 font-medium">Color del vehiculo</label>
+            <input type="text" id="color-register" name="color" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Ej: Blanco" required>
+          </div>
+          <p class="text-gray-500 text-sm">Al registrar el vehiculo pierdes el item, este lo recuperas al borrar el registro. si registras un item que no es un vehiculo se va a borrar ese registro y vas a perder ese item</p>
+        <div class="flex space-x-2">
+          <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Registrar</button>
           <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
         </div>
       </form>

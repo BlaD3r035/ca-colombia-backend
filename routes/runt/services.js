@@ -35,4 +35,27 @@ router.patch('/changevehiclestatus', async(req ,res) =>{
 
 })
 
+router.post('/addvehicle', async(req,res)=>{
+    if(!req.body){
+        return res.status(400).json({message: "no data send"})
+    }
+    const {userId,plate,model,color} = req.body
+
+    if(!userId || !plate || !model || !color){
+        return res.status(400).json({message: "missing data"})
+    }
+    try{
+        const [exist] = await db.query('SELECT id FROM vehiculos WHERE placa = ?',[plate])
+        if(exist.length > 0){
+            return res.status(400).json({message: "vehicle already exist"})
+        }
+
+        await db.query('INSERT INTO vehiculos (placa,color,nombre,owner) VALUES (?,?,?,?)',[plate,color,model,userId])
+        return res.status(200).json({message: "vehicle added successfully"})
+    }catch(e){
+        console.error('Error saving data: ', e);
+        return res.status(500).json('Problem saving data');
+    }
+})
+
 module.exports=router

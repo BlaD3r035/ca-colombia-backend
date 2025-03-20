@@ -25,7 +25,7 @@ function isAuthenticated(req, res, next) {
 function iscookieAuth(req, res, next) {
     if (req.cookies.runt_token) {
         const decoded = jwt.decode(req.cookies.runt_token,SECRET_KEY)
-        if(decoded.userId){
+        if(decoded.userdata){
             return next(); 
         }
         return res.status(401).json({message:"no authorized"})
@@ -55,12 +55,13 @@ router.get('/runt',(req,res) =>{
 router.get('/runt/login',(req,res)=>{
     if (req.cookies.runt_token) {
         const decoded = jwt.decode(req.cookies.runt_token,SECRET_KEY)
-        if(decoded.userId){
+        if(decoded.userdata){
           return res.redirect('/v1/runt/dashboard')
         }}
         return res.render('runt_login')
 })
 router.get('/runt/dashboard',iscookieAuth,(req,res)=>{
-   return res.render('runt_dashboard')
+   const decoded = jwt.decode(req.cookies.runt_token,SECRET_KEY)
+   return res.render('runt_dashboard',{userdata:decoded.userdata})
 })
 module.exports = router

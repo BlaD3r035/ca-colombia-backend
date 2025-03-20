@@ -57,8 +57,13 @@ router.post('/login', async (req,res)=>{
             await db.query('DELETE FROM temp_codes WHERE id =?',[codever[0].id])
             return res.status(401).json({message:"no valid code"})
         }
+        const [data] = await db.query('SELECT * FROM cedulas WHERE userId =?',[userId])
+        if(data.length === 0){
+            return res.status(401).json({message:"No cuenta con cedula"})
+        }
+        const userdata = data[0]
         const session_data = {
-            userId:userId
+            userdata:userdata
         }
         const token = jwt.sign(session_data,SECRET_KEY,{expiresIn:'1h'})
         res.cookie('runt_token',token,{

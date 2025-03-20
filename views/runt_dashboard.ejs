@@ -10,8 +10,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="/runt/dashboard.js"></script>
     
     <style>
+         .side-panel {
+        position: fixed;
+        top: 0;
+        width: 250px;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 20px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .left-panel {
+        left: 0;
+    }
+
+    .right-panel {
+        right: 0;
+    }
+
+    @media (max-width: 1024px) {
+        .side-panel {
+            display: none;
+        }
+    }
         :root {
             --ponal-green: #253777;
             --ponal-green-light: #405cbe;
@@ -260,38 +287,142 @@
             </nav>
         </div>
     </header>
+    
 
     <main class="max-w-4xl mx-auto px-6 pt-32 pb-20">
+        <!-- Loading screen -->
+        <div id="loading-screen" class="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-50">
+            <div class="flex flex-col items-center p-6 bg-blue-500/80 rounded-2xl shadow-xl">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-white"></div>
+                <p class="text-white mt-4 text-lg">Cargando...</p>
+            </div>
+        </div>
+        
+
+
         <section class="info-card bg-white shadow-lg rounded-2xl p-8 mb-10" data-aos="fade-up">
             <div class="text-center mb-6">
-                <h2 class="text-3xl font-semibold text-[#405cbe]">¿Registro Único Nacional de Tránsito?</h2>
+                <h2 class="text-3xl font-semibold text-[#405cbe]">Registro Único Nacional de Tránsito</h2>
                 <div class="w-20 h-1 bg-[#405cbe] mx-auto my-3"></div>
-                <p class="text-gray-600">Desde este portal podrás hacer todos los tramites relacionados con el registro de transito terrestre</p>
             </div>
         
-            <div class="grid md:grid-cols-3 gap-6 text-center">
-                <div class="p-6 border border-gray-200 rounded-xl">
-                    <h3 class="font-medium text-lg text-[#405cbe]">Registro vehicular.</h3>
-                    <p class="text-gray-500 text-sm">Registra, Traspasa y gestiona tus vehiculos.</p>
+            <div class="flex flex-col items-center md:flex-row md:items-stsart">
+                <!-- Foto -->
+                <div class="w-32 h-32 rounded-full mb-4 border-4 border-blue-600 overflow-hidden shadow-md">
+                    <img id="avatar" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                        class="w-full h-full object-cover">
                 </div>
         
-                <div class="p-6 border border-gray-200 rounded-xl">
-                    <h3 class="font-medium text-lg text-[#405cbe]">Gestiona tus licencias.</h3>
-                    <p class="text-gray-500 text-sm">Gestiona y mantente al dia con tu licencia de conducir.</p>
-                </div>
-        
-                <div class="p-6 border border-gray-200 rounded-xl">
-                    <h3 class="font-medium text-lg text-[#405cbe]">Paga tus deudas</h3>
-                    <p class="text-gray-500 text-sm">Paga las deudas que tengas con el RUNT.</p>
+                <!-- Datos del usuario -->
+                <div class="ml-6">
+                    <p class="text-lg font-medium text-gray-700"><strong>Nombre:</strong> <span id="name"></span></p>
+                    <p class="text-lg font-medium text-gray-700"><strong>Apellido:</strong> <span id="lastname"></span></p>
+                    <p class="text-lg font-medium text-gray-700"><strong>Sexo:</strong> <span id="sex"></span></p>
+                    <p class="text-lg font-medium text-gray-700"><strong>F. Nacimiento:</strong> <span id="birthdate"></span></p>
+                    <p class="text-lg font-medium text-gray-700"><strong>G.S:</strong> <span id="gs"></span></p>
+                    <p class="text-lg font-medium text-gray-700"><strong>Documento:</strong> <span id="ndoc"></span></p>
                 </div>
             </div>
         </section>
-
+        <!--licencia-->
+        <section class="login-card rounded-2xl p-10" data-aos="fade-up">
+            <div class="text-center mb-12 bg-red">
+              <div class="text-center mb-6">
+                  <h2 class="text-3xl font-semibold text-[#405cbe]">Licencia de conducción</h2>
+                  <div class="w-20 h-1 bg-[#405cbe] mx-auto my-3"></div>
+              </div>
+              <div class="hidden md:block overflow-x-auto">
+                  <table class="w-full border-collapse border border-gray-300">
+                      <thead>
+                          <tr class="bg-gray-200 text-gray-700">
+                              <th class="border border-gray-300 px-4 py-2">Expedición</th>
+                              <th class="border border-gray-300 px-4 py-2">tipo</th>
+                              <th class="border border-gray-300 px-4 py-2">Restricciones</th>
+                              <th class="border border-gray-300 px-4 py-2">estado</th>
+                          </tr>
+                      </thead>
+                      <tbody id="tablaLicencia" class="text-gray-600">
+                      </tbody>
+                  </table>
+              </div>
+              
+            
+              <div class="block md:hidden">
+                  <div id="tarjetaLicencia" class="space-y-4">
+                    
+                  </div>
+              </div>
+            </div>
+          </section>
+        <!--vehiculos-->
+        <section class="login-card rounded-2xl p-10" data-aos="fade-up">
+          <div class="text-center mb-12 bg-red">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-semibold text-[#405cbe]">Tus vehiculos</h2>
+                <div class="w-20 h-1 bg-[#405cbe] mx-auto my-3"></div>
+            </div>
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200 text-gray-700">
+                            <th class="border border-gray-300 px-4 py-2">Modelo</th>
+                            <th class="border border-gray-300 px-4 py-2">Placa</th>
+                            <th class="border border-gray-300 px-4 py-2">Color</th>
+                            <th class="border border-gray-300 px-4 py-2">Blindado</th>
+                            <th class="border border-gray-300 px-4 py-2">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaVehiculos" class="text-gray-600">
+                    </tbody>
+                </table>
+            </div>
+            
+          
+            <div class="block md:hidden">
+                <div id="tarjetasVehiculos" class="space-y-4">
+                  
+                </div>
+            </div>
+          </div>
+        </section>
+        <!--tickets-->
+        <section class="login-card rounded-2xl p-10" data-aos="fade-up">
+            <div class="text-center mb-12 bg-red">
+              <div class="text-center mb-6">
+                  <h2 class="text-3xl font-semibold text-[#405cbe]">Tus Multas</h2>
+                  <div class="w-20 h-1 bg-[#405cbe] mx-auto my-3"></div>
+              </div>
+              <p>Registro de tus ultimas multas</p>
+              <div class="hidden md:block overflow-x-auto">
+                  <table class="w-full border-collapse border border-gray-300">
+                      <thead>
+                          <tr class="bg-gray-200 text-gray-700">
+                              <th class="border border-gray-300 px-4 py-2">Articulos</th>
+                              <th class="border border-gray-300 px-4 py-2">Placa</th>
+                              <th class="border border-gray-300 px-4 py-2">Valor</th>
+                              <th class="border border-gray-300 px-4 py-2">Estado</th>
+                              <th class="border border-gray-300 px-4 py-2">Fecha</th>
+                          </tr>
+                      </thead>
+                      <tbody id="tablaMultas" class="text-gray-600">
+                      </tbody>
+                  </table>
+              </div>
+              
+            
+              <div class="block md:hidden">
+                  <div id="tarjetasMultas" class="space-y-4">
+                    
+                  </div>
+              </div>
+            </div>
+          </section>
+                <!--logout panel-->
        <section class="login-card rounded-2xl p-10" data-aos="fade-up">
     <div class="text-center mb-12">
-        <h2 class="text-3xl font-semibold text-[#405cbe] mb-3">Mantenimiento</h2>
+        <h2 class="text-3xl font-semibold text-[#405cbe] mb-3">Servicios</h2>
         <div class="w-20 h-1 bg-[#405cbe] mx-auto mb-4"></div>
-        <p>Actualmente la pagina se encuentra en construcción, si tienes alguna duda puedes consultar al equipo de desarrollo.</p>
+        <p>Actualmente la pagina se encuentra en construcción, Los servicios estarán disponibles proximamente.</p>
         <button id="cerrar-sesion" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg">
             Cerrar Sesión
         </button>
@@ -313,6 +444,7 @@
     </footer>
 
     <script>
+        const userId ='<%= userdata.userId %>'
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({
                 duration: 1000,
@@ -373,8 +505,6 @@
         }
     });
     </script>
-    <style>
-       
-    </style>
+  
 </body>
 </html>

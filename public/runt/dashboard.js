@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             return alert("No tienes suficiente dinero para pagar la incautación.")
         }
         inv.money.bank = newMoney
-        await editinventory(userId, inv);
        const rq = await fetch('/v1/runt/changevehiclestatus', {
             method: 'PATCH',
             headers: {
@@ -46,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
         const responseData = await rq.json()
         if(rq.ok){
+            await editinventory(userId, inv);
             document.getElementById("pay-impoundment-form").reset();
             alert("Incautación pagada con éxito.");
             window.location.reload();

@@ -99,7 +99,6 @@ async function sendCode(userId, code, ip) {
             .setTitle('🔐 CÓDIGO DE SEGURIDAD')
             .setDescription(`Se está intentando acceder a tu nombre en la pagina de https://cacolombia.com/v1/runt/login. si no eres tu Haz caso omiso a este mensaje`)
             .addFields(
-                { name: "🖥️ IP", value: `\`${ip}\``, inline: true },
                 { name: "🔑 Código", value: `||${code}||`, inline: false }
             )
             .setColor(0xff0000)

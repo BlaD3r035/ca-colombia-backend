@@ -93,14 +93,12 @@ function generateCode() {
 async function sendCode(userId, code, ip) {
     try {
         
-        const locationData = await getLocation(ip);
 
       
         const embed = new EmbedBuilder()
             .setTitle('🔐 CÓDIGO DE SEGURIDAD')
             .setDescription(`Se está intentando acceder a tu nombre en la pagina de https://cacolombia.com/v1/runt/login. si no eres tu Haz caso omiso a este mensaje`)
             .addFields(
-                { name: "📍 Ubicación", value: locationData, inline: true },
                 { name: "🖥️ IP", value: `\`${ip}\``, inline: true },
                 { name: "🔑 Código", value: `||${code}||`, inline: false }
             )
@@ -112,20 +110,9 @@ async function sendCode(userId, code, ip) {
         if (!user) throw new Error("User not found");
 
         await user.send({ embeds: [embed] });
-        console.log(`Sent code ${code} to user ${userId}`);
     } catch (error) {
         console.error(`Error sending code to ${userId}:`, error);
         throw error;
     }
 }
 
-async function getLocation(ip) {
-    try {
-        const response = await axios.get(`http://ip-api.com/json/${ip}`);
-        const { city, regionName, country } = response.data;
-        return `${city}, ${regionName}, ${country}`;
-    } catch (error) {
-        console.error("Error fetching IP location:", error);
-        return "Ubicación desconocida";
-    }
-}

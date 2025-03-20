@@ -1,5 +1,6 @@
 
 document.addEventListener('DOMContentLoaded', async function() {
+    document.getElementById("pay-impoundment").style.display = 'none';
    setLoadingOn()
    const response = await fetch(`/v1/getUserData?userId=${userId}&driverLicence=true&vehicles=true&tickets=true`)
     if (!response.ok) {
@@ -21,7 +22,48 @@ document.addEventListener('DOMContentLoaded', async function() {
    await updateVehicles(vehicles)
    await updateMultas(tickets)
    await updateLicencia(driverLicence)
-  setLoadingOff()
+   setLoadingOff()
+
+
+   document.getElementById("pay-impoundment-form").addEventListener("submit",async function(event) {
+    event.preventDefault();
+    try{
+        const plate = document.getElementById("plate-impoundment").value;
+        const inv =await getinventory(userId)
+        const newMoney = inv.money.bank - 10000000
+        if(newMoney < 0){
+            document.getElementById("pay-impoundment-form").reset();
+            return alert("No tienes suficiente dinero para pagar la incautación.")
+        }
+        inv.money.bank = newMoney
+        await editinventory(userId, inv);
+       const rq = await fetch('/v1/runt/changevehiclestatus', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ plate, status: 'activo' ,userId})
+        });
+        const responseData = await rq.json()
+        if(rq.ok){
+            document.getElementById("pay-impoundment-form").reset();
+            alert("Incautación pagada con éxito.");
+            window.location.reload();
+        }else{
+            if(rq.status === 404){
+                alert("error:Parece que no tienes un vehiculo a tu nombre con esa placa.")
+            }else{
+                alert("Error al pagar la solicitud.")
+            }
+        }
+
+    }catch(e){
+        console.log(e)
+        return alert("Error al pagar la incautación. " + e)
+    }
+   
+
+});
 })
 
 function setLoadingOff() {
@@ -148,3 +190,50 @@ async function updateMultas(multas) {
         ticketsTableBody.appendChild(row);
     });
 }
+
+async function getinventory(userId){
+    const response = await fetch(`/v1/getinventory?userId=${userId}`)
+    if (!response.ok) {
+        return alert("Error al buscar los datos del usuario,recargue la pagina o contacte con soporte tecnico.");
+    }
+    const jsondata = await response.json()
+    document.querySelectorAll('.account-money').forEach((elemento, index) => {
+        const valorFormateado = new Intl.NumberFormat("es-CO").format(jsondata.money.bank);
+
+        elemento.textContent = `${valorFormateado} Pesos`;
+    });
+    return jsondata
+
+}
+async function editinventory(userId, object) {
+    try {
+        const responseE = await fetch('/v1/editinventory', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, object })
+        });
+
+        const result = await responseE.json();
+        return result;
+    } catch (error) {
+        console.error(error);
+        alert("No se pudo actualizar el inventario. Inténtelo de nuevo.");
+    }
+}
+
+async function serverReq(req) {
+    if(!req){
+        document.getElementById("pay-impoundment").style.display = 'none';
+
+    }
+    if(req ==='pagar_incautados'){
+        getinventory(userId)
+        document.getElementById("pay-impoundment").style.display = 'flex';
+        getinventory(userId)
+
+    }
+    
+}
+

@@ -417,20 +417,61 @@
               </div>
             </div>
           </section>
-                <!--logout panel-->
-       <section class="login-card rounded-2xl p-10" data-aos="fade-up">
-    <div class="text-center mb-12">
-        <h2 class="text-3xl font-semibold text-[#405cbe] mb-3">Servicios</h2>
-        <div class="w-20 h-1 bg-[#405cbe] mx-auto mb-4"></div>
-        <p>Actualmente la pagina se encuentra en construcción, Los servicios estarán disponibles proximamente.</p>
-        <button id="cerrar-sesion" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg">
-            Cerrar Sesión
-        </button>
-    </div>
+          <section class="info-card bg-white shadow-lg rounded-2xl p-8 mb-10" data-aos="fade-up">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-semibold text-[#405cbe]">Servicios</h2>
+                <div class="w-20 h-1 bg-[#405cbe] mx-auto my-3"></div>
+                <p class="text-gray-600">Selecciona el tramite que deseas realizar</p>
+            </div>
+        
+            <div class="grid md:grid-cols-3 gap-6 text-center">
+                <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('examen_licencia')">
+                    <h3 class="font-medium text-lg text-[#405cbe]">Realizar examen de licencia</h3>
+                    <p class="text-gray-500 text-sm">Paga y realiza tu examen para obtener tu licencia de conducir.</p>
+                </div>
+        
+                <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('pagar_incautados')">
+                    <h3 class="font-medium text-lg text-[#405cbe]">Pagar vehículos incautados</h3>
+                    <p class="text-gray-500 text-sm">Consulta y paga las deudas de vehículos incautados.</p>
+                </div>
+        
+                <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('registrar_vehiculo')">
+                    <h3 class="font-medium text-lg text-[#405cbe]">Registra tu vehiculo</h3>
+                    <p class="text-gray-500 text-sm">Registra tu vehiculo de manera facil y rapida.</p>
+                </div>
+            </div>
+        </section>
+<button id="cerrar-sesion" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg">
+    Cerrar Sesión
+</button>
 
-   
-</section>
-    </main>
+<!--SERVICIOS-PART-FIXED-PAGE-->
+<div id="pay-impoundment" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Paga tus incautaciones</h2>
+      <p class="text-gray-600 mb-4">Rellena el siguiente formulario.</p>
+      <form id="pay-impoundment-form" class="space-y-4">
+        <div>
+          <label for="plate" class="block text-gray-700 font-medium">Placa del vehículo</label>
+          <input type="text" id="plate-impoundment" name="plate" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Ej: ABC-123" required>
+        </div>
+        <div>
+          <label for="payment-method" class="block text-gray-700 font-medium">Medio de pago</label>
+          <select id="payment-method-impoundment" name="payment-method" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <option value="banco">Banco</option>
+          </select>
+        </div>
+        <p class="text-gray-500 text-sm"><strong>Saldo en tu cuenta:</strong> <span class="account-money"></span></p>
+        <p class="text-gray-500 text-sm"><strong>Valor de la transacción:</strong> <span>10.000.000</span> Pesos</p>
+        <div class="flex space-x-2">
+          <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Pagar</button>
+          <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+</div>
+
+</main>
 
     <footer class="bg-gradient-to-b from-[#243880] to-[#243880] text-white mt-12 py-8">
         <div class="max-w-4xl mx-auto px-6 text-center">

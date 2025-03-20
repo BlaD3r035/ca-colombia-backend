@@ -51,7 +51,10 @@ const mainpage = require('./routes/mainpage');
 app.use('/', mainpage);
 const get_records = require('./public_routes/get_records');
 app.use('/public/v1', get_records);
-
+const economy = require('./routes/economy')
+app.use('/v1',economy)
+const services = require('./routes/runt/services.js')
+app.use('/v1/runt',services)
 // Configuración de sesiones con MySQL
 const sessionStore = new MySQLStore({}, db);
 sessionStore.on('error', function(error) {

@@ -29,7 +29,11 @@ document.addEventListener('DOMContentLoaded', async function() {
    document.getElementById("pay-impoundment-form").addEventListener("submit",async function(event) {
     event.preventDefault();
     try{
+        const placaRegex = /^[A-Z]{3}-\d{3}$/;
         const plate = document.getElementById("plate-impoundment").value;
+        if (!placaRegex.test(plate)) {
+            return alert("Placa inválida. Formato correcto: XXX-000");
+        }
         const inv =await getinventory(userId)
        if(!inv){
            return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
@@ -71,9 +75,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.getElementById('register-vehicle-form').addEventListener('submit',async function(event){
     event.preventDefault();
     try{
+        const placaRegex = /^[A-Z]{3}-\d{3}$/;
+        
        const plate =   document.getElementById('plate-register').value
        const model =  document.getElementById('register-vehicle-model').value
        const color = document.getElementById('color-register').value
+       if (!placaRegex.test(plate)) {
+        return alert("Placa inválida. Formato correcto: XXX-000");
+    }
        const inv = await getinventory(userId)
        if(!inv){
            return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 

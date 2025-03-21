@@ -57,5 +57,41 @@ router.post('/addvehicle', async(req,res)=>{
         return res.status(500).json('Problem saving data');
     }
 })
+router.post('/addlicence', async(req,res)=>{
+    if(!req.body){
+        return res.status(400).json({message: "no data send"})
+    }
+    const {userId,restrictions} = req.body
+
+    if(!userId || !restrictions){
+        return res.status(400).json({message: "missing data"})
+    }
+    console.log(restrictions)
+    try{
+        const [licenciaResults] = await db.query('SELECT userId FROM licencia WHERE userId = ? LIMIT 1', [userId]);
+
+        if (licenciaResults.length > 0) {
+            return res.status(400).json({ message: "User already has a license" });
+        }
+        const formatDateTime = (date) => {
+            return date.toISOString().slice(0, 19).replace('T', ' ');
+        };
+
+        const now = new Date();
+        const createdAt = formatDateTime(now); 
+        now.setMonth(now.getMonth() + 2);
+        const removeAt = formatDateTime(now); 
+
+        const restriction = restrictions|| ""
+        await db.query(
+            'INSERT INTO licencia (userId, exp, restriccion, removeAt) VALUES (?,?,?,?)', 
+            [userId, createdAt, restriction, removeAt]
+        );
+        return res.status(200).json({ message: "License added successfully" });
+    }catch(e){
+        console.error('Error saving data: ', e);
+        return res.status(500).json('Problem saving data');
+    }
+})
 
 module.exports=router

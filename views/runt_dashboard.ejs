@@ -499,6 +499,130 @@
     </div>
 </div>
 
+<div id="pay-survey-form" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Solicitar Curso de licencias</h2>
+      <p class="text-gray-600 mb-4">Al solicitar el formulario tendrás 8 preguntas, si pasas el examen con un puntaje de 5 preguntas correctas o mas se te asignará automaticamente la licencia. al darle a pagar pagas los derechos del examen y pasas directamente a este. no te puedes salir ni recargar pagina, si lo haces o cancelas el examen tendrás que pagar nuevamente los derechos para presentar el examen otra vez.</p>
+      <form id="pay-survey-form-form" class="space-y-4">
+        <p class="text-gray-500 text-sm"><strong>Saldo en tu cuenta:</strong> <span class="account-money"></span></p>
+        <p class="text-gray-500 text-sm"><strong>Valor de la transacción:</strong> <span>1.300.000</span> Pesos</p>
+        <div class="flex space-x-2">
+          <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Pagar</button>
+          <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+</div>
+
+
+
+<!--TEST LICENCIA-->
+<div id="survey-form" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl max-h-[80vh] overflow-y-auto">
+      <h2 class="text-xl font-bold text-gray-800 mb-2 text-center">Formulario de Licencia</h2>
+      <p class="text-gray-600 mb-4 text-center">Por favor, responde las siguientes preguntas.</p>
+      <form id="survey-questions" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Preguntas -->
+        <div>
+          <label for="question1" class="block text-gray-700 font-medium">¿Cuánto tiempo debes esperar en un Pare?</label>
+          <select id="question1" name="question1" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="1">1 segundo</option>
+            <option value="2">2 segundos</option>
+            <option value="3">3 segundos</option>
+            <option value="4">5 segundos</option>
+          </select>
+        </div>
+        <div>
+          <label for="question2" class="block text-gray-700 font-medium">En caso de ir a la izquierda, ¿qué debes hacer?</label>
+          <select id="question2" name="question2" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="1">No hacer nada</option>
+            <option value="2">Señalizar que voy a la izquierda presionando Q "Intermitente"</option>
+            <option value="3">girar rapidamente</option>
+            <option value="4">Tocar la bocina</option>
+          </select>
+        </div>
+        <div>
+          <label for="question3" class="block text-gray-700 font-medium">Si ves una señal en forma de triángulo, ¿qué debes hacer?</label>
+          <select id="question3" name="question3" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="1">Acelerar</option>
+            <option value="2">Ceder el paso</option>
+            <option value="3">Ignorarla</option>
+            <option value="4">Detenerse completamente</option>
+          </select>
+        </div>
+        <div>
+          <label for="question4" class="block text-gray-700 font-medium">¿Qué es entrar en contra vía?</label>
+          <select id="question4" name="question4" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="1">Ir por el carril correcto</option>
+            <option value="2">Ir por el carril que no es correcto</option>
+            <option value="3">Manejar en reversa</option>
+            <option value="4">Hacer un giro prohibido</option>
+          </select>
+        </div>
+        <div>
+          <label for="question5" class="block text-gray-700 font-medium">¿Cuál es el límite de velocidad dentro de la ciudad?</label>
+          <select id="question5" name="question5" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="1">20 mph</option>
+            <option value="2">35 mph</option>
+            <option value="3">40 mph</option>
+            <option value="4">50 mph</option>
+          </select>
+        </div>
+        <div>
+          <label for="question6" class="block text-gray-700 font-medium">¿Cuál es el límite de velocidad en la autopista 55?</label>
+          <select id="question6" name="question6" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="1">99 mph</option>
+            <option value="2">80 mph</option>
+            <option value="3">60 mph</option>
+            <option value="4">75 mph</option>
+          </select>
+        </div>
+        <div>
+          <label for="question7" class="block text-gray-700 font-medium">¿Cuál es el límite de velocidad en la Riverside Drive?</label>
+          <select id="question7" name="question7" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="1">100 mph</option>
+            <option value="2">80 mph</option>
+            <option value="3">99 mph</option>
+            <option value="4">60 mph</option>
+          </select>
+        </div>
+        <div>
+          <label for="question8" class="block text-gray-700 font-medium">En un semáforo amarillo, ¿qué debes hacer?</label>
+          <select id="question8" name="question8" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="1">Acelerar</option>
+            <option value="2">Reducir la velocidad</option>
+            <option value="3">Detenerse si es seguro</option>
+            <option value="4">Ignorar la luz</option>
+          </select>
+        </div>
+        <div>
+          <label for="question9" class="block text-gray-700 font-medium">¿Cumple con alguno de los siguientes casos?</label>
+          <select id="question9" name="question9" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="">Ninguna de las anteriores</option>
+            <option value="conducir con lentes">Usa gafas/lentes de contacto</option>
+            <option value="conducir con audifonos">Cuenta con sordera sea leve o severa</option>
+            <option value="adaptaciones motrices">Deficiencia motriz</option>
+          </select>
+        </div>
+        <div class="flex space-x-2">
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Enviar</button>
+            <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
+          </div>
+      </form>
+    </div>
+</div>
+
+
 </main>
 
     <footer class="bg-gradient-to-b from-[#243880] to-[#243880] text-white mt-12 py-8">

@@ -2,6 +2,10 @@
 document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById("pay-impoundment").style.display = 'none';
     document.getElementById("vehicle-register").style.display = 'none';
+    document.getElementById("survey-form").style.display = 'none';
+    document.getElementById("pay-survey-form").style.display = 'none'; 
+
+
    setLoadingOn()
    const response = await fetch(`/v1/getUserData?userId=${userId}&driverLicence=true&vehicles=true&tickets=true`)
     if (!response.ok) {
@@ -24,6 +28,112 @@ document.addEventListener('DOMContentLoaded', async function() {
    await updateMultas(tickets)
    await updateLicencia(driverLicence)
    setLoadingOff()
+
+   document.getElementById("pay-survey-form-form").addEventListener("submit",async function(event) {
+    event.preventDefault();
+    try{
+        const response = await fetch(`/v1/getUserData?userId=${userId}&driverLicence=true`)
+        if (!response.ok) {
+            return alert("Error al buscar los datos del usuario,recargue la pagina o contacte con soporte tecnico.");
+        }
+        const jsondata = await response.json()
+        const driverLicence = jsondata.driverLicence
+        if(driverLicence && driverLicence.length > 0){
+            return alert("Ya tienes una licencia de conducción activa.")
+        }
+        
+        const inv =await getinventory(userId)
+       if(!inv){
+           return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
+        }
+        const newMoney = inv.money.bank - 1300000
+        if(newMoney < 0){
+            document.getElementById("pay-survey-form-form").reset();
+            return alert("No tienes suficiente dinero para pagar este servicio.")
+        }
+        inv.money.bank = newMoney
+   
+            await editinventory(userId, inv);
+            document.getElementById("pay-survey-form-form").reset();
+            alert("Examen  pagado con éxito. redirigiendo..");
+            document.getElementById("survey-form").style.display = 'flex';
+            document.getElementById("pay-survey-form").style.display = 'none'; 
+
+    }catch(e){
+        console.log(e)
+        return alert("Error al pagar el servicio. " + e)
+    }
+   
+
+});
+document.getElementById("survey-questions").addEventListener("submit",async function(event) {
+    event.preventDefault();
+    let points = 0;
+    const q1 = document.getElementById("question1").value
+    const q2 = document.getElementById("question2").value
+    const q3 = document.getElementById("question3").value
+    const q4 = document.getElementById("question4").value
+    const q5 = document.getElementById("question5").value
+    const q6 = document.getElementById("question6").value
+    const q7 = document.getElementById("question7").value
+    const q8 = document.getElementById("question8").value
+    const restriccion = document.getElementById("question9").value
+    if(q1 === "3"){
+        points +=1
+    }
+    if(q2 === "2"){
+        points +=1
+    }
+    if(q3 === "2"){
+        points +=1
+    }
+    if(q4 === "2"){
+        points +=1
+    }
+    if(q5 === "1"){
+        points +=1
+    }
+    if(q6 === "3"){
+        points +=1
+    }
+    if(q7 === "4"){
+        points +=1
+    }
+    if(q8 === "3"){
+        points +=1
+    }
+    if(points < 5){
+        document.getElementById("survey-questions").reset();
+        document.getElementById("survey-form").style.display = 'none';
+        return alert("Has fallado el examen, intentalo de nuevo.")
+    }
+    const response= await fetch('/v1/runt/addlicence', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId, restrictions:restriccion })
+    })
+    if(response.ok){
+        document.getElementById("survey-questions").reset();
+        document.getElementById("survey-form").style.display = 'none';
+        window.location.reload();
+        return alert("Licencia de conducción expedida con éxito.")
+    }
+    if(response.status === 400){
+        document.getElementById("survey-questions").reset();
+        document.getElementById("survey-form").style.display = 'none';
+        return alert("Ya tienes una licencia de conducción activa.")
+    }
+    if(response.status === 500){
+        document.getElementById("survey-questions").reset();
+        document.getElementById("survey-form").style.display = 'none';
+        return alert("Error al expedir la licencia.")
+    }
+
+
+
+})
 
 
    document.getElementById("pay-impoundment-form").addEventListener("submit",async function(event) {
@@ -306,18 +416,33 @@ async function serverReq(req) {
     if(!req){
         document.getElementById("pay-impoundment").style.display = 'none';
         document.getElementById("vehicle-register").style.display = 'none';
+        document.getElementById("survey-form").style.display = 'none';
+        document.getElementById("pay-survey-form").style.display = 'none';
+
 
     }
     if(req ==='pagar_incautados'){
         document.getElementById("vehicle-register").style.display = 'none';
+        document.getElementById("survey-form").style.display = 'none';
+        document.getElementById("pay-survey-form").style.display = 'none';
         getinventory(userId)
         document.getElementById("pay-impoundment").style.display = 'flex';
 
     }
     if(req === 'registrar_vehiculo'){
         document.getElementById("pay-impoundment").style.display = 'none';
+        document.getElementById("survey-form").style.display = 'none';
+        document.getElementById("pay-survey-form").style.display = 'none'; 
         loadVehicleModels(userId)
         document.getElementById("vehicle-register").style.display = 'flex';
+
+    }
+    if(req === 'examen_licencia'){
+        document.getElementById("pay-impoundment").style.display = 'none';
+        document.getElementById("survey-form").style.display = 'none';
+        document.getElementById("vehicle-register").style.display = 'none';
+        getinventory(userId)
+        document.getElementById("pay-survey-form").style.display = 'flex';
 
     }
     

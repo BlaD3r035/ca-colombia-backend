@@ -90,7 +90,7 @@ function generateCode() {
     return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
-async function sendCode(userId, code, ip) {
+async function sendCode(userId, code) {
     try {
         
 

@@ -439,6 +439,10 @@
                     <h3 class="font-medium text-lg text-[#405cbe]">Registra tu vehiculo</h3>
                     <p class="text-gray-500 text-sm">Registra tu vehiculo de manera facil y rapida.</p>
                 </div>
+                <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('gestionar_vehiculo')">
+                    <h3 class="font-medium text-lg text-[#405cbe]">gestionar registros</h3>
+                    <p class="text-gray-500 text-sm">Transfiere o borra tus registros vehiculares.</p>
+                </div>
             </div>
         </section>
 <button id="cerrar-sesion" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg">
@@ -499,6 +503,51 @@
     </div>
 </div>
 
+<div id="vehicle-transfer" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Gestiona tu registro vehicular</h2>
+
+      <div class="flex border-b mb-4">
+        <button id="tab-transfer" class="w-1/2 py-2 text-center font-medium border-b-2 border-blue-600 text-blue-600 focus:outline-none" onclick="showForm('transfer')">Transferir</button>
+        <button id="tab-delete" class="w-1/2 py-2 text-center font-medium text-gray-600 hover:text-blue-600 focus:outline-none" onclick="showForm('delete')">Eliminar</button>
+      </div>
+
+      <!-- Formulario para Transferencia -->
+      <form id="form-transfer" class="space-y-4">
+        <div>
+          <label for="plate-transfer" class="block text-gray-700 font-medium">Placa del vehículo</label>
+          <input type="text" id="plate-transfer" name="plate-transfer" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Ej: ABC-123" required>
+        </div>
+        
+        <div>
+          <label for="document-number-transfer" class="block text-gray-700 font-medium">Número de documento del receptor</label>
+          <input type="text" id="document-number-transfer" name="document-number-transfer" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Ej: 12345678" required>
+        </div>
+
+        <p class="text-gray-500 text-sm">Al transferir el vehículo, perderás el registro. La persona a la que transfieres el vehiculo recivirá un mensaje con instrucciones de como aceptarlo. Si en 24 horas no aceptan el traspaso este regresará a tus registros</p>
+
+        <div class="flex space-x-2">
+          <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Transferir</button>
+          <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
+        </div>
+      </form>
+
+      <!-- Formulario para Eliminación  -->
+      <form id="form-delete" class="space-y-4 hidden">
+        <div>
+          <label for="plate-delete" class="block text-gray-700 font-medium">Placa del vehículo</label>
+          <input type="text" id="plate-delete" name="plate" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="Ej: ABC-123" required>
+        </div>
+
+        <p class="text-red-600 text-sm font-medium">Al eliminar el registro,Se te va a dar el item del vehiculo, si este item ya no existe no se te va a asignar este item.</p>
+
+        <div class="flex space-x-2">
+          <button type="submit" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">Eliminar</button>
+          <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+</div>
 <div id="pay-survey-form" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
     <div class="bg-white p-6 rounded-lg shadow-lg w-96">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Solicitar Curso de licencias</h2>
@@ -677,6 +726,22 @@
                 }
             });
         });
+        function showForm(type) {
+    if (type === "transfer") {
+      document.getElementById("form-transfer").classList.remove("hidden");
+      document.getElementById("form-delete").classList.add("hidden");
+      document.getElementById("tab-transfer").classList.add("border-blue-600", "text-blue-600");
+      document.getElementById("tab-delete").classList.remove("border-blue-600", "text-blue-600");
+      document.getElementById("tab-delete").classList.add("text-gray-600");
+    } else {
+      document.getElementById("form-transfer").classList.add("hidden");
+      document.getElementById("form-delete").classList.remove("hidden");
+      document.getElementById("tab-delete").classList.add("border-blue-600", "text-blue-600");
+      document.getElementById("tab-transfer").classList.remove("border-blue-600", "text-blue-600");
+      document.getElementById("tab-transfer").classList.add("text-gray-600");
+    }
+  }
+
     
        
     </script>

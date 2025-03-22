@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById("vehicle-register").style.display = 'none';
     document.getElementById("survey-form").style.display = 'none';
     document.getElementById("pay-survey-form").style.display = 'none'; 
+    document.getElementById("vehicle-transfer").style.display = 'none';
 
 
    setLoadingOn()
@@ -242,6 +243,64 @@ document.getElementById("survey-questions").addEventListener("submit",async func
         return alert("Error al registrar el vehiculo. " )
     }
   })
+  document.getElementById('form-delete').addEventListener('submit',async function (event) {
+    event.preventDefault()
+    const plate = document.getElementById('plate-delete').value
+    console.log(plate)
+    try{
+        const response = await fetch('/v1/runt/deletevehicle',{
+            method:'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ plate:plate,userId})
+        })
+        if(response.ok){
+             document.getElementById('form-delete').reset()
+             window.location.reload()
+             return alert('Registro vehicular eliminado')
+        }
+        if(response.status === 404){
+            document.getElementById('form-delete').reset()
+            return alert('No tienes ningun vehiculo con esa placa')
+        }
+        if(!response.ok){
+            document.getElementById('form-delete').reset()
+           return alert("ocurrió un problema borrando el registro")
+        }
+    }catch(e){
+      console.log(e)
+      return alert('ocurrió un problema borrando el registro')
+    }
+    
+  })
+  document.getElementById('form-transfer').addEventListener('submit',async function(event){
+    event.preventDefault()
+    const documentId = document.getElementById('document-number-transfer').value
+    const plate = document.getElementById('plate-transfer').value
+     const response = await fetch('/v1/runt/setvehicleransfer',{
+        method:'PUT',
+        headers:{
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify({userId:userId,documentTransfer:documentId,plate:plate})
+     })
+     if(response.ok){
+        document.getElementById('form-transfer').reset()
+        window.location.reload()
+        return alert('Transferencia exitosa')
+     }
+     if(response.status === 404){
+        document.getElementById('form-transfer').reset()
+        return alert('Esta placa no está  a tu nombre o no existe una persona con este numero de documento')
+     }
+     if(!response.ok){
+        document.getElementById('form-transfer').reset()
+        const data = await response.json()
+        return alert('Ocurrió un problema realizando la transferencia: ' + data.message)
+     }
+
+  })
 
 })
 
@@ -417,7 +476,8 @@ async function serverReq(req) {
         document.getElementById("pay-impoundment").style.display = 'none';
         document.getElementById("vehicle-register").style.display = 'none';
         document.getElementById("survey-form").style.display = 'none';
-        document.getElementById("pay-survey-form").style.display = 'none';
+        document.getElementById("pay-survey-form").style.display = 'none'; 
+        document.getElementById("vehicle-transfer").style.display = 'none';
 
 
     }
@@ -425,6 +485,7 @@ async function serverReq(req) {
         document.getElementById("vehicle-register").style.display = 'none';
         document.getElementById("survey-form").style.display = 'none';
         document.getElementById("pay-survey-form").style.display = 'none';
+        document.getElementById("vehicle-transfer").style.display = 'none';
         getinventory(userId)
         document.getElementById("pay-impoundment").style.display = 'flex';
 
@@ -433,16 +494,27 @@ async function serverReq(req) {
         document.getElementById("pay-impoundment").style.display = 'none';
         document.getElementById("survey-form").style.display = 'none';
         document.getElementById("pay-survey-form").style.display = 'none'; 
+        document.getElementById("vehicle-transfer").style.display = 'none';
         loadVehicleModels(userId)
         document.getElementById("vehicle-register").style.display = 'flex';
 
     }
     if(req === 'examen_licencia'){
         document.getElementById("pay-impoundment").style.display = 'none';
+        document.getElementById("vehicle-transfer").style.display = 'none';
         document.getElementById("survey-form").style.display = 'none';
         document.getElementById("vehicle-register").style.display = 'none';
         getinventory(userId)
         document.getElementById("pay-survey-form").style.display = 'flex';
+
+    }
+    if(req === 'gestionar_vehiculo'){
+        document.getElementById("pay-impoundment").style.display = 'none';
+        document.getElementById("vehicle-transfer").style.display = 'flex';
+        document.getElementById("survey-form").style.display = 'none';
+        document.getElementById("vehicle-register").style.display = 'none';
+        getinventory(userId)
+        document.getElementById("pay-survey-form").style.display = 'none';
 
     }
     

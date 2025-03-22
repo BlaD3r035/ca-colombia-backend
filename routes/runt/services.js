@@ -275,18 +275,3 @@ async function sendCode(documentId, userId, code, senderId, vehicledata) {
 module.exports=router
 
 
-async function sendWebhookMessage(title, description, userId, fields = []) {
-    try {
-        const embed = {
-            title,
-            description: `${description}\n\n<@${userId}>`,
-            color: 0x0099ff,
-            fields,
-            timestamp: new Date(),
-        };
-
-        await axios.post(WEBHOOK_URL, { embeds: [embed] });
-    } catch (error) {
-        console.error('Error sending webhook message:', error);
-    }
-}

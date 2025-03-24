@@ -28,6 +28,7 @@
     "path": "^0.12.7",
     "pdfkit": "^0.15.1",
     "pdfkit-table": "^0.1.99",
+    "socket.io": "^4.8.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "unb-api": "^1.4.0"

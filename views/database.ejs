@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        .chat-message {
+    word-wrap: break-word; /* Rompe la palabra si es muy larga */
+    overflow-wrap: break-word; /* Alternativa para navegadores modernos */
+    white-space: pre-wrap; /* Respeta saltos de línea y permite envolver texto */
+    max-width: 75%; /* Evita que el mensaje sea más ancho que el contenedor */
+}
         .initial-loading {
             position: fixed;
             top: 0;
@@ -199,8 +205,9 @@
         </div>
     </nav>
     <div class="h-16"></div>
-    <main class="max-w-7xl mx-auto p-2 sm:p-4 my-4 sm:my-8">
-    <div class="bg-white rounded-[1rem] sm:rounded-[2rem] shadow-xl overflow-hidden border-4 sm:border-8 border-gray-800 max-w-4xl mx-auto">
+
+    <main class="max-w-7xl mx-auto p-2 sm:p-4 my-4 sm:my-8 ">
+        <div class="bg-white rounded-[1rem] sm:rounded-[2rem] shadow-xl overflow-hidden border-4 sm:border-8 border-gray-800 max-w-4xl mx-auto">
         <!-- Barra de búsqueda -->
         <div class="p-4 bg-gray-50">
             <div class="flex items-center bg-gray-100 rounded-lg p-2 mb-4">
@@ -399,6 +406,9 @@
             </div>
         </div>
     </div>
+  
+
+
 </main>
                 <div class="mt-6 border-t border-gray-200 pt-6">
                     <div class="flex flex-wrap justify-center gap-3">
@@ -748,6 +758,67 @@
         </form>
     </div>
 </div>
+<div class="fixed top-40 right-5">
+    <button
+      id="toggleChat"
+      class="bg-blue-500 text-white p-2 rounded-full shadow-md"
+    >
+      ⬆️
+    </button>
+  
+    <div
+      id="chatContainer"
+      class="max-w-md mx-auto bg-white dark:bg-zinc-800 shadow-md rounded-lg overflow-hidden fixed bottom-16 right-5 hidden"
+    >
+      <div class="flex flex-col h-[400px]">
+        <div class="px-4 py-3 border-b dark:border-zinc-700 relative">
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-zinc-800 dark:text-white">
+              Chat beta
+            </h2>
+            <div id="chatStatus" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                Offline
+            </div>
+        </div>
+        <p class="text-white">Usuarios activos:<strong id="userCounter" class="text-white"></strong></p>
+    </div>
+        <div
+          class="flex-1 p-3 overflow-y-auto flex flex-col space-y-2"
+          id="chatDisplay"
+        >
+          <div
+            class="chat-message self-end bg-blue-500 text-white max-w-xs rounded-lg px-3 py-1.5 text-sm"
+          >Hola! esta es una funcionalidad beta,<br> Simplemente estamos probando una feature que vendrá proximamente.
+          </div>
+          <div
+            class="chat-message self-start bg-zinc-500 text-white max-w-xs rounded-lg px-3 py-1.5 text-sm"
+          >Si quieres Usar esta funcionalidad unete al chat ahora!
+          </div>
+          <button class="bg-zinc-500 rounded-lg text-white" onclick="startChat()">Unirse ahora!</button>
+        </div>
+        <div class="px-3 py-2 border-t dark:border-zinc-700">
+          <div class="flex gap-2">
+            <textarea
+            placeholder="Escribe un mensaje"
+            class="flex-1 p-2 border rounded-lg dark:bg-zinc-700 dark:text-white dark:border-zinc-600 text-sm"
+            id="chatInput"
+            rows="2"
+        ></textarea>
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-lg transition duration-300 ease-in-out text-sm"
+              id="sendButton"
+            >
+              Enviar
+            </button>
+          </div>
+          <label class="flex items-center space-x-2">
+            <input type="checkbox" id="autoScrollCheckbox" checked>
+            <span class="text-sm text-white">Autoscroll</span>
+        </label>
+        </div>
+      </div>
+    </div>
+  </div>
     </main>
 
 
@@ -839,6 +910,22 @@
    
     <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg flex items-center space-x-4">
+
+            <script>
+                document.getElementById("toggleChat").addEventListener("click", function () {
+                  let chat = document.getElementById("chatContainer");
+                  let button = document.getElementById("toggleChat");
+              
+                  if (chat.classList.contains("hidden")) {
+                    chat.classList.remove("hidden");
+                    button.textContent = "⬇️"; 
+                  } else {
+                    chat.classList.add("hidden");
+                    button.textContent = "⬆️";
+                  }
+                });
+              </script>
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -888,6 +975,7 @@
         let personInfo;
         let searchPerson;
         const agentName='<%=userdata.nombreic%>'+" "+"<%=userdata.apellidoic%>";
+        const agentId ='<%=userdata.userId%>'
         function toggleForm(formId,formId2,formId3,formId4) {
             if(!searchPerson){
                 return
@@ -1133,7 +1221,7 @@
                 'Conectando con la base de datos...',
                 'Cargando módulos...',
                 'Verificando credenciales...',
-                'Preparando interfaz...'
+                'centrando divs!!...',
             ];
             let messageIndex = 0;
 
@@ -1283,4 +1371,123 @@
     }
 </script>
 </body>
+<!--Live chat test-->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+   const chatDisplay = document.getElementById('chatDisplay');
+   const chatStatus = document.getElementById('chatStatus');
+   const chatInput = document.getElementById('chatInput');
+   const sendButton = document.getElementById('sendButton');
+   const userCounter= document.getElementById('userCounter');
+   let socket;
+
+   function formatTimestamp() {
+      const now = new Date();
+      return now.toLocaleTimeString();
+   }
+
+   function startChat() {
+   chatDisplay.innerHTML = '';
+   socket = io();
+
+   socket.on('chat message', ({ message, UID, name, timestamp }) => {
+      const messageContainer = document.createElement('div');
+      messageContainer.className = UID === agentId 
+   ? "self-end bg-blue-500 text-white max-w-xs rounded-lg px-3 py-1.5 text-sm break-words"
+   : "self-start bg-zinc-500 text-white max-w-xs rounded-lg px-3 py-1.5 text-sm break-words";
+
+      const messageText = document.createElement('div');
+      messageText.textContent = message;
+      messageText.innerHTML = message.replace(/\n/g, '<br>'); 
+
+      const messageFooter = document.createElement('div');
+      messageFooter.className = "text-xs text-gray-300 mt-1";
+      messageFooter.textContent = `${name} • ${timestamp}`;
+
+      messageContainer.appendChild(messageText);
+      messageContainer.appendChild(messageFooter);
+      chatDisplay.appendChild(messageContainer);
+      autoScroll();
+      
+
+   });
+
+   // Notificar cuando un usuario se conecta
+   socket.on('user joined', ({ message,activeUsers }) => {
+      const notification = document.createElement('div');
+      notification.className = "text-xs text-green-500 mt-2";
+      notification.textContent = message;
+      chatDisplay.appendChild(notification);
+      userCounter.innerHTML=activeUsers
+   });
+
+   // Notificar cuando un usuario se desconecta
+   socket.on('user left', ({ message,activeUsers }) => {
+      const notification = document.createElement('div');
+      notification.className = "text-xs text-red-500 mt-2";
+      notification.textContent = message;
+      chatDisplay.appendChild(notification);
+      userCounter.innerHTML=activeUsers
+   });
+
+   socket.on('connect', () => {
+      chatStatus.style.backgroundColor = 'green';
+      chatStatus.textContent = 'Conectado';
+      socket.emit('register_agent', { agentId, agentName });
+
+   });
+
+   socket.on('disconnect', () => {
+      chatStatus.style.backgroundColor = 'red';
+      chatStatus.textContent = 'Desconectado';
+   });
+
+   chatInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        if (event.shiftKey) {
+            
+            return;
+        }
+        event.preventDefault(); 
+        sendButton.click();
+    }
+});
+   sendButton.addEventListener('click', () => {
+      if (chatInput.value.trim()) {
+         socket.emit('chat message', { 
+            message: chatInput.value, 
+            UID: agentId, 
+            name: agentName, 
+            timestamp: formatTimestamp() 
+         });
+
+         const messageContainer = document.createElement('div');
+         messageContainer.className = "self-end bg-blue-500 text-white max-w-xs rounded-lg px-3 py-1.5 text-sm break-words";
+
+         const messageText = document.createElement('div');
+         messageText.textContent = chatInput.value;
+         messageText.innerHTML = chatInput.value.replace(/\n/g, '<br>');
+
+         const messageFooter = document.createElement('div');
+         messageFooter.className = "text-xs text-gray-300 mt-1";
+         messageFooter.textContent = `${agentName} • ${formatTimestamp()}`;
+
+         messageContainer.appendChild(messageText);
+         messageContainer.appendChild(messageFooter);
+         chatDisplay.appendChild(messageContainer);
+         chatInput.value = '';  
+         autoScroll();
+         
+      }
+   });
+}
+
+const autoScrollCheckbox = document.getElementById('autoScrollCheckbox');
+
+function autoScroll() {
+    if (autoScrollCheckbox.checked) {
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+}
+</script>
 </html>

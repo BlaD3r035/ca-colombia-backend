@@ -93,4 +93,18 @@ router.get('/miembros', async (req, res) => {
     }
 });
 
+router.get('/eventos', async (req,res) =>{
+    try{
+        const [eventos] = await db.query('SELECT * FROM eventos WHERE date > NOW()')
+        if(!eventos){
+            return res.status(404).json({message:"No events founded"})
+        }
+        return res.status(200).json({eventos:eventos})
+
+    }catch(e){
+       console.log(e)
+       return res.status(500).json({message:"internal server error"})
+    }
+})
+
 module.exports =router

@@ -96,7 +96,7 @@ router.get('/miembros', async (req, res) => {
 router.get('/eventos', async (req,res) =>{
     try{
         const [eventos] = await db.query('SELECT * FROM eventos WHERE date > NOW()')
-        if(!eventos){
+        if(!eventos || eventos.length === 0){
             return res.status(404).json({message:"No events founded"})
         }
         return res.status(200).json({eventos:eventos})

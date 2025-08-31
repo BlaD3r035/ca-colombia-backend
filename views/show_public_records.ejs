@@ -143,11 +143,11 @@
             <div class="space-y-4">
                 <p class="text-gray-600">El ciudadano:</p>
                 <strong class="text-xl text-[#004830]">
-                    <%= document.nombreic %> <%= document.apellidoic %>
+                    <%= document.first_names %> <%= document.last_names %>
                 </strong>
                 <p class="text-gray-600">Identificado con el número de documento:</p>
                 <strong class="text-xl text-[#004830]">
-                    <%= document.documentId %>
+                    <%= document.roblox_id %>
                 </strong>
             </div>
 
@@ -164,8 +164,8 @@
                         <tbody>
                             <% records.forEach(record => { %>
                                 <tr class="border-b">
-                                    <td class="p-4"><%= record.articulos %></td>
-                                    <td class="p-4"><%= record.tiempo %></td>
+                                    <td class="p-4"><%= record.articles %></td>
+                                    <td class="p-4"><%= record.time %></td>
                                     <td class="p-4"><%= record.endTime %></td>
                                 </tr>
                             <% }); %>

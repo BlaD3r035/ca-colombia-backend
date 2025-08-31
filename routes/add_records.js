@@ -30,7 +30,7 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
 
     const photo = req.file;
     
-    if (!ticketData || !agentName || !pedData || !pedData.userId || !photo) {
+    if (!ticketData || !agentName || !pedData || !pedData.user_id || !photo) {
         console.log('Error, falta foto o datos');
         return res.status(404).json('Datos o foto no proporcionados');
     }
@@ -43,8 +43,8 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
 
         // Guardar en la base de datos
         const [saveInfo] = await db.query(
-          'INSERT INTO antecedentes (userId, articulos, tiempo, endTime, agente) VALUES (?, ?, ?, ?, ?)',
-          [pedData.userId, ticketData.record, ticketData.time, endTime, agentName]
+          'INSERT INTO arrests (user_id, articles, time, endTime, agent_name) VALUES (?, ?, ?, ?, ?)',
+          [pedData.user_id, ticketData.record, ticketData.time, endTime, agentName]
         );
         
         const multaId = saveInfo.insertId; 
@@ -67,14 +67,14 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
 
         const discordWebhookUrl = process.env.RECORDS_URL_WEBHOOK;
         const discordMessage = {
-            content: `<@${pedData.userId}>`,
+            content: `<@${pedData.discord_id}>`,
             embeds: [
                 {
                     title: 'REGISTRO DE ARRESTO',
                     color: 0x00FF00,
                     thumbnail: { url: pedData.avatarUrl },
                     fields: [
-                        { name: 'Arrestado', value: `<@${pedData.userId}>`, inline: false },
+                        { name: 'Arrestado', value: `<@${pedData.discord_id}>`, inline: false },
                         { name: 'Articulos', value: ticketData.record, inline: false },
                         { name: 'Tiempo', value: `${ticketData.time}`, inline: false },
                         { name: 'Notificación', value: `https://cacolombia.com/pdfs/antecedentes/${multaId}.pdf`, inline: false }

@@ -76,7 +76,7 @@ router.get('/getUserData', async (req, res) => {
       return res.status(404).json('the userId is not provided')
     }
     const responseData = {};
-    const [userCheck] = await db.query('SELECT * FROM cedulas WHERE userId=?',[userId])
+    const [userCheck] = await db.query('SELECT * FROM users WHERE user_id=?',[userId])
     if(userCheck.length ===0){
         return res.status(404).json('no user info founded')
     }else{
@@ -87,39 +87,39 @@ router.get('/getUserData', async (req, res) => {
   
     try{
         if(driverLicence){
-            const [driverLicenceResult] = await db.query('SELECT * FROM licencia WHERE userId=? ',[userId])
+            const [driverLicenceResult] = await db.query('SELECT * FROM licenses WHERE user_id=? ',[userId])
             if (driverLicenceResult.length > 0) {
                 responseData.driverLicence = driverLicenceResult;
             }
         }
         if(vehicles){
-            const [vehiclesResult] = await db.query('SELECT * FROM vehiculos WHERE owner=? ',[userId])
+            const [vehiclesResult] = await db.query('SELECT * FROM vehicles WHERE user_id=? ',[userId])
     
             if (vehiclesResult.length > 0) {
                 responseData.vehicles = vehiclesResult;
             }
         }
         if(arrestRecord){
-            const [arrestRecordResult] = await db.query('SELECT * FROM antecedentes WHERE userId=? ',[userId])
+            const [arrestRecordResult] = await db.query('SELECT * FROM arrests WHERE user_id=? ',[userId])
             if (arrestRecordResult.length > 0) {
                 responseData.arrestRecord = arrestRecordResult;
             }
         }
         if(tickets){
-            const [ticketsResult] = await db.query('SELECT * FROM multas WHERE userId=? ',[userId])
+            const [ticketsResult] = await db.query('SELECT * FROM infractions WHERE user_id =? ',[userId])
             if (ticketsResult.length > 0) {
                 responseData.tickets = ticketsResult;
             } 
         }
     
         if(warnings){
-            const [warningsResult] = await db.query('SELECT * FROM observaciones WHERE userId=? ',[userId])
+            const [warningsResult] = await db.query('SELECT * FROM observaciones WHERE user_id=? ',[userId])
             if (warningsResult.length > 0) {
                 responseData.warnings = warningsResult;
             }
         }
         if(byc){
-            const [bycresult] = await db.query('SELECT * FROM busquedaycaptura WHERE userId=? ',[userId])
+            const [bycresult] = await db.query('SELECT * FROM wanted WHERE user_id=? ',[userId])
             if (bycresult.length > 0) {
                 responseData.byc = bycresult;
             }
@@ -127,6 +127,7 @@ router.get('/getUserData', async (req, res) => {
 
         res.status(200).json(responseData);
     }catch(e){
+        console.log(e)
         res.status(500).json('error trying to get the info')
     }
    

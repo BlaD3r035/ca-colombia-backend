@@ -73,11 +73,11 @@ router.get('/runt/vehicletransfer', async (req, res) => {
     }
 
     try {
-        const [personresult] = await db.query('SELECT * FROM cedulas WHERE documentId =?',[documentId])
+        const [personresult] = await db.query('SELECT * FROM users WHERE roblox_id =?',[documentId])
         if(personresult.length === 0){
             return res.status(404).json({message:'La persona no tiene cedula'})
         }
-        const userId = personresult[0].userId
+        const userId = personresult[0].user_id
         const [results] = await db.query(
             'SELECT * FROM vehiculos WHERE owner = 0 AND idTransfer = ? AND code = ? AND transfer = 1 AND maxTransDate > NOW()',
             [userId, code]
@@ -86,7 +86,7 @@ router.get('/runt/vehicletransfer', async (req, res) => {
         if (results.length === 0) {
             return res.status(404).json({ message: "Esta transferencia no existe o ya expiró" });
         }
-        const [sellerdata] = await db.query('SELECT * FROM cedulas WHERE userId =?',[results[0].orgId])
+        const [sellerdata] = await db.query('SELECT * FROM users WHERE user_id =?',[results[0].orgId])
         if (sellerdata.length === 0) {
             return res.status(404).json({ message: "El propietario no cuenta con una cedula vigente" });
         }

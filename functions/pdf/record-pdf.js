@@ -20,14 +20,14 @@ const generateHtmlRecord = (ticketData, agentName, pedData, multaId) => {
   <div class="container">
     <div class="header">ENTIDAD DE REGISTRO PENAL</div>
     <h2>REGISTRO DE ANTECEDENTES PENALES Y REQUERIMIENTOS JUDICIALES</h2>
-    <p>Respetado(a) señor(a) <strong>${pedData.nombreic} ${pedData.apellidoic}</strong></p>
+    <p>Respetado(a) señor(a) <strong>${pedData.first_names} ${pedData.last_names}</strong></p>
     <p>La entidad encargada de generar el reporte penal le informa que se ha generado el siguiente registro por el motivo: <strong>${ticketData.record}</strong>.</p>
     
     <table>
       <tr><th colspan="2">Información del Ciudadano</th></tr>
-      <tr><td><strong>Documento:</strong></td><td>${pedData.documentId}</td></tr>
-      <tr><td><strong>Nombre:</strong></td><td>${pedData.nombreic} ${pedData.apellidoic}</td></tr>
-      <tr><td><strong>Fecha de nacimiento:</strong></td><td>${pedData.fechadenacimiento}</td></tr>
+      <tr><td><strong>Documento:</strong></td><td>${pedData.roblox_id}</td></tr>
+      <tr><td><strong>Nombre:</strong></td><td>${pedData.first_names} ${pedData.last_names}</td></tr>
+      <tr><td><strong>Fecha de nacimiento:</strong></td><td>${pedData.dob}</td></tr>
     </table>
     
     <table>

@@ -31,7 +31,7 @@ async function getIdByDoc() {
             setLoadingOff();
             return alert("No se encontró esta placa.");
         }
-        fetchUserData(userId.owner);
+        fetchUserData(userId.user_id);
     } else {
         // Case user document
         const response = await fetch(`/v1/user?documentId=${i_value}`);
@@ -44,7 +44,8 @@ async function getIdByDoc() {
             setLoadingOff();
             return alert("No se encontró el documento.");
         }
-        fetchUserData(userId.userId);
+        
+        fetchUserData(userId.user_id);
     }
 }
 
@@ -70,30 +71,30 @@ async function fetchUserData(userident) {
         const documentData = data.documentData[0];
 
         if (documentData) {
-            searchPerson = documentData.documentId;
+            searchPerson = documentData.roblox_id;
             personInfo = documentData;
             const form = document.getElementById('form-multas');
             const form2 = document.getElementById('form-arrestos');
             form.style.display = 'none';
             form2.style.display = 'none';
-            document.getElementById('avatar').src = documentData.avatarUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
-            document.getElementById('nombre').innerText = documentData.nombreic || 'N/A';
-            document.getElementById('apellido').innerText = documentData.apellidoic || 'N/A';
-            document.getElementById('nacionalidad').innerText = documentData.nacionalidadic || 'N/A';
-            document.getElementById('estatura').innerText = documentData.estaturaic || 'N/A';
-            document.getElementById('sexo').innerText = documentData.sexoic || 'N/A';
-            document.getElementById('fechanacimiento').innerText = documentData.fechadenacimiento || 'N/A';
-            document.getElementById('edad').innerText = documentData.edadic || 'N/A';
-            document.getElementById('gs').innerText = documentData.tipodesangre || 'N/A';
-            document.getElementById('username').innerText = documentData.username || 'N/A';
-            document.getElementById('ndoc').innerText = documentData.documentId || 'N/A';
+            document.getElementById('avatar').src = `https://sparked.shiftsbot.xyz/v1/images/${documentData.user_id}/user` || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+            document.getElementById('nombre').innerText = documentData.first_names || 'N/A';
+            document.getElementById('apellido').innerText = documentData.last_names || 'N/A';
+            document.getElementById('nacionalidad').innerText = documentData.nationality || 'N/A';
+            document.getElementById('estatura').innerText = documentData.height || 'N/A';
+            document.getElementById('sexo').innerText = documentData.gender || 'N/A';
+            document.getElementById('fechanacimiento').innerText = documentData.dob || 'N/A';
+            document.getElementById('edad').innerText = documentData.age || 'N/A';
+            document.getElementById('gs').innerText = documentData.bood_tipe || 'N/A';
+            document.getElementById('username').innerText = documentData.discord_username || 'N/A';
+            document.getElementById('ndoc').innerText = documentData.roblox_id || 'N/A';
         }
 
-        populateTable('table-licencia', data.driverLicence, ['status', 'tipo', 'exp', 'restriccion']);
-        populateTable('table-vehiculos', data.vehicles, ['nombre', 'placa', 'color','blindado','status']);
-        populateTable('table-antecedentes', data.arrestRecord, ['articulos', 'tiempo', 'agente', 'created_at']);
-        populateTable('table-multas', data.tickets, ['articulos', 'placa', 'valor', 'agente', 'created_at']);
-        populateTable('table-observaciones', data.warnings, ['observaciones']);
+        populateTable('table-licencia', data.driverLicence, ['status', 'type', 'exp', 'restriction']);
+        populateTable('table-vehiculos', data.vehicles, ['vehicle_name', 'plate', 'color','service','state']);
+        populateTable('table-antecedentes', data.arrestRecord, ['articles', 'time', 'agent_name', 'created_at']);
+        populateTable('table-multas', data.tickets, ['articles', 'plate', 'fine', 'agent_name', 'created_at']);
+        populateTable('table-observaciones', data.warnings, ['observacion']);
         populateTable('table-byc', data.byc, ['byc']);
     } catch (error) {
         console.error(error);
@@ -133,11 +134,8 @@ function populateTable(tableId, dataArray, columns) {
                 cell.style.fontSize = "1.2em";
             } else if (column === 'byc' && data[column] === 0) {
                 cell.innerText = "N/A";
-            } else if(column === 'blindado' && data[column] !== null){
-                cell.innerText = "Blindado";
-            }else if(column === 'blindado' && data[column] === null){
-                cell.innerText = "Sin blindar";
-            }else{
+            } 
+            else{
                 cell.innerText = data[column] !== undefined ? data[column] : "N/A";
 
             }

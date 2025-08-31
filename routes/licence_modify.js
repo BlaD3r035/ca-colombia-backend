@@ -117,7 +117,7 @@ router.get('/licence', async(req,res) =>{
     }
     userId = req.query.userId
 try{
-    const [licence] = await db.query('SELECT * FROM licencia WHERE userId = ?',[userId])
+    const [licence] = await db.query('SELECT * FROM licenses WHERE user_id = ?',[userId])
     if(licence.length === 0){
      return res.status(404).json({message:"no licence finded"})
     }
@@ -146,7 +146,7 @@ router.post('/changelicence', async (req, res) => {
             return res.status(400).json({ message: "No data provided" });
         }
 
-        const { userId, status, reason, date } = req.body;
+        const { userId, status, reason, date, dId } = req.body;
         if (!userId) {
             return res.status(400).json({ message: "userId not provided" });
         }
@@ -158,7 +158,7 @@ router.post('/changelicence', async (req, res) => {
             return res.status(400).json({ message: "Reason not provided" });
         }
          
-        const [licence] = await db.query('SELECT userId FROM licencia WHERE userId = ?',[userId])
+        const [licence] = await db.query('SELECT user_id FROM licenses WHERE user_id = ?',[userId])
         if(licence.length === 0){
          return res.status(404).json({message:"no licence finded"})
         }
@@ -174,16 +174,16 @@ router.post('/changelicence', async (req, res) => {
                 newDate = new Date(date);
             }
             editDate = newDate.toISOString().slice(0, 19).replace('T', ' ');
-            await db.query('UPDATE licencia SET status = ?, editAt = ? WHERE userId = ?', [status, editDate, userId]);
+            await db.query('UPDATE licenses SET status = ?, editAt = ? WHERE user_id = ?', [status, editDate, userId]);
         } else if (status === "Cancelada") {
             newDate.setDate(newDate.getDate() + 45);
             removeDate = newDate.toISOString().slice(0, 19).replace('T', ' ');
-            await db.query('UPDATE licencia SET status = ?, removeAt = ? WHERE userId = ?', [status, removeDate, userId]);
+            await db.query('UPDATE licenses SET status = ?, removeAt = ? WHERE user_id = ?', [status, removeDate, userId]);
         } else if (status === "Valida") {
-            await db.query('UPDATE licencia SET status = ?, editAt = NULL WHERE userId = ?', [status, userId]);
+            await db.query('UPDATE licenses SET status = ?, editAt = NULL WHERE user_id = ?', [status, userId]);
         }
 
-        sendLicenceWebhook(userId, status, reason, req.session.userdata, newDate);
+        sendLicenceWebhook(userId, status, reason, req.session.userdata, newDate,dId);
 
         return res.status(200).json({ message: "Licence updated successfully" });
     } catch (err) {
@@ -191,22 +191,22 @@ router.post('/changelicence', async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 });
-async function sendLicenceWebhook(userId, status, reason, session, date) {
+async function sendLicenceWebhook(userId, status, reason, session, date,dId) {
     try {
         const webhookUrl = process.env.RUNT_URL_WEBHOOK; 
         const payload = {
-            content: `<@${userId}>`,
+            content: `<@${dId}>`,
             embeds: [
                 {
                     title: "🚨 Licencia Actualizada 🚨",
                     description: `Se cambió el estado de tu licencia de conducir. En caso de **SUSPENSIÓN**, la licencia estará suspendida hasta la fecha indicada. En caso de **CANCELACIÓN**, se le retirará la licencia y no podrá solicitar una nueva hasta la fecha indicada.`,
                     color: 16711680,
                     fields: [
-                        { name: "Usuario ID", value: `<@${userId}>`, inline: true },
+                        { name: "Usuario ID", value: `<@${dId}>`, inline: true },
                         { name: "Nuevo Estado", value: status, inline: true },
                         { name: "Razón", value: reason, inline: false },
                         { name: "Fecha Finalización", value: date.toISOString(), inline: false },
-                        { name: "Agente", value: `<@${session.userId}> - ${session.nombreic} ${session.apellidoic}`, inline: false }
+                        { name: "Agente", value: `<@${session.discord_id}> - ${session.first_names} ${session.last_names}`, inline: false }
                     ],  
                     timestamp: new Date().toISOString()
                 }

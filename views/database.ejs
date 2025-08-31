@@ -294,7 +294,7 @@
                                                 <th class="border">NOMBRE</th>
                                                 <th class="border">PLACA</th>
                                                 <th class="border">COLOR</th>
-                                                <th class="border">BLINDADO</th>
+                                                <th class="border">SERVICIO</th>
                                                 <th class="border">ESTADO</th>
                                             </tr>
                                         </thead>
@@ -488,9 +488,9 @@
                 <div class="border-b pb-3">
                     <h3 class="font-medium text-gray-700">Información del Agente</h3>
                     <div class="text-sm text-gray-600 mt-1">
-                        <p><strong>Nombre:</strong> <%=userdata.nombreic%></p>
-                        <p><strong>Apellido:</strong> <%=userdata.apellidoic%></p>
-                        <p><strong>Documento:</strong> <%=userdata.documentId%></p>
+                        <p><strong>Nombre:</strong> <%=userdata.first_names%></p>
+                        <p><strong>Apellido:</strong> <%=userdata.last_names%></p>
+                        <p><strong>Documento:</strong> <%=userdata.roblox_id%></p>
                     </div>
                 </div>
                 
@@ -564,9 +564,9 @@
                 <div class="border-b pb-3">
                     <h3 class="font-medium text-gray-700">Información del Agente</h3>
                     <div class="text-sm text-gray-600 mt-1">
-                        <p><strong>Nombre:</strong> <%=userdata.nombreic%></p>
-                        <p><strong>Apellido:</strong> <%=userdata.apellidoic%></p>
-                        <p><strong>Documento:</strong> <%=userdata.documentId%></p>
+                        <p><strong>Nombre:</strong> <%=userdata.first_names%></p>
+                        <p><strong>Apellido:</strong> <%=userdata.last_names%></p>
+                        <p><strong>Documento:</strong> <%=userdata.roblox_id%></p>
                     </div>
                 </div>
                 
@@ -649,9 +649,9 @@
                 <div class="border-b pb-3">
                     <h3 class="font-medium text-gray-700">Información del Agente</h3>
                     <div class="text-sm text-gray-600 mt-1">
-                        <p><strong>Nombre:</strong> <%=userdata.nombreic%></p>
-                        <p><strong>Apellido:</strong> <%=userdata.apellidoic%></p>
-                        <p><strong>Documento:</strong> <%=userdata.documentId%></p>
+                        <p><strong>Nombre:</strong> <%=userdata.first_names%></p>
+                        <p><strong>Apellido:</strong> <%=userdata.last_names%></p>
+                        <p><strong>Documento:</strong> <%=userdata.roblox_id%></p>
                     </div>
                 </div>
                 
@@ -728,9 +728,9 @@
                 <div class="border-b pb-3">
                     <h3 class="font-medium text-gray-700">Información del Agente</h3>
                     <div class="text-sm text-gray-600 mt-1">
-                        <p><strong>Nombre:</strong> <%=userdata.nombreic%></p>
-                        <p><strong>Apellido:</strong> <%=userdata.apellidoic%></p>
-                        <p><strong>Documento:</strong> <%=userdata.documentId%></p>
+                        <p><strong>Nombre:</strong> <%=userdata.first_names%></p>
+                        <p><strong>Apellido:</strong> <%=userdata.last_names%></p>
+                        <p><strong>Documento:</strong> <%=userdata.roblox_id%></p>
                     </div>
                 </div>
                 
@@ -974,24 +974,24 @@
     <script>
         let personInfo;
         let searchPerson;
-        const agentName='<%=userdata.nombreic%>'+" "+"<%=userdata.apellidoic%>";
-        const agentId ='<%=userdata.userId%>'
+        const agentName='<%=userdata.first_names%>'+" "+"<%=userdata.last_names%>";
+        const agentId ='<%=userdata.user_id%>'
         function toggleForm(formId,formId2,formId3,formId4) {
             if(!searchPerson){
                 return
             }else{
-                document.getElementById('name-form').innerText = "Nombre:"+personInfo.nombreic
-                document.getElementById('lastName-form').innerText ="Apellido:"+personInfo.apellidoic
-                document.getElementById('documentId-form').innerText ="Numero de documento:"+personInfo.documentId
-                document.getElementById('name-form2').innerText = "Nombre:"+personInfo.nombreic
-                document.getElementById('lastName-form2').innerText ="Apellido:"+personInfo.apellidoic
-                document.getElementById('documentId-form2').innerText ="Numero de documento:"+personInfo.documentId
-                document.getElementById('name-form3').innerText = "Nombre:"+personInfo.nombreic
-                document.getElementById('lastName-form3').innerText ="Apellido:"+personInfo.apellidoic
-                document.getElementById('documentId-form3').innerText ="Numero de documento:"+personInfo.documentId
-                document.getElementById('name-form4').innerText = "Nombre:"+personInfo.nombreic
-                document.getElementById('lastName-form4').innerText ="Apellido:"+personInfo.apellidoic
-                document.getElementById('documentId-form4').innerText ="Numero de documento:"+personInfo.documentId
+                document.getElementById('name-form').innerText = "Nombre:"+personInfo.first_names
+                document.getElementById('lastName-form').innerText ="Apellido:"+personInfo.last_names
+                document.getElementById('documentId-form').innerText ="Numero de documento:"+personInfo.roblox_id
+                document.getElementById('name-form2').innerText = "Nombre:"+personInfo.first_names
+                document.getElementById('lastName-form2').innerText ="Apellido:"+personInfo.last_names
+                document.getElementById('documentId-form2').innerText ="Numero de documento:"+personInfo.roblox_id
+                document.getElementById('name-form3').innerText = "Nombre:"+personInfo.first_names
+                document.getElementById('lastName-form3').innerText ="Apellido:"+personInfo.last_names
+                document.getElementById('documentId-form3').innerText ="Numero de documento:"+personInfo.roblox_id
+                document.getElementById('name-form4').innerText = "Nombre:"+personInfo.first_names
+                document.getElementById('lastName-form4').innerText ="Apellido:"+personInfo.last_names
+                document.getElementById('documentId-form4').innerText ="Numero de documento:"+personInfo.roblox_id
             }
       
         const form = document.getElementById(formId);
@@ -1065,8 +1065,9 @@
     axios.post('/v1/changelicence', {
         status: data.status,
         reason: data.reason,
-        userId: personInfo.userId,
-        date: data.date
+        userId: personInfo.user_id,
+        date: data.date,
+        dId: personInfo.discord_id
     })
     .then(response => {
         console.log('Licencia modificada:', response.data);
@@ -1147,7 +1148,8 @@
                 
                 plate: document.getElementById('articulo-incautacion').value,
                 status:"incautado",
-                userId:personInfo.userId
+                userId:personInfo.user_id,
+                did: personInfo.discord_id
        
         };
 

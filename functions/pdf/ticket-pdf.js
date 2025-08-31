@@ -20,14 +20,14 @@ const generateHtmlTicket = (ticketData, agentName, pedData) => {
   <div class="container">
     <div class="header">SECRETARÍA DISTRITAL DE MOVILIDAD</div>
     <h2>REGISTRO DE MULTA/COMPARENDO CIUDADANO</h2>
-    <p>Respetado(a) señor(a) <strong>${pedData.nombreic} ${pedData.apellidoic}</strong></p>
+    <p>Respetado(a) señor(a) <strong>${pedData.first_names} ${pedData.last_names}</strong></p>
     <p>La Secretaría Distrital de Movilidad le informa que se ha generado la siguiente sanción por el motivo: <strong>${ticketData.record}</strong>.</p>
-    
+      
     <table>
       <tr><th colspan="2">Información del Ciudadano</th></tr>
-      <tr><td><strong>Documento:</strong></td><td>${pedData.documentId}</td></tr>
-      <tr><td><strong>Nombre:</strong></td><td>${pedData.nombreic} ${pedData.apellidoic}</td></tr>
-      <tr><td><strong>Fecha de nacimiento:</strong></td><td>${pedData.fechadenacimiento}</td></tr>
+      <tr><td><strong>Documento:</strong></td><td>${pedData.roblox_id}</td></tr>
+      <tr><td><strong>Nombre:</strong></td><td>${pedData.first_names} ${pedData.last_names}</td></tr>
+      <tr><td><strong>Fecha de nacimiento:</strong></td><td>${pedData.dob}</td></tr>
       <tr><td><strong>Placa del Vehículo:</strong></td><td>${ticketData.plate || 'N/A'}</td></tr>
     </table>
     

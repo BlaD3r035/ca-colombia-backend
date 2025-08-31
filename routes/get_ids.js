@@ -101,7 +101,7 @@ router.get('/user', async (req, res) => {
             return res.status(400).json({ error: 'No user documentId provided' });
         }
 
-        const [userId] = await db.query('SELECT * FROM cedulas WHERE documentId = ?', [documentId]);
+        const [userId] = await db.query('SELECT * FROM users WHERE roblox_id = ?', [documentId]);
         if (userId.length === 0) {
             return res.status(404).json({ error: 'No user found' });
         }
@@ -120,7 +120,7 @@ router.get('/plate', async (req, res) => {
             return res.status(400).json({ error: 'No plate number provided' });
         }
 
-        const [userId] = await db.query('SELECT owner FROM vehiculos WHERE placa = ?', [plate]);
+        const [userId] = await db.query('SELECT user_id FROM vehicles WHERE plate = ?', [plate]);
         if (userId.length === 0) {
             return res.status(404).json({ error: 'No plate found' });
         }

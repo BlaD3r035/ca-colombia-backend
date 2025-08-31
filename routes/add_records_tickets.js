@@ -74,21 +74,22 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const path = require('path');
 const pdf = require('html-pdf');
-const generateHtmlTicket = require('../functions/pdf/ticket-pdf')
+const generateHtmlTicket = require('../functions/pdf/ticket-pdf');
+const { Console } = require('console');
 
 router.post('/sendticket', async (req, res) => {
   const { ticketData, agentName, pedData } = req.body;
 
 
-  if (!ticketData || !agentName || !pedData || !pedData.userId) {
+  if (!ticketData || !agentName || !pedData || !pedData.user_id) {
     return res.status(404).json('No data provided');
   }
 
   try {
  
     const [saveInfo] = await db.query(
-      'INSERT INTO multas (userId, tipo, articulos, placa, valor, agente) VALUES (?, ?, ?, ?, ?, ?)',
-      [pedData.userId, ticketData.type, ticketData.record, ticketData.plate, ticketData.value, agentName]
+      'INSERT INTO infractions (user_id, type, articles, plate, fine, agent_name) VALUES (?, ?, ?, ?, ?, ?)',
+      [pedData.user_id, ticketData.type, ticketData.record, ticketData.plate, ticketData.value, agentName]
     );
 
     const multaId = saveInfo.insertId; 
@@ -103,14 +104,14 @@ router.post('/sendticket', async (req, res) => {
       }
       const discordWebhookUrl = process.env.TICKETS_URL_WEBHOOK;
       const discordMessage = {
-          content:`<@${pedData.userId}>`,
+          content:`<@${pedData.discord_id}>`,
         embeds: [
           {
             title: ticketData.type === 'multa' ? 'REGISTRO MULTA' : 'COMPARENDO',
             color: ticketData.type === 'multa' ? 0x00FF00 : 0xFFFF00,
             thumbnail: { url: pedData.avatarUrl },
             fields: [
-              { name: 'Multado', value: `<@${pedData.userId}>`, inline: false },
+              { name: 'Multado', value: `<@${pedData.discord_id}>`, inline: false },
               { name: 'Articulos', value: ticketData.record, inline: false },
               { name: 'Valor', value: `$${ticketData.value}`, inline: false },
               { name: 'Placa', value: ticketData.plate, inline: false },
@@ -127,7 +128,7 @@ router.post('/sendticket', async (req, res) => {
   
       await axios.post(discordWebhookUrl, discordMessage);
   
-      await addTaxesTransaction(pedData.userId,ticketData.type,`Pago de ${ticketData.type} por ${ticketData.value}`, parseInt(ticketData.value))
+      /*await addTaxesTransaction(pedData.userId,ticketData.type,`Pago de ${ticketData.type} por ${ticketData.value}`, parseInt(ticketData.value)) */
   
       
       return res.status(200).json({ message: 'Ticket saved successfully', pdfUrl: `/pdfs/multas/${multaId}.pdf` });

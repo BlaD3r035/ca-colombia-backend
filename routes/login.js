@@ -16,7 +16,7 @@ const REDIRECT_URI = process.env.REDIRECT_URI;
 const DISCORD_API_URL =process.env.DISCORD_API_URL;
  const BOT_TOKEN =process.env.BOT_TOKEN;
 
-const GUILD_ID = '1042099714608345159';
+const GUILD_ID = '1042099714608345159'; 
 const ALLOWED_ROLES = [
     '1042099715031961749', '1042099715052949535', '1042099715052949539', 
     '1042099715052949538', '1042099715052949537', '1068770548311658577', '1229429878382919680'
@@ -55,7 +55,7 @@ router.get('/auth/discord/callback', async (req, res) => {
         });
         
         const userId = userResponse.data.id;
-        const [user] = await db.query('SELECT * FROM cedulas WHERE userId = ?', [userId]);
+        const [user] = await db.query('SELECT * FROM users WHERE discord_id = ?', [userId]);
         if (user.length === 0) return res.redirect('/v1/login?error=No%20autorizado');
 
         const guildMemberResponse = await axios.get(`${DISCORD_API_URL}/guilds/${GUILD_ID}/members/${userId}`, {

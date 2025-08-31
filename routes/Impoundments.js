@@ -41,6 +41,7 @@ router.post('/changevehiclestatus',upload.single('photo'), async(req ,res) =>{
     const status = data.status;
     const userId = data.userId
     const photo = req.file;
+    const did = data.did;
     const plate = platem.toUpperCase()
 
     if(!photo){
@@ -52,7 +53,8 @@ router.post('/changevehiclestatus',upload.single('photo'), async(req ,res) =>{
         return res.status(400).json({ message: "Invalid status. Use: activo or incautado" });
     }
     try{
-      const [veh] = await db.query('SELECT id FROM vehiculos WHERE owner =? AND placa = ?',[userId,plate])
+        console.log(userId + " " + plate)
+      const [veh] = await db.query('SELECT vehicle_id FROM vehicles WHERE user_id =? AND plate = ?',[userId,plate])
         if(veh.length === 0){
             return res.status(404).json({message:"no vehicle finded"})
         }
@@ -61,16 +63,16 @@ router.post('/changevehiclestatus',upload.single('photo'), async(req ,res) =>{
           const photoPath = path.join(__dirname, `../public/fotos-incautaciones/${veh[0].id}.jpg`);
                 fs.renameSync(photo.path, photoPath); 
 
-        await db.query('UPDATE vehiculos SET status =? WHERE placa =?',[status,plate])
+        await db.query('UPDATE vehicles SET state =? WHERE plate =?',[status,plate])
 
-        sendLicenceWebhook(veh[0].id,userId, status, plate, agentdata);
+        sendLicenceWebhook(veh[0].id,userId, status, plate, agentdata,did);
 
 
         return res.status(200).json({ message: "vehicle status successfully change " });
 
 
     }catch(err){
-        console.error('Error saving data: ', e);
+        console.error('Error saving data: ', err);
         return res.status(500).json('Problem saving data');
     }
    
@@ -79,21 +81,21 @@ router.post('/changevehiclestatus',upload.single('photo'), async(req ,res) =>{
 })
 
 //function
-async function sendLicenceWebhook(id,userId, status, plate, officer) {
+async function sendLicenceWebhook(id,userId, status, plate, officer,did) {
     try {
         const webhookUrl = process.env.RUNT_URL_WEBHOOK; 
         const payload = {
-            content: `<@${userId}>`,
+            content: `<@${did}>`,
             embeds: [
                 {
                     title: "🚨 VEHICULO ENCAUTADO 🚨",
-                    description: `SE HA INCAUTADO TU VEHICULO, Si deseas operar tu vehiculo de nuevo puedes usar el comando /runt para pagar la incautación y que te den tu vehiculo de nuevo`,
+                    description: `SE HA INCAUTADO TU VEHICULO, Si deseas operar tu vehiculo de nuevo puedes ingresar a la pagina del RUNT para pagar la incautación y que te den tu vehiculo de nuevo`,
                     color: 16711680,
                     fields: [
-                        { name: "Usuario ID", value: `<@${userId}>`, inline: true },
+                        { name: "Usuario ID", value: `<@${did}>`, inline: true },
                         { name: "Nuevo Estado", value: status, inline: true },
                         { name: "Placa", value: plate, inline: false },
-                        { name: "Agente", value: `<@${officer.userId}> - ${officer.nombreic} ${officer.apellidoic}`, inline: false }
+                        { name: "Agente", value: `<@${officer.discord_id}> - ${officer.first_names} ${officer.last_names}`, inline: false }
                     ],  
                     timestamp: new Date().toISOString(),
                     image:{url:`https://cacolombia.com/fotos-incautaciones/${id}.jpg`}

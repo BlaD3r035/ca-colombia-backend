@@ -99,7 +99,7 @@ async function sendCode(userId, code) {
       
         const embed = new EmbedBuilder()
             .setTitle('🔐 CÓDIGO DE SEGURIDAD')
-            .setDescription(`Se está intentando acceder a tu nombre en la pagina de https://cacolombia.com/v1/runt/login. si no eres tu Haz caso omiso a este mensaje`)
+            .setDescription(`Se está intentando acceder a tu nombre en la pagina de https://app.cacolombia.com/v1/runt/login. si no eres tu Haz caso omiso a este mensaje`)
             .addFields(
                 { name: "🔑 Código", value: `||${code}||`, inline: false }
             )

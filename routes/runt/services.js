@@ -312,7 +312,7 @@ async function sendCode(documentId, userId, code, senderId, vehicledata) {
       
         const embed = new EmbedBuilder()
             .setTitle('📲 Solicitud de transferencia vehicular')
-            .setDescription(`el usuario <@${senderId}> te quiere transferir un registro vehicular, para aceptarlo entra a https://cacolombia.com/v1/runt/vehicletransfer?code=${code}&documentId=${documentId}`)
+            .setDescription(`el usuario <@${senderId}> te quiere transferir un registro vehicular, para aceptarlo entra a https://app.cacolombia.com/v1/runt/vehicletransfer?code=${code}&documentId=${documentId}`)
             .addFields(
                 {name:"Modelo del vehiculo",value:vehicledata.vehicle_name},
                 {name:"Placa",value:vehicledata.plate},

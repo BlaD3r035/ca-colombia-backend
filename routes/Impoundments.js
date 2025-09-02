@@ -60,12 +60,12 @@ router.post('/changevehiclestatus',upload.single('photo'), async(req ,res) =>{
         }
 
 
-          const photoPath = path.join(__dirname, `../public/fotos-incautaciones/${veh[0].id}.jpg`);
+          const photoPath = path.join(__dirname, `../public/fotos-incautaciones/${veh[0].vehicle_id}.jpg`);
                 fs.renameSync(photo.path, photoPath); 
 
         await db.query('UPDATE vehicles SET state =? WHERE plate =?',[status,plate])
 
-        sendLicenceWebhook(veh[0].id,userId, status, plate, agentdata,did);
+        sendLicenceWebhook(veh[0].vehicle_id,userId, status, plate, agentdata,did);
 
 
         return res.status(200).json({ message: "vehicle status successfully change " });
@@ -98,7 +98,7 @@ async function sendLicenceWebhook(id,userId, status, plate, officer,did) {
                         { name: "Agente", value: `<@${officer.discord_id}> - ${officer.first_names} ${officer.last_names}`, inline: false }
                     ],  
                     timestamp: new Date().toISOString(),
-                    image:{url:`https://cacolombia.com/fotos-incautaciones/${id}.jpg`}
+                    image:{url:`https://app.cacolombia.com/fotos-incautaciones/${id}.jpg`}
                 }
             ]
         };

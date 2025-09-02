@@ -12,7 +12,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url:'https://cacolombia.com/',
+        url:'https://app.cacolombia.com/',
         description:'Ca colombia url'
       },
       {

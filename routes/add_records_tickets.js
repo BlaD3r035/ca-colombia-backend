@@ -115,7 +115,7 @@ router.post('/sendticket', async (req, res) => {
               { name: 'Articulos', value: ticketData.record, inline: false },
               { name: 'Valor', value: `$${ticketData.value}`, inline: false },
               { name: 'Placa', value: ticketData.plate, inline: false },
-              { name: 'Notificación', value:`https://cacolombia.com/pdfs/multas/${multaId}.pdf`, inline: false }
+              { name: 'Notificación', value:`https://app.cacolombia.com/pdfs/multas/${multaId}.pdf`, inline: false }
             ],
             footer: {
               text: '「CA」 Colombia ER:LC',

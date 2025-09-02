@@ -1,8 +1,8 @@
 const db = require('../../db/db');
 const axios = require('axios')
-const deleteLicenciaQuery = 'DELETE FROM licencia WHERE userId = ?';
-const updateLicenciaQuery = 'UPDATE licencia SET status = ?, editAt = NULL WHERE userId = ?';
-const licenciaQuery = 'SELECT userId, status, removeAt, editAt FROM licencia';
+const deleteLicenciaQuery = 'DELETE FROM licenses WHERE user_id = ?';
+const updateLicenciaQuery = 'UPDATE licenses SET status = ?, editAt = NULL WHERE user_id = ?';
+const licenciaQuery = 'SELECT user_id, status, removeAt, editAt FROM licenses';
 const DISCORD_WEBHOOK_URL = process.env.RUNT_URL_WEBHOOK; 
 
 async function checkLicenses() {
@@ -11,14 +11,15 @@ async function checkLicenses() {
         const now = new Date();
 
         for (const licencia of licenciaResults) {
-            const userId = licencia.userId;
+            const userId = licencia.user_id;
+            const dicid = licencia.discord_id
             const removeAt = licencia.removeAt ? new Date(licencia.removeAt) : null;
             const editAt = licencia.editAt ? new Date(licencia.editAt) : null;
 
             if (removeAt && now >= removeAt) {
                 await db.query(deleteLicenciaQuery, [userId]);
                 console.log(`Licencia de ${userId} eliminada por expiración.`);
-                await sendDiscordNotification(userId, removeAt); // Enviar webhook
+                await sendDiscordNotification(dicid, removeAt); // Enviar webhook
                 continue;
             }
 
@@ -60,14 +61,16 @@ async function sendDiscordNotification(userId, removeAt) {
 }
 async function checkVehicles() {
     try{
-        const [vehicles] = await db.query('SELECT * FROM vehiculos WHERE transfer = 1')
+        const [vehicles] = await db.query('SELECT * FROM vehicles WHERE transfer = 1')
         const now = new Date()
         vehicles.forEach(async(vehicle) =>{
           if(now > vehicle.maxTransDate){
-            await db.query( 'UPDATE vehiculos SET owner = ?, idTransfer = null, orgId = null, transfer = null, maxTransDate = null, code = null WHERE placa = ?',
+            await db.query( 'UPDATE vehicles SET user_id = ?, idTransfer = null, orgId = null, transfer = 0, maxTransDate = null, code = null WHERE plate = ?',
                 [vehicle.orgId,vehicle.placa]
             )
-            sendDiscordCarReq(vehicle.orgId,vehicle.placa)
+            const [orgUser] = await db.query("SELECT discord_id FROM users WHERE user_id = ?", [vehicle.orgId])
+            const u = orgUser[0]
+            sendDiscordCarReq(u.discord_id,vehicle.placa)
           }
         })
     }catch(e){

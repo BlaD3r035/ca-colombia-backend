@@ -65,8 +65,8 @@ sessionStore.on('error', function(error) {
 
 //function
 const {checkLicenses,checkVehicles} = require('./functions/bucle/bucle.js')
-setInterval(checkLicenses,   20 *60 * 1000);
-setInterval(checkVehicles, 40 * 60 * 1000);
+setInterval(checkLicenses,   1 *60 * 1000);
+setInterval(checkVehicles, 1 * 60 * 1000);
 
 
 // Iniciar servidor

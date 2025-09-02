@@ -79,7 +79,7 @@ router.get('/runt/vehicletransfer', async (req, res) => {
         }
         const userId = personresult[0].user_id
         const [results] = await db.query(
-            'SELECT * FROM vehiculos WHERE owner = 0 AND idTransfer = ? AND code = ? AND transfer = 1 AND maxTransDate > NOW()',
+            'SELECT * FROM vehicles WHERE user_id = 0 AND idTransfer = ? AND code = ? AND transfer = 1 AND maxTransDate > NOW()',
             [userId, code]
         );
 
@@ -91,7 +91,7 @@ router.get('/runt/vehicletransfer', async (req, res) => {
             return res.status(404).json({ message: "El propietario no cuenta con una cedula vigente" });
         }
 
-         return res.status(200).render('runt_vehicle_transfer',{vehicle:results[0],userId:userId,seller:sellerdata[0]});
+         return res.status(200).render('runt_vehicle_transfer',{vehicle:results[0],userId:userId,buyer:personresult[0],seller:sellerdata[0]});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });

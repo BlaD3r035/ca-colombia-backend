@@ -70,6 +70,7 @@ router.get('/getUserData', async (req, res) => {
       const tickets= req.query.tickets === 'true'
       const  warnings= req.query.warnings === 'true'
       const  byc= req.query.byc === 'true'
+      const  driveTest= req.query.driveTest === 'true'
  
     //verify data
     if(!userId){
@@ -109,6 +110,12 @@ router.get('/getUserData', async (req, res) => {
             const [ticketsResult] = await db.query('SELECT * FROM infractions WHERE user_id =? ',[userId])
             if (ticketsResult.length > 0) {
                 responseData.tickets = ticketsResult;
+            } 
+        }
+        if(driveTest){
+            const [driveTestResult] = await db.query('SELECT * FROM drive_test WHERE user_id =? ',[userId])
+            if (driveTestResult.length > 0) {
+                responseData.driveTest = driveTestResult;
             } 
         }
     

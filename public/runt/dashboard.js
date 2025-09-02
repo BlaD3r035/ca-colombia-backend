@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
    setLoadingOn()
-   const response = await fetch(`/v1/getUserData?userId=${userId}&driverLicence=true&vehicles=true&tickets=true`)
+   const response = await fetch(`/v1/getUserData?userId=${userId}&driverLicence=true&vehicles=true&tickets=true&driveTest=true`)
     if (!response.ok) {
          return alert("Error al buscar los datos del usuario,recargue la pagina o contacte con soporte tecnico.");
     }
@@ -17,17 +17,19 @@ document.addEventListener('DOMContentLoaded', async function() {
    const driverLicence = jsondata.driverLicence
    const vehicles = jsondata.vehicles
     const tickets = jsondata.tickets
+    const driveTest = jsondata.driveTest
     document.getElementById("avatar").src = userdata.avatarUrl
-    document.getElementById('name').innerText = userdata.nombreic
-    document.getElementById('lastname').innerText = userdata.apellidoic
-    document.getElementById('sex').innerText = userdata.sexoic
-    document.getElementById('birthdate').innerText = userdata.fechadenacimiento
-    document.getElementById('gs').innerText = userdata.tipodesangre
-    document.getElementById('ndoc').innerText = userdata.documentId
+    document.getElementById('name').innerText = userdata.first_names
+    document.getElementById('lastname').innerText = userdata.last_names
+    document.getElementById('sex').innerText = userdata.gender
+    document.getElementById('birthdate').innerText = userdata.dob
+    document.getElementById('gs').innerText = userdata.blood_type
+    document.getElementById('ndoc').innerText = userdata.roblox_id
 
    await updateVehicles(vehicles)
    await updateMultas(tickets)
    await updateLicencia(driverLicence)
+   await updateCursos(driveTest)
    setLoadingOff()
 
    document.getElementById("pay-survey-form-form").addEventListener("submit",async function(event) {
@@ -47,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async function() {
        if(!inv){
            return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
         }
-        const newMoney = inv.money.bank - 1300000
+        const newMoney = inv.money.bank - 400000
         if(newMoney < 0){
             document.getElementById("pay-survey-form-form").reset();
             return alert("No tienes suficiente dinero para pagar este servicio.")
@@ -79,6 +81,7 @@ document.getElementById("survey-questions").addEventListener("submit",async func
     const q7 = document.getElementById("question7").value
     const q8 = document.getElementById("question8").value
     const restriccion = document.getElementById("question9").value
+    const type = document.getElementById("question10").value
     if(q1 === "3"){
         points +=1
     }
@@ -103,23 +106,28 @@ document.getElementById("survey-questions").addEventListener("submit",async func
     if(q8 === "3"){
         points +=1
     }
+    let s;
+    let m;
     if(points < 5){
-        document.getElementById("survey-questions").reset();
-        document.getElementById("survey-form").style.display = 'none';
-        return alert("Has fallado el examen, intentalo de nuevo.")
+        s = "Reprobado";
+        m = "Certificado de curso teorico fue expedido exitosamente.";
+    }else{
+        s = "Aprobado";
+        m = "Certificado de curso teorico fue expedido exitosamente.";
     }
-    const response= await fetch('/v1/runt/addlicence', {
+
+    const response= await fetch('/v1/runt/adddrivetest', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userId, restrictions:restriccion })
+        body: JSON.stringify({ userId,type:"Teorico",category:type,score:s,restriction:restriccion  })
     })
     if(response.ok){
         document.getElementById("survey-questions").reset();
         document.getElementById("survey-form").style.display = 'none';
         window.location.reload();
-        return alert("Licencia de conducción expedida con éxito.")
+        return alert(m)
     }
     if(response.status === 400){
         document.getElementById("survey-questions").reset();
@@ -129,7 +137,7 @@ document.getElementById("survey-questions").addEventListener("submit",async func
     if(response.status === 500){
         document.getElementById("survey-questions").reset();
         document.getElementById("survey-form").style.display = 'none';
-        return alert("Error al expedir la licencia.")
+        return alert("Error al expedir el certificado.")
     }
 
 
@@ -147,7 +155,7 @@ document.getElementById("survey-questions").addEventListener("submit",async func
         }
         const inv =await getinventory(userId)
        if(!inv){
-           return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
+           return alert("No tienes inventario, usa el comando /balance en discord para crearlo y reinicia la pagina.") 
         }
         const newMoney = inv.money.bank - 10000000
         if(newMoney < 0){
@@ -190,20 +198,22 @@ document.getElementById("survey-questions").addEventListener("submit",async func
         
        const plate =   document.getElementById('plate-register').value
        const model =  document.getElementById('register-vehicle-model').value
+       const service =  document.getElementById('register-vehicle-service').value
        const color = document.getElementById('color-register').value
-       if (!placaRegex.test(plate)) {
+       if (!placaRegex.test(plate)){
         return alert("Placa inválida. Formato correcto: XXX-000");
     }
        const inv = await getinventory(userId)
        if(!inv){
-           return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
+           return alert("No tienes inventario, usa el comando /balance en discord para crearlo y reinicia la pagina.") 
         }
        const items = inv.items
-       const existitem = items.find(item => item.name === model)
+       const existitem = items.find(item => item.item_info.name === model)
        if(!existitem){
            document.getElementById('register-vehicle-form').reset();
            return alert("No tienes este modelo en tu inventario.")
        }
+       const store_item_id  = existitem.item_info.item_id
        const platecheck = await getVehicle(plate)
        if(platecheck){
            document.getElementById('register-vehicle-form').reset();
@@ -214,7 +224,7 @@ document.getElementById("survey-questions").addEventListener("submit",async func
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ userId, plate, model, color })
+            body: JSON.stringify({ userId,roblox_id, plate, model, color, service, store_item_id})
         });
         const responseData = await r2q.json()
         if(r2q.ok){
@@ -246,7 +256,6 @@ document.getElementById("survey-questions").addEventListener("submit",async func
   document.getElementById('form-delete').addEventListener('submit',async function (event) {
     event.preventDefault()
     const plate = document.getElementById('plate-delete').value
-    console.log(plate)
     try{
         const response = await fetch('/v1/runt/deletevehicle',{
             method:'DELETE',
@@ -337,8 +346,8 @@ async function updateLicencia(licence) {
 
         row.innerHTML = `
             <td class='border border-gray-300 px-4 py-2'>${licencia.exp}</td>
-            <td class='border border-gray-300 px-4 py-2'>${licencia.tipo}</td>
-            <td class='border border-gray-300 px-4 py-2'>${licencia.restriccion}</td>
+            <td class='border border-gray-300 px-4 py-2'>${licencia.type}</td>
+            <td class='border border-gray-300 px-4 py-2'>${licencia.restriction}</td>
             <td class='border border-gray-300 px-4 py-2'>${licencia.status}</td>
         `;
 
@@ -347,8 +356,8 @@ async function updateLicencia(licence) {
         tarjetasLicencia.innerHTML += `
             <div class="p-4 border border-gray-300 rounded-lg shadow">
                 <p><strong>Expedición:</strong> ${licencia.exp}</p>
-                <p><strong>Tipo:</strong> ${licencia.tipo}</p>
-                <p><strong>Restricción:</strong> ${licencia.restriccion}</p>
+                <p><strong>Tipo:</strong> ${licencia.type}</p>
+                <p><strong>Restricción:</strong> ${licencia.restriction}</p>
                 <p><strong>Estado:</strong> ${licencia.status}</p>
             </div>
         `;
@@ -366,19 +375,19 @@ async function updateVehicles(vehicles) {
         row.classList.add('border', 'border-gray-300');
 
         row.innerHTML = `
-            <td class='border border-gray-300 px-4 py-2'>${vehicle.nombre}</td>
-            <td class='border border-gray-300 px-4 py-2'>${vehicle.placa}</td>
+            <td class='border border-gray-300 px-4 py-2'>${vehicle.vehicle_name}</td>
+            <td class='border border-gray-300 px-4 py-2'>${vehicle.plate}</td>
             <td class='border border-gray-300 px-4 py-2'>${vehicle.color}</td>
-            <td class='border border-gray-300 px-4 py-2'>${vehicle.blindado? "aplica":"no aplica"}</td>
-            <td class='border border-gray-300 px-4 py-2'>${vehicle.status}</td>
+            <td class='border border-gray-300 px-4 py-2'>${vehicle.service}</td>
+            <td class='border border-gray-300 px-4 py-2'>${vehicle.state}</td>
         `;
         tarjetasVehiculos.innerHTML += `
             <div class="p-4 border border-gray-300 rounded-lg shadow">
-                <p><strong>Modelo:</strong> ${vehicle.nombre}</p>
-                <p><strong>Placa:</strong> ${vehicle.placa}</p>
+                <p><strong>Modelo:</strong> ${vehicle.vehicle_name}</p>
+                <p><strong>Placa:</strong> ${vehicle.plate}</p>
                 <p><strong>Color:</strong> ${vehicle.color}</p>
-                <p><strong>Blindado:</strong> ${vehicle.blindado? "aplica":"no aplica"}</p>
-                <p><strong>Estado:</strong> ${vehicle.status}</p>
+                <p><strong>Servicio:</strong> ${vehicle.service}</p>
+                <p><strong>Estado:</strong> ${vehicle.state}</p>
             </div>
         `;
 
@@ -397,7 +406,7 @@ async function updateMultas(multas) {
     const ultimasMultas = multas.slice(-5);
 
     ultimasMultas.forEach(multa => {
-        const valorFormateado = new Intl.NumberFormat("es-CO").format(multa.valor);
+        const valorFormateado = new Intl.NumberFormat("es-CO").format(multa.fine);
 
         const fecha = new Date(multa.created_at);
         const fechaFormateada = new Intl.DateTimeFormat('es-CO', { 
@@ -413,8 +422,8 @@ async function updateMultas(multas) {
         row.classList.add('border', 'border-gray-300');
 
         row.innerHTML = `
-            <td class='border border-gray-300 px-4 py-2'>${multa.articulos}</td>
-            <td class='border border-gray-300 px-4 py-2'>${multa.placa}</td>
+            <td class='border border-gray-300 px-4 py-2'>${multa.articles}</td>
+            <td class='border border-gray-300 px-4 py-2'>${multa.plate}</td>
             <td class='border border-gray-300 px-4 py-2'>${valorFormateado} Pesos</td>
             <td class='border border-gray-300 px-4 py-2'>Pagada</td>
             <td class='border border-gray-300 px-4 py-2'>${fechaFormateada}</td>
@@ -422,8 +431,8 @@ async function updateMultas(multas) {
 
         tarjetasMultas.innerHTML += `
             <div class="p-4 border border-gray-300 rounded-lg shadow">
-                <p><strong>Artículos:</strong> ${multa.articulos}</p>
-                <p><strong>Placa:</strong> ${multa.placa}</p>
+                <p><strong>Artículos:</strong> ${multa.articles}</p>
+                <p><strong>Placa:</strong> ${multa.plate}</p>
                 <p><strong>Valor:</strong> ${valorFormateado} Pesos</p>
                 <p><strong>Estado:</strong> Pagada</p>
                 <p><strong>Fecha:</strong> ${fechaFormateada}</p>
@@ -431,6 +440,53 @@ async function updateMultas(multas) {
         `;
 
         ticketsTableBody.appendChild(row);
+    });
+}
+async function updateCursos(cursos) {
+    const tablaCursos = document.getElementById('tablaCursos');
+    const tarjetasCursos = document.getElementById("tarjetasCursos");
+    tablaCursos.innerHTML = ''; 
+    tarjetasCursos.innerHTML = '';
+    if(!cursos || cursos.length === 0){
+        return;
+    }
+
+    const ultimosCursos = cursos.slice(-5);
+
+    ultimosCursos.forEach(curso => {
+    
+        const fecha = new Date(curso.created_at);
+        const fechaFormateada = new Intl.DateTimeFormat('es-CO', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+        }).format(fecha).replace(',', ''); 
+
+        const row = document.createElement('tr');
+        row.classList.add('border', 'border-gray-300');
+
+        row.innerHTML = `
+            <td class='border border-gray-300 px-4 py-2'>${curso.type}</td>
+            <td class='border border-gray-300 px-4 py-2'>${curso.license_cat}</td>
+            <td class='border border-gray-300 px-4 py-2'>${curso.score}</td>
+            <td class='border border-gray-300 px-4 py-2'> ${curso.restriction}</td>
+            <td class='border border-gray-300 px-4 py-2'>${fechaFormateada}</td>
+        `;
+
+        tarjetasCursos.innerHTML += `
+            <div class="p-4 border border-gray-300 rounded-lg shadow">
+                <p><strong>Tipo:</strong> ${curso.type}</p>
+                <p><strong>Categoria:</strong> ${curso.license_cat}</p>
+                <p><strong>Puntaje:</strong> ${curso.score}</p>
+                <p><strong>Restricciones:</strong> ${curso.restriction}</p>
+                <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+            </div>
+        `;
+
+        tablaCursos.appendChild(row);
     });
 }
 
@@ -524,7 +580,7 @@ async function loadVehicleModels() {
     try {
         const inventory = await getinventory(userId);
         if(!inventory){
-            return alert("No tienes inventario, usa el comando /saldo en discord para crearlo y reinicia la pagina.") 
+            return alert("No tienes inventario, usa el comando /balance en discord para crearlo y reinicia la pagina.") 
         }
         const modelSelect = document.getElementById("register-vehicle-model");
 
@@ -532,8 +588,8 @@ async function loadVehicleModels() {
         if (inventory && inventory.items.length > 0) {
             inventory.items.forEach(item => {
                 const option = document.createElement("option");
-                option.value = item.name;
-                option.textContent = item.name;
+                option.value = item.item_info.name;
+                option.textContent = item.item_info.name;
                 modelSelect.appendChild(option);
             });
         } else {

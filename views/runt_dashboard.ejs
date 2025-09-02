@@ -368,7 +368,7 @@
                             <th class="border border-gray-300 px-4 py-2">Modelo</th>
                             <th class="border border-gray-300 px-4 py-2">Placa</th>
                             <th class="border border-gray-300 px-4 py-2">Color</th>
-                            <th class="border border-gray-300 px-4 py-2">Blindado</th>
+                            <th class="border border-gray-300 px-4 py-2">Servicio</th>
                             <th class="border border-gray-300 px-4 py-2">Estado</th>
                         </tr>
                     </thead>
@@ -417,6 +417,37 @@
               </div>
             </div>
           </section>
+        <section class="login-card rounded-2xl p-10" data-aos="fade-up">
+            <div class="text-center mb-12 bg-red">
+              <div class="text-center mb-6">
+                  <h2 class="text-3xl font-semibold text-[#405cbe]">Tus cursos</h2>
+                  <div class="w-20 h-1 bg-[#405cbe] mx-auto my-3"></div>
+              </div>
+              <p>Registro de cursos de manejo</p>
+              <div class="hidden md:block overflow-x-auto">
+                  <table class="w-full border-collapse border border-gray-300">
+                      <thead>
+                          <tr class="bg-gray-200 text-gray-700">
+                              <th class="border border-gray-300 px-4 py-2">Tipo</th>
+                              <th class="border border-gray-300 px-4 py-2">Categoria</th>
+                              <th class="border border-gray-300 px-4 py-2">Puntaje</th>
+                              <th class="border border-gray-300 px-4 py-2">Restricciones</th>
+                              <th class="border border-gray-300 px-4 py-2">Fecha</th>
+                          </tr>
+                      </thead>
+                      <tbody id="tablaCursos" class="text-gray-600">
+                      </tbody>
+                  </table>
+              </div>
+              
+            
+              <div class="block md:hidden">
+                  <div id="tarjetasCursos" class="space-y-4">
+                    
+                  </div>
+              </div>
+            </div>
+          </section>
           <section class="info-card bg-white shadow-lg rounded-2xl p-8 mb-10" data-aos="fade-up">
             <div class="text-center mb-6">
                 <h2 class="text-3xl font-semibold text-[#405cbe]">Servicios</h2>
@@ -427,7 +458,7 @@
             <div class="grid md:grid-cols-3 gap-6 text-center">
                 <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('examen_licencia')">
                     <h3 class="font-medium text-lg text-[#405cbe]">Realizar examen de licencia</h3>
-                    <p class="text-gray-500 text-sm">Paga y realiza tu examen para obtener tu licencia de conducir.</p>
+                    <p class="text-gray-500 text-sm">Paga y realiza tu examen para obtener tu certificado teorico.</p>
                 </div>
         
                 <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('pagar_incautados')">
@@ -488,6 +519,12 @@
         <div>
           <label for="register-vehicle-model" class="block text-gray-700 font-medium">Modelo del vehiculo</label>
           <select id="register-vehicle-model" name="register-vehicle-model" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+          </select>
+          <label for="register-vehicle-service" class="block text-gray-700 font-medium">Tipo de servicio</label>
+          <select id="register-vehicle-service" name="register-vehicle-service" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            <option value="particular">particular</option>
+            <option value="público">público</option>
+            <option value="empresarial">empresarial</option>
           </select>
         </div>
         <div>
@@ -551,10 +588,10 @@
 <div id="pay-survey-form" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
     <div class="bg-white p-6 rounded-lg shadow-lg w-96">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Solicitar Curso de licencias</h2>
-      <p class="text-gray-600 mb-4">Al solicitar el formulario tendrás 8 preguntas, si pasas el examen con un puntaje de 5 preguntas correctas o mas se te asignará automaticamente la licencia. al darle a pagar pagas los derechos del examen y pasas directamente a este. no te puedes salir ni recargar pagina, si lo haces o cancelas el examen tendrás que pagar nuevamente los derechos para presentar el examen otra vez.</p>
+      <p class="text-gray-600 mb-4">Al solicitar el formulario tendrás 8 preguntas, si pasas el examen con un puntaje de 5 preguntas correctas o mas se te expedirá un certificado teorico Aprobado. al darle a pagar pagas los derechos del examen y pasas directamente a este. no te puedes salir ni recargar pagina, si lo haces o cancelas el examen tendrás que pagar nuevamente los derechos para presentar el examen otra vez.</p>
       <form id="pay-survey-form-form" class="space-y-4">
         <p class="text-gray-500 text-sm"><strong>Saldo en tu cuenta:</strong> <span class="account-money"></span></p>
-        <p class="text-gray-500 text-sm"><strong>Valor de la transacción:</strong> <span>1.300.000</span> Pesos</p>
+        <p class="text-gray-500 text-sm"><strong>Valor de la transacción:</strong> <span>400.000</span> Pesos</p>
         <div class="flex space-x-2">
           <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Pagar</button>
           <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
@@ -657,10 +694,20 @@
           <label for="question9" class="block text-gray-700 font-medium">¿Cumple con alguno de los siguientes casos?</label>
           <select id="question9" name="question9" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
             <option value="" disabled selected>Selecciona una opción</option>
-            <option value=" ">Ninguna de las anteriores</option>
-            <option value="conducir con lentes">Usa gafas/lentes de contacto</option>
-            <option value="conducir con audifonos">Cuenta con sordera sea leve o severa</option>
-            <option value="adaptaciones motrices">Deficiencia motriz</option>
+            <option value="NINGUNA">Ninguna de las anteriores</option>
+            <option value="CONDUCIR CON LENTES">Usa gafas/lentes de contacto</option>
+            <option value="CONDUCIR CON AUDÍFONOS">Cuenta con sordera sea leve o severa</option>
+            <option value="CONDUCIR CON LENTES Y CON AUDÍFONOS">Usa gafas/lentes de contacto y cuenta con sordera sea leve o severa</option>
+          </select>
+        </div>
+        <div>
+          <label for="question10" class="block text-gray-700 font-medium">¿Que tipo de licencia desea solicitar?</label>
+          <select id="question10" name="question10" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="C1">C1</option>
+            <option value="C2">C2</option>
           </select>
         </div>
         <div class="flex space-x-2">
@@ -686,7 +733,8 @@
     </footer>
 
     <script>
-        const userId ='<%= userdata.userId %>'
+        const userId ='<%= userdata.user_id %>'
+        const roblox_id ='<%= userdata.roblox_id %>'
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({
                 duration: 1000,

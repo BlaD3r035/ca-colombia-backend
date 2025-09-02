@@ -273,10 +273,10 @@
 <div class="mb-6">
     <h3 class="text-xl font-semibold text-gray-700">Información del vehículo</h3>
     <div class="bg-gray-100 p-4 rounded-lg mt-2">
-        <p class="text-gray-600">Modelo: <span class="font-medium"><%= vehicle.nombre %></span></p>
+        <p class="text-gray-600">Modelo: <span class="font-medium"><%= vehicle.vehicle_name %></span></p>
         <p class="text-gray-600">Color: <span class="font-medium"><%= vehicle.color %></span></p>
         <p class="text-gray-600">Fecha original de registro: <span class="font-medium"><%= vehicle.created_at %></span></p>
-        <p class="text-gray-600">Placa: <span class="font-medium"><%= vehicle.placa %></span></p>
+        <p class="text-gray-600">Placa: <span class="font-medium"><%= vehicle.plate %></span></p>
     </div>
 </div>
 
@@ -284,9 +284,17 @@
 <div class="mb-6">
     <h3 class="text-xl font-semibold text-gray-700">Información del vendedor</h3>
     <div class="bg-gray-100 p-4 rounded-lg mt-2">
-        <p class="text-gray-600">Nombre: <span class="font-medium"><%= seller.nombreic %> <%=seller.apellidoic%></span></p>
-        <p class="text-gray-600">Número de documento: <span class="font-medium"><%= seller.documentId %></span></p>
-        <p class="text-gray-600">Nacionalidad: <span class="font-medium"><%= seller.nacionalidadic %></span></p>
+        <p class="text-gray-600">Nombre: <span class="font-medium"><%= seller.first_names %> <%=seller.last_names%></span></p>
+        <p class="text-gray-600">Número de documento: <span class="font-medium"><%= seller.roblox_id %></span></p>
+        <p class="text-gray-600">Nacionalidad: <span class="font-medium"><%= seller.nationality %></span></p>
+    </div>
+</div>
+<div class="mb-6">
+    <h3 class="text-xl font-semibold text-gray-700">Información del Comprador</h3>
+    <div class="bg-gray-100 p-4 rounded-lg mt-2">
+        <p class="text-gray-600">Nombre: <span class="font-medium"><%= buyer.first_names %> <%=buyer.last_names%></span></p>
+        <p class="text-gray-600">Número de documento: <span class="font-medium"><%= buyer.roblox_id %></span></p>
+        <p class="text-gray-600">Nacionalidad: <span class="font-medium"><%= buyer  .nationality %></span></p>
     </div>
 </div>
 <p>Al aceptar el traspaso el vehiculo se desvinculará totalmente del vendedor y todas las acciones posteriores al traspaso serán registradas a su nombre</p>
@@ -313,8 +321,9 @@
 
     <script>
         const userId = '<%=userId%>'
-        const senderId ='<%=seller.userId%>'
-        const plate = '<%=vehicle.placa%>'
+        const license_number = '<%=buyer.roblox_id%>'
+        const senderId ='<%=seller.user_id%>'
+        const plate = '<%=vehicle.plate%>'
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({
                 duration: 1000,
@@ -362,7 +371,7 @@
         const response = await fetch('/v1/runt/acepttransfer', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: userId, plate: plate })
+            body: JSON.stringify({ userId: userId, plate: plate, license_number })
         });
         const data = await response.json();
 

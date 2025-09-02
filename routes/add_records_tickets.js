@@ -88,8 +88,8 @@ router.post('/sendticket', async (req, res) => {
   try {
  
     const [saveInfo] = await db.query(
-      'INSERT INTO infractions (user_id, type, articles, plate, fine, agent_name) VALUES (?, ?, ?, ?, ?, ?)',
-      [pedData.user_id, ticketData.type, ticketData.record, ticketData.plate, ticketData.value, agentName]
+      'INSERT INTO infractions (user_id, type, articles, plate, fine, agent_name, impounds,suspends) VALUES (?, ?, ?, ?, ?, ?,?,?)',
+      [pedData.user_id, ticketData.type, ticketData.record, ticketData.plate, ticketData.value, agentName, 0,0]
     );
 
     const multaId = saveInfo.insertId; 

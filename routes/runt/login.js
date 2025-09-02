@@ -17,19 +17,21 @@ router.post('/login-code',async(req,res)=>{
     }
     try {
     const documentId = req.body.documentId
-   const [data] = await db.query('SELECT userId,documentId FROM cedulas WHERE documentId =?',[documentId])
+   const [data] = await db.query('SELECT user_id,roblox_id,discord_id FROM users WHERE roblox_id =?',[documentId])
    if(data.length === 0){
       return res.status(404).json({message:"no se encontró al usuario"})
    }
-   const userId = data[0].userId;
+   console.log(data)
+   const userId = data[0].user_id;
    const code = generateCode()
    const now =new Date()
    const deleteDate = new Date(now.getTime() + 10 * 60000)
    await db.query('DELETE FROM temp_codes WHERE reqId =?',[userId])
    await db.query('INSERT INTO temp_codes (code,reqId,delete_date) VALUES(?,?,?)',[code,userId,deleteDate])
-   await sendCode(userId, code, req.ip);
+   await sendCode(data[0].discord_id, code, req.ip);
    return res.json({ message: "Code sent successfully", userId:userId});
 } catch (error) {
+    console.log(error)
     res.status(500).json({ message: "Error sending code" });
 }
 
@@ -54,10 +56,10 @@ router.post('/login', async (req,res)=>{
         }
         const now = new Date()
         if(codever[0].delete_date < now){
-            await db.query('DELETE FROM temp_codes WHERE id =?',[codever[0].id])
+            await db.query('DELETE FROM temp_codes WHERE code_id =?',[codever[0].code_id])
             return res.status(401).json({message:"no valid code"})
         }
-        const [data] = await db.query('SELECT * FROM cedulas WHERE userId =?',[userId])
+        const [data] = await db.query('SELECT * FROM users WHERE user_id =?',[userId])
         if(data.length === 0){
             return res.status(401).json({message:"No cuenta con cedula"})
         }

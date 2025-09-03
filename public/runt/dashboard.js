@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async function() {
    const vehicles = jsondata.vehicles
     const tickets = jsondata.tickets
     const driveTest = jsondata.driveTest
-    document.getElementById("avatar").src = `https://api.cacolombia.com/images/${userId}/user`
+    document.getElementById("avatar").src = `https://api.cacolombia.com/images/${userdata.user_id}/user`
     document.getElementById('name').innerText = userdata.first_names
     document.getElementById('lastname').innerText = userdata.last_names
     document.getElementById('sex').innerText = userdata.gender

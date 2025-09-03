@@ -69,11 +69,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
 const axios = require('axios');
-
-const fs = require('fs');
-const PDFDocument = require('pdfkit');
+const fs = require('fs')
 const path = require('path');
-const pdf = require('html-pdf');
+const puppeteer = require('puppeteer');
 const generateHtmlTicket = require('../functions/pdf/ticket-pdf');
 const { Console } = require('console');
 
@@ -96,34 +94,45 @@ router.post('/sendticket', async (req, res) => {
     const pdfPath = path.join(__dirname, `../public/pdfs/multas/${multaId}.pdf`);
     const htmlContent = generateHtmlTicket(ticketData, agentName, pedData);
 
-    pdf.create(htmlContent).toFile(pdfPath, async (err) => {
-      
-      if (err) {
-        console.error('Error generating PDF:', err);
-        return res.status(500).json('Error generating PDF');
-      }
-      const discordWebhookUrl = process.env.TICKETS_URL_WEBHOOK;
-      const discordMessage = {
-          content:`<@${pedData.discord_id}>`,
-        embeds: [
-          {
-            title: ticketData.type === 'multa' ? 'REGISTRO MULTA' : 'COMPARENDO',
-            color: ticketData.type === 'multa' ? 0x00FF00 : 0xFFFF00,
-            thumbnail: { url: pedData.avatarUrl },
-            fields: [
-              { name: 'Multado', value: `<@${pedData.discord_id}>`, inline: false },
-              { name: 'Articulos', value: ticketData.record, inline: false },
-              { name: 'Valor', value: `$${ticketData.value}`, inline: false },
-              { name: 'Placa', value: ticketData.plate, inline: false },
-              { name: 'Notificación', value:`https://app.cacolombia.com/pdfs/multas/${multaId}.pdf`, inline: false }
-            ],
-            footer: {
-              text: '「CA」 Colombia ER:LC',
-              icon_url: 'https://media.discordapp.net/attachments/1047946669079134249/1176943871595397172/Nuevo_Logo.png?ex=672e5065&is=672cfee5&hm=dbe7d9c45ba1c184c0224d2f262918d3c5b5ad3a59b3d6532d8e716263c516ec&=&format=webp&quality=lossless&width=379&height=379'
-            }
-          }
-        ]
-      };
+    const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+  const page = await browser.newPage();
+
+  await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+  await page.pdf({
+    path: pdfPath,
+    format: 'A4',
+    printBackground: true,
+  });
+
+  await browser.close();
+
+  const discordWebhookUrl = process.env.TICKETS_URL_WEBHOOK;
+  const discordMessage = {
+    content: `<@${pedData.discord_id}>`,
+    embeds: [
+      {
+        title: ticketData.type === 'multa' ? 'REGISTRO MULTA' : 'COMPARENDO',
+        color: ticketData.type === 'multa' ? 0x00ff00 : 0xffff00,
+        thumbnail: { url: pedData.avatarUrl },
+        fields: [
+          { name: 'Multado', value: `<@${pedData.discord_id}>`, inline: false },
+          { name: 'Articulos', value: ticketData.record, inline: false },
+          { name: 'Valor', value: `$${ticketData.value}`, inline: false },
+          { name: 'Placa', value: ticketData.plate, inline: false },
+          { name: 'Notificación', value: `https://app.cacolombia.com/pdfs/multas/${multaId}.pdf`, inline: false },
+        ],
+        footer: {
+          text: '「CA」 Colombia ER:LC',
+          icon_url:
+            'https://media.discordapp.net/attachments/1047946669079134249/1176943871595397172/Nuevo_Logo.png?ex=672e5065&is=672cfee5&hm=dbe7d9c45ba1c184c0224d2f262918d3c5b5ad3a59b3d6532d8e716263c516ec&=&format=webp&quality=lossless&width=379&height=379',
+        },
+      },
+    ],
+  };
   
   
       await axios.post(discordWebhookUrl, discordMessage);
@@ -133,7 +142,7 @@ router.post('/sendticket', async (req, res) => {
       
       return res.status(200).json({ message: 'Ticket saved successfully', pdfUrl: `/pdfs/multas/${multaId}.pdf` });
 
-    })
+   
     
   
    

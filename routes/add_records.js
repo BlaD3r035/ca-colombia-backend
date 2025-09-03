@@ -7,7 +7,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
-const pdf = require('html-pdf');
+const puppeteer = require('puppeteer');
 const generateHtmlRecord = require('../functions/pdf/record-pdf');
 
 const storage = multer.diskStorage({
@@ -58,12 +58,29 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
         }
 
         const htmlContent = generateHtmlRecord(ticketData, agentName, pedData);
-        pdf.create(htmlContent).toFile(pdfPath, (err, result) => {
-            if (err) {
-                console.error('Error generating PDF:', err);
-                return res.status(500).json('Problem generating PDF');
-            }
+
+    try {
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox'], 
         });
+       const page = await browser.newPage();
+
+   
+       await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+ 
+        await page.pdf({
+            path: pdfPath,
+           format: 'A4',
+           printBackground: true,
+       });
+
+        await browser.close();
+    } catch (err) {
+        console.error('Error generating PDF:', err);
+        return res.status(500).json('Problem generating PDF');
+    }
 
         const discordWebhookUrl = process.env.RECORDS_URL_WEBHOOK;
         const discordMessage = {

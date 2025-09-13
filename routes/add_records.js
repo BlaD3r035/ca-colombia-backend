@@ -9,6 +9,7 @@ const path = require('path');
 const multer = require('multer');
 const puppeteer = require('puppeteer');
 const generateHtmlRecord = require('../functions/pdf/record-pdf');
+const {randomUUID}  = require('crypto')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -40,11 +41,11 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
         let endTime = new Date();
         let timeInMinutes = parseInt(ticketData.time, 10); 
         endTime.setMinutes(endTime.getMinutes() + timeInMinutes);
-
+        const id = randomUUID()
         // Guardar en la base de datos
         const [saveInfo] = await db.query(
-          'INSERT INTO arrests (user_id, articles, time, endTime, agent_name) VALUES (?, ?, ?, ?, ?)',
-          [pedData.user_id, ticketData.record, ticketData.time, endTime, agentName]
+          'INSERT INTO arrests (arrest_id,user_id, articles, time, endTime, agent_name) VALUES (?, ?, ?, ?, ?, ?)',
+          [id,pedData.user_id, ticketData.record, ticketData.time, endTime, agentName]
         );
         
         const multaId = saveInfo.insertId; 

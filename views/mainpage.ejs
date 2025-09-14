@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Servicios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d384d 0%, #2a5298 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 600px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            background: white;
+            color: #2a5298;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .btn:hover {
+            background: #2a5298;
+            color: white;
+        }
+        footer {
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        /* --- 📱 RESPONSIVE PARA CEL --- */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            header p {
+                font-size: 0.9rem;
+            }
+            .container {
+                gap: 1rem;
+            }
+            .card {
+                padding: 1.2rem;
+            }
+            .card h2 {
+                font-size: 1.3rem;
+            }
+            .card p {
+                font-size: 0.85rem;
+            }
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚦 Panel de Servicios</h1>
+        <p>Selecciona el sistema que quieres consultar</p>
+    </header>
+
+    <div class="container">
+        <div class="card" onclick="window.location.href='/v1/runt'">
+            <h2>RUNT</h2>
+            <p>Consulta de vehículos y conductores</p>
+            <a class="btn" href="/v1/runt">Ir al RUNT</a>
+        </div>
+        <div class="card" onclick="window.location.href='/v1/login'">
+            <h2>Policía</h2>
+            <p>Verifica comparendos y reportes</p>
+            <a class="btn" href="/v1/login">Ir a Policía</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Ca colombia ER:LC TODOS LOS DERECHOS</p>
+    </footer>
+</body>
+</html>

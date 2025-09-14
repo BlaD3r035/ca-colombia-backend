@@ -468,13 +468,19 @@ async function updateCursos(cursos) {
         const row = document.createElement('tr');
         row.classList.add('border', 'border-gray-300');
 
-        row.innerHTML = `
-            <td class='border border-gray-300 px-4 py-2'>${curso.type}</td>
-            <td class='border border-gray-300 px-4 py-2'>${curso.license_cat}</td>
-            <td class='border border-gray-300 px-4 py-2'>${curso.score}</td>
-            <td class='border border-gray-300 px-4 py-2'> ${curso.restriction}</td>
-            <td class='border border-gray-300 px-4 py-2'>${fechaFormateada}</td>
-        `;
+       row.innerHTML = `
+  <td class='border border-gray-300 px-4 py-2'>${curso.type}</td>
+  <td class='border border-gray-300 px-4 py-2'>${curso.license_cat}</td>
+  <td class='border border-gray-300 px-4 py-2'>${curso.score}</td>
+  <td class='border border-gray-300 px-4 py-2'>${curso.restriction}</td>
+  <td class='border border-gray-300 px-4 py-2'>${fechaFormateada}</td>
+  <td class='border border-gray-300 px-4 py-2'></td>
+`;
+    const btn = document.createElement('button');
+    btn.className = 'px-3 py-1.5 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1 text-sm transition';
+    btn.textContent = 'Ver certificado';
+    btn.addEventListener('click', () => window.open(`https://app.cacolombia.com/pdfs/cursos/${curso.test_id}.pdf`,'_blank'));
+    row.querySelector('td:last-child').appendChild(btn);
 
         tarjetasCursos.innerHTML += `
             <div class="p-4 border border-gray-300 rounded-lg shadow">
@@ -483,6 +489,7 @@ async function updateCursos(cursos) {
                 <p><strong>Puntaje:</strong> ${curso.score}</p>
                 <p><strong>Restricciones:</strong> ${curso.restriction}</p>
                 <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+                <p><strong>Certificado:</strong><a href="https://app.cacolombia.com/pdfs/cursos/${curso.test_id}.pdf" target="_blank" class="text-blue-500 hover:text-blue-700 underline-offset-2 hover:underline font-semibold transition-colors">Ver certificado</p>
             </div>
         `;
 

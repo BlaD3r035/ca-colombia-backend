@@ -3,11 +3,14 @@ const router = express.Router()
 const db = require('../../db/db');
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const BOT_TOKEN = process.env.BOT_TOKEN
+const puppeteer = require('puppeteer');
 const WEBHOOK_URL = process.env.RUNT_URL_WEBHOOK
+const path = require('path')
+const fs = require('fs')
 const discordClient = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 discordClient.login(BOT_TOKEN);
 const {randomUUID}  = require('crypto')
-
+const generateCourseCertificate = require('../../functions/pdf/curso')
 
 router.patch('/changevehiclestatus', async(req ,res) =>{
     if(!req.body){
@@ -142,27 +145,79 @@ router.post('/addlicence', async(req,res)=>{
         return res.status(500).json('Problem saving data');
     }
 })
-router.post('/adddrivetest', async (req,res) =>{
-     if(!req.body){
-        return res.status(400).json({message: "no data send"})
+router.post('/adddrivetest', async (req,res) => {
+    if (!req.body) {
+        return res.status(400).json({ message: "no data send" });
     }
-    const {userId,type, category, score, restriction} = req.body
 
-    if(!userId || !type || !category || !score || !restriction){
-        return res.status(400).json({message: "missing data"})
+    const { userId, type, category, score, restriction } = req.body;
+
+    if (!userId || !type || !category || !score || !restriction ) {
+        return res.status(400).json({ message: "missing data" });
     }
-    try{
-        
-        await db.query(
-            'INSERT INTO drive_test (user_id, type, license_cat, score, restriction) VALUES (?,?,?,?, ?)', 
-            [userId, type, category, score,restriction]
+
+    try {
+         const [r2] = await db.query('SELECT * FROM users WHERE user_id =?',[userId])
+         const userData = r2[0]
+
+         const [r] =  await db.query(
+            'INSERT INTO drive_test (user_id, type, license_cat, score, restriction) VALUES (?, ?, ?, ?, ?)',
+            [userId, type, category, score, restriction]
         );
-        return res.status(200).json({ message: "Test added successfully" });
-    }catch(e){
-        console.error('Error saving data: ', e);
-        return res.status(500).json('Problem saving data');
+        let comments = 'No Especificado'
+
+        const courseData = {
+            type,
+            license_cat: category,
+            score,
+            restriction,
+            comments: comments || 'No Especificado',
+            created_at: new Date()
+        };
+        const examinerName = 'SISTEMA RUNT'
+        const htmlContent = generateCourseCertificate(courseData, userData, examinerName);
+
+        const certificateId = r.insertId;
+        const pdfDir = path.join(__dirname, '../../public/pdfs/cursos');
+        if (!fs.existsSync(pdfDir)) {
+            fs.mkdirSync(pdfDir, { recursive: true });
+        }
+
+        const pdfPath = path.join(pdfDir, `${certificateId}.pdf`);
+
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu',
+                '--no-zygote'
+            ],
+        });
+
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+        await page.pdf({
+            path: pdfPath,
+            format: 'A4',
+            printBackground: true,
+        });
+
+        await browser.close();
+
+        return res.status(200).json({
+            message: "Test added successfully",
+            pdfUrl: `/pdfs/cursos/${certificateId}.pdf`
+        });
+
+    } catch (e) {
+        console.error('Error saving data or generating PDF: ', e);
+        return res.status(500).json('Problem saving data or generating PDF');
     }
-})
+});
 router.delete('/deletevehicle', async (req, res) => {
     if (!req.body) {
         return res.status(400).json({ message: "No data sent" });

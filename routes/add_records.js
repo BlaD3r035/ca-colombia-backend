@@ -42,13 +42,12 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
         let timeInMinutes = parseInt(ticketData.time, 10); 
         endTime.setMinutes(endTime.getMinutes() + timeInMinutes);
         const id = randomUUID()
-        // Guardar en la base de datos
         const [saveInfo] = await db.query(
           'INSERT INTO arrests (arrest_id,user_id, articles, time, endTime, agent_name) VALUES (?, ?, ?, ?, ?, ?)',
           [id,pedData.user_id, ticketData.record, ticketData.time, endTime, agentName]
         );
         
-        const multaId = saveInfo.insertId; 
+        const multaId =id; 
 
         const photoPath = path.join(__dirname, `../public/fotos-antecedentes/${multaId}.jpg`);
         fs.renameSync(photo.path, photoPath); 

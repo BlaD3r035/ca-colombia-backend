@@ -27,6 +27,9 @@ app.set('views', path.join(__dirname, './views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.get('/',  (req,res) =>{
+    res.render('mainpage')
+})
 // Rutas de la API
 const routes = require('./routes/routes');
 app.use('/v1', routes);
@@ -48,6 +51,8 @@ const denunciaAdd = require('./routes/denuncias/denuncias');
 app.use('/v1/denuncias', denunciaAdd);
 const runt = require('./routes/runt/login')
 app.use('/v1/runt',runt)
+const cursospdf = require('./routes/add_course_pdf.js')
+app.use('/v1',cursospdf)
 // Rutas públicas
 const mainpage = require('./routes/mainpage');
 app.use('/', mainpage);

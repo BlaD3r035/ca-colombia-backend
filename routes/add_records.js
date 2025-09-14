@@ -47,7 +47,7 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
           [id,pedData.user_id, ticketData.record, ticketData.time, endTime, agentName]
         );
         
-        const multaId =id; 
+        const multaId = id; 
 
         const photoPath = path.join(__dirname, `../public/fotos-antecedentes/${multaId}.jpg`);
         fs.renameSync(photo.path, photoPath); 
@@ -114,7 +114,7 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
 
         await axios.post(discordWebhookUrl, discordMessage);
 
-        return res.status(200).json({ message: 'Record saved successfully', pdfUrl: `/pdfs/antecedentes/${multaId}.pdf` });
+        return res.status(200).json({ message: 'Record saved successfully', pdfUrl: `/pdfs/antecedentes/${id}.pdf` });
     } catch (e) {
         console.error('Error saving data: ', e);
         return res.status(500).json('Problem saving data');

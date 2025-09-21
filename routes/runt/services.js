@@ -3,12 +3,15 @@ const router = express.Router()
 const db = require('../../db/db');
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const BOT_TOKEN = process.env.BOT_TOKEN
+const RUNT_BOT_TOKEN = process.env.RUNT_BOT_TOKEN
 const puppeteer = require('puppeteer');
 const WEBHOOK_URL = process.env.RUNT_URL_WEBHOOK
 const path = require('path')
 const fs = require('fs')
 const discordClient = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 discordClient.login(BOT_TOKEN);
+const discord_runt_client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+discord_runt_client.login(RUNT_BOT_TOKEN);
 const {randomUUID}  = require('crypto')
 const generateCourseCertificate = require('../../functions/pdf/curso')
 
@@ -48,9 +51,9 @@ router.post('/addvehicle', async (req, res) => {
         return res.status(400).json({ message: "no data send" })
     }
 
-    const { userId, plate, roblox_id, model, color, service, store_item_id } = req.body
+    const { userId, plate, user_id, model, color, service, store_item_id } = req.body
 
-    if (!userId || !plate || !model || !color || !roblox_id || !service || !store_item_id) {
+    if (!userId || !plate || !model || !color || !user_id || !service || !store_item_id) {
         return res.status(400).json({ message: "missing data" })
     }
 
@@ -88,7 +91,7 @@ router.post('/addvehicle', async (req, res) => {
             [
                 id,
                 userId,
-                roblox_id,
+                userId,
                 vehicle_data.brand,
                 vehicle_data.lineage,
                 vehicle_data.model,
@@ -109,7 +112,52 @@ router.post('/addvehicle', async (req, res) => {
         return res.status(500).json('Problem saving data')
     }
 })
+router.post('/addlicenserequest', async (req,res) =>{
+    if(!req.body){
+          return res.status(400).json({ message: "no data send" })
+    }
+    const {userId,theoretical_test_id, practical_test_id,} = req.body
 
+    if(!userId || !theoretical_test_id || !practical_test_id){
+        return res.status(400).json({message: "missing data"})
+    }
+    try{
+        const [r2] = await db.query('SELECT * FROM license_requests WHERE user_id = ? AND status = ?',[userId,"En revision"])
+        if(r2 && r2.length > 0){
+           return res.status(400).json({message:"Other request is waiting for response"})
+        }
+        await db.query('INSERT INTO license_requests (user_id, theoretical_test_id, practical_test_id) VALUES (?,?,?)',[userId, theoretical_test_id, practical_test_id])
+        try{
+          const [channels] = await db.query('SELECT channel_id FROM runt_auth WHERE type = ?',["Secretaria"])
+          for(channel of channels){
+            if(channel && channel.channel_id){
+                const channel_to_send = discord_runt_client.channels.cache.get(channel.channel_id)
+                const embed = new EmbedBuilder()
+                 .setTitle("🆕 Nueva Solicitud de Licencia")
+                 .setDescription(
+                    "Se ha creado una nueva solicitud de licencia y está **pendiente de revisión**.\n" +
+                    "Puedes gestionarla usando /ver-solicitudes-licencia."
+                )
+                .setColor(0x00ff00)
+                .setFooter({
+                    text: "RUNT CA COLOMBIA ERLC",
+                    iconURL: "https://media.discordapp.net/attachments/1047946669079134249/1176943871595397172/Nuevo_Logo.png",
+                })
+                .setTimestamp();
+                await channel_to_send.send({content:"@here",embeds:[embed]})
+
+            }
+          }
+        }catch(err){
+           console.log("Error sending embed" + err)
+        }
+        return res.status(201).json({message:"License resquest created successfully"})
+
+    }catch(error){
+      console.log(error)
+      return res.status(500).json({message:"Internal server error"})
+    }
+})
 router.post('/addlicence', async(req,res)=>{
     if(!req.body){
         return res.status(400).json({message: "no data send"})
@@ -218,6 +266,30 @@ router.post('/adddrivetest', async (req,res) => {
         return res.status(500).json('Problem saving data or generating PDF');
     }
 });
+router.get('/drivetests/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+    }
+
+    try {
+        const [rows] = await db.query(
+            'SELECT * FROM drive_test WHERE user_id = ? ORDER BY created_at DESC',
+            [userId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "No driving tests found for this user" });
+        }
+
+        return res.status(200).json(rows);
+    } catch (error) {
+        console.error('Error fetching driving tests: ', error);
+        return res.status(500).json({ message: "Error fetching driving tests" });
+    }
+});
+
 router.delete('/deletevehicle', async (req, res) => {
     if (!req.body) {
         return res.status(400).json({ message: "No data sent" });
@@ -275,7 +347,7 @@ router.put('/setvehicleransfer',async (req,res) =>{
             return res.status(401).json({message:"No se puede transferir el vehiculo si está incautado "})
 
         }
-        const [userToTransferData] = await db.query('SELECT user_id, discord_id FROM users WHERE roblox_id =?',[documentTransfer])
+        const [userToTransferData] = await db.query('SELECT user_id, discord_id FROM users WHERE user_id =?',[documentTransfer])
         if(userToTransferData.length === 0){
             return res.status(404).json({message:"no user to transfer data founded"})
         }

@@ -25,7 +25,7 @@ const generateHtmlTicket = (ticketData, agentName, pedData) => {
       
     <table>
       <tr><th colspan="2">Información del Ciudadano</th></tr>
-      <tr><td><strong>Documento:</strong></td><td>${pedData.roblox_id}</td></tr>
+      <tr><td><strong>Documento:</strong></td><td>${pedData.user_id}</td></tr>
       <tr><td><strong>Nombre:</strong></td><td>${pedData.first_names} ${pedData.last_names}</td></tr>
       <tr><td><strong>Fecha de nacimiento:</strong></td><td>${pedData.dob}</td></tr>
       <tr><td><strong>Placa del Vehículo:</strong></td><td>${ticketData.plate || 'N/A'}</td></tr>

@@ -17,7 +17,7 @@ router.post('/login-code',async(req,res)=>{
     }
     try {
     const documentId = req.body.documentId
-   const [data] = await db.query('SELECT user_id,roblox_id,discord_id FROM users WHERE roblox_id =?',[documentId])
+   const [data] = await db.query('SELECT user_id,roblox_id,discord_id FROM users WHERE user_id =?',[documentId])
    if(data.length === 0){
       return res.status(404).json({message:"no se encontró al usuario"})
    }

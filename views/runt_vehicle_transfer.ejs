@@ -285,7 +285,7 @@
     <h3 class="text-xl font-semibold text-gray-700">Información del vendedor</h3>
     <div class="bg-gray-100 p-4 rounded-lg mt-2">
         <p class="text-gray-600">Nombre: <span class="font-medium"><%= seller.first_names %> <%=seller.last_names%></span></p>
-        <p class="text-gray-600">Número de documento: <span class="font-medium"><%= seller.roblox_id %></span></p>
+        <p class="text-gray-600">Número de documento: <span class="font-medium"><%= seller.user_id %></span></p>
         <p class="text-gray-600">Nacionalidad: <span class="font-medium"><%= seller.nationality %></span></p>
     </div>
 </div>
@@ -293,7 +293,7 @@
     <h3 class="text-xl font-semibold text-gray-700">Información del Comprador</h3>
     <div class="bg-gray-100 p-4 rounded-lg mt-2">
         <p class="text-gray-600">Nombre: <span class="font-medium"><%= buyer.first_names %> <%=buyer.last_names%></span></p>
-        <p class="text-gray-600">Número de documento: <span class="font-medium"><%= buyer.roblox_id %></span></p>
+        <p class="text-gray-600">Número de documento: <span class="font-medium"><%= buyer.user_id %></span></p>
         <p class="text-gray-600">Nacionalidad: <span class="font-medium"><%= buyer  .nationality %></span></p>
     </div>
 </div>
@@ -321,7 +321,7 @@
 
     <script>
         const userId = '<%=userId%>'
-        const license_number = '<%=buyer.roblox_id%>'
+        const license_number = '<%=buyer.user_id%>'
         const senderId ='<%=seller.user_id%>'
         const plate = '<%=vehicle.plate%>'
         document.addEventListener('DOMContentLoaded', function() {

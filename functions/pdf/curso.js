@@ -73,6 +73,7 @@ const generateCourseCertificate = (courseData, userData, examinerName) => {
 
     <p>Este certificado acredita que</p>
     <div class="user-name">${userData.first_names} ${userData.last_names}</div>
+    <p>con numero de documento: CC: ${userData.user_id}</p>
     <p>ha completado el siguiente examen:</p>
 
     <table class="details-table">

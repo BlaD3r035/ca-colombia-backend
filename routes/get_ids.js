@@ -101,7 +101,7 @@ router.get('/user', async (req, res) => {
             return res.status(400).json({ error: 'No user documentId provided' });
         }
 
-        const [userId] = await db.query('SELECT * FROM users WHERE roblox_id = ?', [documentId]);
+        const [userId] = await db.query('SELECT * FROM users WHERE user_id = ?', [documentId]);
         if (userId.length === 0) {
             return res.status(404).json({ error: 'No user found' });
         }

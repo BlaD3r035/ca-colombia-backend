@@ -71,7 +71,7 @@ async function fetchUserData(userident) {
         const documentData = data.documentData[0];
 
         if (documentData) {
-            searchPerson = documentData.roblox_id;
+            searchPerson = documentData.user_id;
             personInfo = documentData;
             const form = document.getElementById('form-multas');
             const form2 = document.getElementById('form-arrestos');
@@ -87,7 +87,7 @@ async function fetchUserData(userident) {
             document.getElementById('edad').innerText = documentData.age || 'N/A';
             document.getElementById('gs').innerText = documentData.bood_tipe || 'N/A';
             document.getElementById('username').innerText = documentData.discord_username || 'N/A';
-            document.getElementById('ndoc').innerText = documentData.roblox_id || 'N/A';
+            document.getElementById('ndoc').innerText = documentData.user_id || 'N/A';
         }
 
         populateTable('table-licencia', data.driverLicence, ['status', 'type', 'exp', 'restriction']);

@@ -449,6 +449,38 @@
               </div>
             </div>
           </section>
+          <!-- solicitudes-->
+        <section class="login-card rounded-2xl p-10" data-aos="fade-up">
+            <div class="text-center mb-12 bg-red">
+              <div class="text-center mb-6">
+                  <h2 class="text-3xl font-semibold text-[#405cbe]">Tus solicitudes</h2>
+                  <div class="w-20 h-1 bg-[#405cbe] mx-auto my-3"></div>
+              </div>
+              <p>Listado de tus solicitudes de licencia</p>
+              <div class="hidden md:block overflow-x-auto">
+                  <table class="w-full border-collapse border border-gray-300">
+                      <thead>
+                          <tr class="bg-gray-200 text-gray-700">
+                              <th class="border border-gray-300 px-4 py-2">Tipo</th>
+                              <th class="border border-gray-300 px-4 py-2">Curso Teorico</th>
+                              <th class="border border-gray-300 px-4 py-2">Curso Practico</th>
+                              <th class="border border-gray-300 px-4 py-2">Estado</th>
+                              <th class="border border-gray-300 px-4 py-2">Fecha</th>
+                          </tr>
+                      </thead>
+                      <tbody id="tablaSolicitudes" class="text-gray-600">
+                      </tbody>
+                  </table>
+              </div>
+              
+            
+              <div class="block md:hidden">
+                  <div id="tarjetasSolicitudes" class="space-y-4">
+                    
+                  </div>
+              </div>
+            </div>
+          </section>
           <section class="info-card bg-white shadow-lg rounded-2xl p-8 mb-10" data-aos="fade-up">
             <div class="text-center mb-6">
                 <h2 class="text-3xl font-semibold text-[#405cbe]">Servicios</h2>
@@ -460,6 +492,10 @@
                 <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('examen_licencia')">
                     <h3 class="font-medium text-lg text-[#405cbe]">Realizar examen de licencia</h3>
                     <p class="text-gray-500 text-sm">Paga y realiza tu examen para obtener tu certificado teorico.</p>
+                </div>
+                <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('solicitar_licencia')">
+                    <h3 class="font-medium text-lg text-[#405cbe]">Solicitar licencia de conducir</h3>
+                    <p class="text-gray-500 text-sm">Solicita una licencia de conducir.</p>
                 </div>
         
                 <div class="p-6 border border-gray-200 rounded-xl hover:bg-blue-100 cursor-pointer" onclick="serverReq('pagar_incautados')">
@@ -535,6 +571,30 @@
           <p class="text-gray-500 text-sm">Al registrar el vehiculo pierdes el item, este lo recuperas al borrar el registro. si registras un item que no es un vehiculo se va a borrar ese registro y vas a perder ese item</p>
         <div class="flex space-x-2">
           <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Registrar</button>
+          <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+</div>
+<!--Form solicitar licencia-->
+<div id="license-request" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Solicitar Licencia</h2>
+      <p class="text-gray-600 mb-4">Rellena el siguiente formulario.</p>
+      <form id="license-request-form" class="space-y-4">
+        <div>
+          <label for="theoretical-drive-test" class="block text-gray-700 font-medium">Curso Teorico</label>
+          <select id="theoretical-drive-test" name="theoretical-drive-test" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+          </select>
+          <label for="practical-drive-test" class="block text-gray-700 font-medium">Curso Practico</label>
+          <select id="practical-drive-test" name="practical-drive-test" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+          </select>
+        </div>
+  
+          <p class="text-gray-500 text-sm">Al solicitar una licencia de conducción envias los datos presentados en los cursos, recuerda enviar cursos de la misma categoria (B1, B2,C1 etc.) y con una fecha de expedición menor a 15 dias. se te notificará cuando esta solicitud sea aceptada o denegada</p>
+          <p class="text-gray-500 text-sm">Revisa los datos antes de enviar, no podrás enviar otra solicitud hasta que esta sea denegada o aprobada</p>
+        <div class="flex space-x-2">
+          <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Solicitar</button>
           <button type="button" class="w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition" onclick="serverReq()">Cancelar</button>
         </div>
       </form>
@@ -735,7 +795,6 @@
 
     <script>
         const userId ='<%= userdata.user_id %>'
-        const roblox_id ='<%= userdata.roblox_id %>'
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({
                 duration: 1000,

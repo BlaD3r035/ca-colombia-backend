@@ -71,7 +71,8 @@ router.get('/getUserData', async (req, res) => {
       const  warnings= req.query.warnings === 'true'
       const  byc= req.query.byc === 'true'
       const  driveTest= req.query.driveTest === 'true'
- 
+      const  license_request= req.query.license_request === 'true'
+      
     //verify data
     if(!userId){
       return res.status(404).json('the userId is not provided')
@@ -116,6 +117,12 @@ router.get('/getUserData', async (req, res) => {
             const [driveTestResult] = await db.query('SELECT * FROM drive_test WHERE user_id =? ',[userId])
             if (driveTestResult.length > 0) {
                 responseData.driveTest = driveTestResult;
+            } 
+        }
+        if(license_request){
+            const [requestResult] = await db.query('SELECT * FROM license_requests WHERE user_id =? ',[userId])
+            if (requestResult.length > 0) {
+                responseData.license_request = requestResult;
             } 
         }
     

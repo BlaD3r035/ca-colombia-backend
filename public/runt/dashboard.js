@@ -1,14 +1,16 @@
-
+let driveTest;
 document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById("pay-impoundment").style.display = 'none';
     document.getElementById("vehicle-register").style.display = 'none';
     document.getElementById("survey-form").style.display = 'none';
     document.getElementById("pay-survey-form").style.display = 'none'; 
     document.getElementById("vehicle-transfer").style.display = 'none';
+    document.getElementById("license-request").style.display = 'none';
+    
 
 
    setLoadingOn()
-   const response = await fetch(`/v1/getUserData?userId=${userId}&driverLicence=true&vehicles=true&tickets=true&driveTest=true`)
+   const response = await fetch(`/v1/getUserData?userId=${userId}&driverLicence=true&vehicles=true&tickets=true&driveTest=true&license_request=true`)
     if (!response.ok) {
          return alert("Error al buscar los datos del usuario,recargue la pagina o contacte con soporte tecnico.");
     }
@@ -17,19 +19,22 @@ document.addEventListener('DOMContentLoaded', async function() {
    const driverLicence = jsondata.driverLicence
    const vehicles = jsondata.vehicles
     const tickets = jsondata.tickets
-    const driveTest = jsondata.driveTest
+     driveTest = jsondata.driveTest
+    const license_request = jsondata.license_request
+    loadDriveTest()
     document.getElementById("avatar").src = `https://api.cacolombia.com/images/${userdata.user_id}/user`
     document.getElementById('name').innerText = userdata.first_names
     document.getElementById('lastname').innerText = userdata.last_names
     document.getElementById('sex').innerText = userdata.gender
     document.getElementById('birthdate').innerText = userdata.dob
     document.getElementById('gs').innerText = userdata.blood_type
-    document.getElementById('ndoc').innerText = userdata.roblox_id
+    document.getElementById('ndoc').innerText = userdata.user_id
 
    await updateVehicles(vehicles)
    await updateMultas(tickets)
    await updateLicencia(driverLicence)
    await updateCursos(driveTest)
+   await updateSolicitudLicencia(license_request)
    setLoadingOff()
 
    document.getElementById("pay-survey-form-form").addEventListener("submit",async function(event) {
@@ -40,10 +45,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             return alert("Error al buscar los datos del usuario,recargue la pagina o contacte con soporte tecnico.");
         }
         const jsondata = await response.json()
-        const driverLicence = jsondata.driverLicence
-        if(driverLicence && driverLicence.length > 0){
-            return alert("Ya tienes una licencia de conducción activa.")
-        }
+       
         
         const inv =await getinventory(userId)
        if(!inv){
@@ -145,6 +147,41 @@ document.getElementById("survey-questions").addEventListener("submit",async func
 })
 
 
+   document.getElementById("license-request-form").addEventListener("submit",async function(event) {
+    event.preventDefault();
+    try{
+        const theoretical_test_id = document.getElementById("theoretical-drive-test").value;
+        const practical_test_id = document.getElementById("practical-drive-test").value;
+        
+       const rq = await fetch('/v1/runt/addlicenserequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, theoretical_test_id ,practical_test_id})
+        });
+        if(rq.ok){
+            const response = await rq.json()
+            document.getElementById("license-request-form").reset();
+            alert("Se ha solicitado una licencia correctamente.");
+            window.location.reload();
+        }else{
+            const response = await rq.json()
+            if(rq.status === 400 && response.message == "Other request is waiting for response" ){
+                alert("error: Ya tienes una solicitud en revisión")
+                window.location.reload()
+            }else{
+                alert("Error al enviar la solicitud.")
+            }
+        }
+
+    }catch(e){
+        console.log(e)
+        return alert("Error al enviar la incautación. " + e)
+    }
+   
+
+});
    document.getElementById("pay-impoundment-form").addEventListener("submit",async function(event) {
     event.preventDefault();
     try{
@@ -224,7 +261,7 @@ document.getElementById("survey-questions").addEventListener("submit",async func
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ userId,roblox_id, plate, model, color, service, store_item_id})
+            body: JSON.stringify({ userId,userId, plate, model, color, service, store_item_id})
         });
         const responseData = await r2q.json()
         if(r2q.ok){
@@ -310,6 +347,7 @@ document.getElementById("survey-questions").addEventListener("submit",async func
      }
 
   })
+
 
 })
 
@@ -496,6 +534,53 @@ async function updateCursos(cursos) {
         tablaCursos.appendChild(row);
     });
 }
+async function updateSolicitudLicencia(solicitudes) {
+    const tablaSolicitudes = document.getElementById('tablaSolicitudes');
+    const tarjetasSolicitudes = document.getElementById("tarjetasSolicitudes");
+    tablaSolicitudes.innerHTML = ''; 
+    tarjetasSolicitudes.innerHTML = '';
+    if(!solicitudes || solicitudes.length === 0){
+        return;
+    }
+
+    const ultimasSolicitudes = solicitudes.slice(-5);
+
+    ultimasSolicitudes .forEach(solicitud => {
+    
+        const fecha = new Date(solicitud.created_at);
+        const fechaFormateada = new Intl.DateTimeFormat('es-CO', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+        }).format(fecha).replace(',', ''); 
+
+        const row = document.createElement('tr');
+        row.classList.add('border', 'border-gray-300');
+
+       row.innerHTML = `
+  <td class='border border-gray-300 px-4 py-2'>Solicitud de licencia de conducir</td>
+  <td class='border border-gray-300 px-4 py-2'><a href="https://app.cacolombia.com/pdfs/cursos/${solicitud.theoretical_test_id}.pdf" target="_blank" class="text-blue-500 hover:text-blue-700 underline-offset-2 hover:underline font-semibold transition-colors">Ver aquí</td>
+  <td class='border border-gray-300 px-4 py-2'><a href="https://app.cacolombia.com/pdfs/cursos/${solicitud.practical_test_id}.pdf" target="_blank" class="text-blue-500 hover:text-blue-700 underline-offset-2 hover:underline font-semibold transition-colors">Ver aquí</td>
+  <td class='border border-gray-300 px-4 py-2'>${solicitud.status}</td>
+  <td class='border border-gray-300 px-4 py-2'>${fechaFormateada}</td>
+`;
+
+        tarjetasSolicitudes.innerHTML += `
+            <div class="p-4 border border-gray-300 rounded-lg shadow">
+                <p><strong>Tipo:</strong> Solicitud de licencia de conducir</p>
+                <p><strong>Curso Teorico:</strong><a href="https://app.cacolombia.com/pdfs/cursos/${solicitud.theoretical_test_id}.pdf" target="_blank" class="text-blue-500 hover:text-blue-700 underline-offset-2 hover:underline font-semibold transition-colors">Ver certificado </a></p>
+                <p><strong>Curso Practico:</strong><a href="https://app.cacolombia.com/pdfs/cursos/${solicitud.practical_test_id}.pdf" target="_blank" class="text-blue-500 hover:text-blue-700 underline-offset-2 hover:underline font-semibold transition-colors">Ver certificado</a></p>    
+                <p><strong>Estado:</strong> ${solicitud.status}</p>
+                <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+                </div>
+        `;
+
+        tablaSolicitudes.appendChild(row);
+    });
+}
 
 async function getinventory(userId){
     const response = await fetch(`/v1/getinventory?userId=${userId}`)
@@ -541,6 +626,7 @@ async function serverReq(req) {
         document.getElementById("survey-form").style.display = 'none';
         document.getElementById("pay-survey-form").style.display = 'none'; 
         document.getElementById("vehicle-transfer").style.display = 'none';
+        document.getElementById("license-request").style.display = 'none';
 
 
     }
@@ -549,6 +635,7 @@ async function serverReq(req) {
         document.getElementById("survey-form").style.display = 'none';
         document.getElementById("pay-survey-form").style.display = 'none';
         document.getElementById("vehicle-transfer").style.display = 'none';
+        document.getElementById("license-request").style.display = 'none';
         getinventory(userId)
         document.getElementById("pay-impoundment").style.display = 'flex';
 
@@ -558,6 +645,7 @@ async function serverReq(req) {
         document.getElementById("survey-form").style.display = 'none';
         document.getElementById("pay-survey-form").style.display = 'none'; 
         document.getElementById("vehicle-transfer").style.display = 'none';
+        document.getElementById("license-request").style.display = 'none';
         loadVehicleModels(userId)
         document.getElementById("vehicle-register").style.display = 'flex';
 
@@ -567,6 +655,7 @@ async function serverReq(req) {
         document.getElementById("vehicle-transfer").style.display = 'none';
         document.getElementById("survey-form").style.display = 'none';
         document.getElementById("vehicle-register").style.display = 'none';
+        document.getElementById("license-request").style.display = 'none';
         getinventory(userId)
         document.getElementById("pay-survey-form").style.display = 'flex';
 
@@ -576,9 +665,20 @@ async function serverReq(req) {
         document.getElementById("vehicle-transfer").style.display = 'flex';
         document.getElementById("survey-form").style.display = 'none';
         document.getElementById("vehicle-register").style.display = 'none';
+        document.getElementById("license-request").style.display = 'none';
         getinventory(userId)
         document.getElementById("pay-survey-form").style.display = 'none';
 
+    }
+    if(req === 'solicitar_licencia'){
+        document.getElementById("pay-impoundment").style.display = 'none';
+        document.getElementById("vehicle-transfer").style.display = 'none';
+        document.getElementById("survey-form").style.display = 'none';
+        document.getElementById("vehicle-register").style.display = 'none';
+        document.getElementById("pay-survey-form").style.display = 'none';
+        getinventory(userId)
+        loadVehicleModels()
+        document.getElementById("license-request").style.display = 'flex';
     }
     
 }
@@ -608,6 +708,38 @@ async function loadVehicleModels() {
     }
 }
 
+async function loadDriveTest() {
+    const theoretical_select_menu = document.getElementById("theoretical-drive-test");
+    const practical_select_menu = document.getElementById("practical-drive-test");
+
+    theoretical_select_menu.innerHTML = '';
+    practical_select_menu.innerHTML = '';
+
+    if (driveTest && driveTest.length > 0) {
+        const now = new Date();
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(now.getMonth() - 1); 
+
+        driveTest.forEach(test => {
+            const testDate = new Date(test.created_at);
+
+            
+            if (testDate >= oneMonthAgo) {
+                const option = document.createElement('option');
+                const formattedDate = testDate.toLocaleDateString('es-ES');
+
+                option.textContent = `| ${test.license_cat} | ${test.score} | ${formattedDate}`;
+                option.value = test.test_id;
+
+                if (test.type === "Teorico") {
+                    theoretical_select_menu.appendChild(option);
+                } else if (test.type === "Practico") {
+                    practical_select_menu.appendChild(option);
+                }
+            }
+        });
+    }
+}
 async function getVehicle(plate){
     const response = await fetch('/v1/plate?plate='+plate)
     if(response.status === 404){
@@ -615,6 +747,6 @@ async function getVehicle(plate){
     }else{
         return true
     }
-    return false
+    
 
 }

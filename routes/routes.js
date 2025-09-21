@@ -73,7 +73,7 @@ router.get('/runt/vehicletransfer', async (req, res) => {
     }
 
     try {
-        const [personresult] = await db.query('SELECT * FROM users WHERE roblox_id =?',[documentId])
+        const [personresult] = await db.query('SELECT * FROM users WHERE user_id =?',[documentId])
         if(personresult.length === 0){
             return res.status(404).json({message:'La persona no tiene cedula'})
         }

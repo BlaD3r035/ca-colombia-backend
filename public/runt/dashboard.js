@@ -261,9 +261,8 @@ document.getElementById("survey-questions").addEventListener("submit",async func
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ userId,userId, plate, model, color, service, store_item_id})
+            body: JSON.stringify({ userId,user_id:userId, plate, model, color, service, store_item_id})
         });
-        const responseData = await r2q.json()
         if(r2q.ok){
             document.getElementById('register-vehicle-form').reset();
             existitem.quantity -=1
@@ -742,6 +741,7 @@ async function loadDriveTest() {
 }
 async function getVehicle(plate){
     const response = await fetch('/v1/plate?plate='+plate)
+    console.log(response.status)
     if(response.status === 404){
         return false
     }else{

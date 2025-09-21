@@ -21,7 +21,6 @@ router.post('/login-code',async(req,res)=>{
    if(data.length === 0){
       return res.status(404).json({message:"no se encontró al usuario"})
    }
-   console.log(data)
    const userId = data[0].user_id;
    const code = generateCode()
    const now =new Date()

@@ -22,7 +22,6 @@ const ALLOWED_ROLES = [
     '1042099715052949538', '1042099715052949537', '1068770548311658577', '1229429878382919680'
 ];
 
-// Helper function to check if user has required roles
 const hasRequiredRole = (roles) => roles.some(role => ALLOWED_ROLES.includes(role));
 
 // Discord Login Route

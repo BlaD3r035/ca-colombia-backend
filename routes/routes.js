@@ -13,7 +13,7 @@ const sessionMiddleware = require('../Middleware/sessionConfig');
 router.use(sessionMiddleware);
 
 //functions
-//functions
+
 function isAuthenticated(req, res, next) {
     if (req.session && req.session.loggedin) {
         return next(); 

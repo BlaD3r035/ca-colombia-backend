@@ -11,7 +11,6 @@ const server = createServer(app)
 const db = require('./db/db');
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
-const axios = require('axios')
 const {Server} = require('socket.io')
 const io = new Server(server)
 
@@ -111,5 +110,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(process.env.PORT || 8080, () => {
-    console.log(`🚀 Server started on port ${process.env.PORT || 8080}`);
+    console.log(`Server started on port ${process.env.PORT || 8080}`);
 });

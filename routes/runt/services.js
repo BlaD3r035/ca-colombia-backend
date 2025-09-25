@@ -128,9 +128,16 @@ router.post('/addlicenserequest', async (req,res) =>{
         }
         await db.query('INSERT INTO license_requests (user_id, theoretical_test_id, practical_test_id) VALUES (?,?,?)',[userId, theoretical_test_id, practical_test_id])
         try{
-          const [channels] = await db.query('SELECT channel_id FROM runt_auth WHERE type = ?',["Secretaria"])
+          const [channels] = await db.query('SELECT channel_id, auth_roles FROM runt_auth WHERE type = ?',["Secretaria"])
           for(channel of channels){
             if(channel && channel.channel_id){
+                let roles = JSON.parse(channel.auth_roles)
+                roles = roles.roles
+                let mentions  = ""
+                roles.forEach(role => {
+                    mentions = mentions + `<@&${role}> ` 
+                    
+                });
                 const channel_to_send = discord_runt_client.channels.cache.get(channel.channel_id)
                 const embed = new EmbedBuilder()
                  .setTitle("🆕 Nueva Solicitud de Licencia")
@@ -144,7 +151,7 @@ router.post('/addlicenserequest', async (req,res) =>{
                     iconURL: "https://media.discordapp.net/attachments/1047946669079134249/1176943871595397172/Nuevo_Logo.png",
                 })
                 .setTimestamp();
-                await channel_to_send.send({content:"@here",embeds:[embed]})
+                await channel_to_send.send({content:mentions,embeds:[embed]})
 
             }
           }

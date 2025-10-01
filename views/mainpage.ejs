@@ -3,132 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Servicios</title>
+    <title>Panel de Servicios - CaColombia ER:LC</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f9fafb', 100: '#f3f4f6', 200: '#e5e7eb', 300: '#d1d5db',
+                            400: '#9ca3af', 500: '#6b7280', 600: '#4b5563', 700: '#374151',
+                            800: '#1f2937', 900: '#111827'
+                        },
+                        accent: {
+                            50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7',
+                            800: '#27272a', 900: '#18181b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #fafafa 0%, #f4f4f5 25%, #e4e4e7 75%, #d4d4d8 100%); }
+        .card-shadow { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05); }
+        .glass-effect { 
+            backdrop-filter: blur(16px) saturate(200%); -webkit-backdrop-filter: blur(16px) saturate(200%);
+            background-color: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0, 0, 0, 0.08);
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #2d384d 0%, #2a5298 100%);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 1rem;
-        }
-        header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        header h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            width: 100%;
-            max-width: 600px;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, background 0.3s ease;
-            cursor: pointer;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .card p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 1rem;
-        }
-        .btn {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            background: white;
-            color: #2a5298;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-        .btn:hover {
-            background: #2a5298;
-            color: white;
-        }
-        footer {
-            margin-top: 3rem;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            text-align: center;
-        }
-
-        /* --- 📱 RESPONSIVE PARA CEL --- */
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 1.8rem;
-            }
-            header p {
-                font-size: 0.9rem;
-            }
-            .container {
-                gap: 1rem;
-            }
-            .card {
-                padding: 1.2rem;
-            }
-            .card h2 {
-                font-size: 1.3rem;
-            }
-            .card p {
-                font-size: 0.85rem;
-            }
-            .btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.9rem;
-            }
-        }
+        .hover-scale { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover-scale:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.12); }
     </style>
 </head>
-<body>
-    <header>
-        <h1>🚦 Panel de Servicios</h1>
-        <p>Selecciona el sistema que quieres consultar</p>
-    </header>
-
-    <div class="container">
-        <div class="card" onclick="window.location.href='/v1/runt'">
-            <h2>RUNT</h2>
-            <p>Consulta de vehículos y conductores</p>
-            <a class="btn" href="/v1/runt">Ir al RUNT</a>
+<body class="gradient-bg min-h-screen">
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-50/30 via-gray-100/20 to-gray-200/30"></div>
+    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.02) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.03) 0%, transparent 50%);"></div>
+    
+    <nav class="relative z-10 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">CaColombia ER:LC</h1>
+                    <p class="text-sm text-gray-600">Sistema de Consultas</p>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <span class="text-sm text-gray-600 font-medium">Sistema Oficial</span>
+            </div>
         </div>
-        <div class="card" onclick="window.location.href='/v1/login'">
-            <h2>Policía</h2>
-            <p>Verifica comparendos y reportes</p>
-            <a class="btn" href="/v1/login">Ir a Policía</a>
-        </div>
-    </div>
+    </nav>
 
-    <footer>
-        <p>Ca colombia ER:LC TODOS LOS DERECHOS</p>
+    <main class="relative z-10 flex-1 flex items-center justify-center px-6 py-12">
+        <div class="max-w-4xl mx-auto w-full">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl mb-6">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+                    Panel de <span class="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">Servicios</span>
+                </h1>
+                <p class="text-xl text-gray-700 max-w-2xl mx-auto leading-relaxed">
+                    Accede a los sistemas oficiales de consulta de manera segura y confiable
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+                <div class="glass-effect rounded-2xl p-8 card-shadow hover-scale group cursor-pointer" onclick="console.log(''); window.location.href='/v1/runt'">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-16 h-16 bg-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm border border-gray-200">
+                            <img src="https://app.cacolombia.com/runt/RUNT_logo.png" alt="Logo RUNT" class="w-12 h-12 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                            <div class="hidden w-full h-full items-center justify-center bg-gray-100 rounded-lg">
+                                <span class="text-gray-700 font-bold text-xs">RUNT</span>
+                            </div>
+                        </div>
+                        <div class="w-2 h-2 bg-gray-600 rounded-full animate-pulse"></div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">RUNT</h3>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        Sistema nacional para consulta de información de vehículos, conductores y documentos de tránsito
+                    </p>
+                </div>
+
+                <div class="glass-effect rounded-2xl p-8 card-shadow hover-scale group cursor-pointer" onclick="console.log(''); window.location.href='/v1/login'">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm border border-gray-200">
+                            <img src="https://app.cacolombia.com/login/logo_ponal.png" alt="Logo Policía Nacional" class="w-12 h-12 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                            <div class="hidden w-full h-full items-center justify-center bg-gray-100 rounded-lg">
+                                <span class="text-gray-700 font-bold text-xs">POLICÍA</span>
+                            </div>
+                        </div>
+                        <div class="w-2 h-2 bg-gray-600 rounded-full animate-pulse"></div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Policía Nacional</h3>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        Consulta de comparendos, reportes de hurto y verificación de antecedentes policiales
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 font-medium">Acceso Seguro</span>
+                        <svg class="w-5 h-5 text-gray-500 group-hover:text-gray-900 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16 text-center">
+                <div class="glass-effect rounded-xl p-6 max-w-2xl mx-auto">
+                    <div class="flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-gray-800 font-medium">Información Importante</span>
+                    </div>
+                    <p class="text-gray-700 text-sm leading-relaxed">
+                        Este sitio web es un proyecto de ficción y parodia inspirado en actividades de roleplay.
+No está afiliado, patrocinado ni respaldado por la Policía Nacional de Colombia ni por alguna entidad pública o privada.
+Todos los nombres, logotipos y referencias son utilizados con fines creativos.
+Página exclusiva de 「CA」 Colombia ER:LC
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="relative z-10 mt-16">
+        <div class="glass-effect px-6 py-12 mt-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-4 gap-8 mb-8">
+                    <div class="md:col-span-2">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center shadow-lg">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-900">CaColombia ER:LC</h3>
+                                <p class="text-gray-600 font-medium">Sistema Oficial de Consultas</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed mb-6 max-w-md">
+                            Plataforma oficial para acceder de manera segura y confiable a los sistemas gubernamentales de consulta en CaColombia.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Servicios</h4>
+                        <ul class="space-y-3">
+                            <li>
+                                <a href="/v1/runt" class="text-gray-600 hover:text-gray-900 transition-colors duration-200 flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Consulta RUNT</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/v1/login" class="text-gray-600 hover:text-gray-900 transition-colors duration-200 flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                    <span>Portal Policía</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="p-4 bg-white rounded-2xl shadow-md">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Estado de los Servicios</h4>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <a href="https://status.cacolombia.com/es" target="_blank" class="text-gray-800 text-sm hover:underline font-semibold">
+                                    Ver Estado de los Servicios
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </footer>
 </body>
 </html>

@@ -15,7 +15,47 @@ const {Server} = require('socket.io')
 const io = new Server(server)
 
 // Configuración de CORS
-app.use(cors())
+const allowedOrigins = [
+  'https://cacolombia.com',
+  'https://app.cacolombia.com',
+  process.env.BASE_URL
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, false); 
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
+app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+  const origin = req.get('Origin');
+  const referer = req.get('Referer');
+
+  if (origin && allowedOrigins.includes(origin)) {
+    return next();
+  }
+
+  if (referer) {
+    try {
+      const refererHost = new URL(referer).origin;
+      if (allowedOrigins.includes(refererHost)) {
+        return next();
+      }
+    } catch {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+  }
+
+  return res.status(403).json({ error: 'Forbidden' });
+});
+
 
 // Configuración de vistas y archivos estáticos
 app.use(express.static('public'));

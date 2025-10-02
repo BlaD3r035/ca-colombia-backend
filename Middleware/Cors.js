@@ -1,18 +1,23 @@
-const allowedOrigins = [
-    'https://cacolombia.com',
-    'https://app.cacolombia.com',
-    
-];
+const path = require("path");
+const fs = require("fs");
 
 module.exports = function validateOrigin(req, res, next) {
-    const base_url =    process.env.BASE_URL
-    if(!allowedOrigins.includes(base_url)){
-        allowedOrigins.push(base_url)
-    }
-  const origin = req.get('Origin');
-  const referer = req.get('Referer');
+  const logsFolder = path.join(__dirname, "logs");
 
-  let requestOrigin = '';
+  if (!fs.existsSync(logsFolder)) {
+    fs.mkdirSync(logsFolder, { recursive: true });
+  }
+
+  const logsFile = path.join(logsFolder, "logs.txt");
+
+  const base_urls = JSON.parse(process.env.CORS_URLS || "[]");
+
+  const allowedIps = JSON.parse(process.env.CORS_IPS|| "[]")
+ 
+  const origin = req.get("Origin");
+  const referer = req.get("Referer");
+
+  let requestOrigin = "";
 
   if (origin) {
     requestOrigin = origin;
@@ -20,13 +25,27 @@ module.exports = function validateOrigin(req, res, next) {
     try {
       requestOrigin = new URL(referer).origin;
     } catch (error) {
-      return res.status(403).json({ error: 'Forbbiden' });
+      return res.status(403).json({ error: "Forbidden" });
     }
   }
 
-  if (allowedOrigins.includes(requestOrigin)) {
+  const clientIp =
+    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+    req.connection?.remoteAddress ||
+    req.socket?.remoteAddress ||
+    req.ip;
+
+  if (requestOrigin && base_urls.includes(requestOrigin)) {
     return next();
   }
 
-  return res.status(403).json({ error: 'Forbbiden' });
+  if (allowedIps.includes(clientIp)) {
+    
+    return next();
+  }
+
+  const logLine = `[${new Date().toISOString()}] Restricted: ${requestOrigin || "unknown"} → ${req.originalUrl} | IP: ${clientIp}\n`;
+  fs.appendFileSync(logsFile, logLine);
+
+  return res.status(403).json({ error: "Forbidden" });
 };

@@ -23,6 +23,7 @@ app.set('views', path.join(__dirname, './views'));
 // Middleware de análisis de datos
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.set('trust proxy', true);
 
 app.get('/',  (req,res) =>{
     res.render('mainpage')
@@ -63,6 +64,10 @@ app.use('/v1/runt',validateCors,services)
 const sessionStore = new MySQLStore({}, db);
 sessionStore.on('error', function(error) {
     console.error('Session store error:', error);
+});
+
+app.use((req, res) => {
+  res.status(404).render('404');
 });
 
 //function

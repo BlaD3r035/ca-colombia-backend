@@ -13,49 +13,7 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 const {Server} = require('socket.io')
 const io = new Server(server)
-
-// Configuración de CORS
-const allowedOrigins = [
-  'https://cacolombia.com',
-  'https://app.cacolombia.com',
-  process.env.BASE_URL
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, false); 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-};
-
-app.use(cors(corsOptions));
-
-app.use((req, res, next) => {
-  const origin = req.get('Origin');
-  const referer = req.get('Referer');
-
-  if (origin && allowedOrigins.includes(origin)) {
-    return next();
-  }
-
-  if (referer) {
-    try {
-      const refererHost = new URL(referer).origin;
-      if (allowedOrigins.includes(refererHost)) {
-        return next();
-      }
-    } catch {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
-  }
-
-  return res.status(403).json({ error: 'Forbidden' });
-});
-
+const validateCors = require('./Middleware/Cors.js')
 
 // Configuración de vistas y archivos estáticos
 app.use(express.static('public'));
@@ -73,34 +31,34 @@ app.get('/',  (req,res) =>{
 const routes = require('./routes/routes');
 app.use('/v1', routes);
 const login = require('./routes/login');
-app.use('/v1', login);
+app.use('/v1',validateCors, login);
 const userDatas = require('./routes/get_ids');
-app.use('/v1', userDatas);
+app.use('/v1', validateCors, userDatas);
 const allUserData = require('./routes/get_database_user_data');
-app.use('/v1', allUserData);
+app.use('/v1', validateCors, allUserData);
 const Ticket = require('./routes/add_records_tickets');
-app.use('/v1', Ticket);
+app.use('/v1', validateCors ,Ticket);
 const records = require('./routes/add_records');
-app.use('/v1', records);
+app.use('/v1',validateCors, records);
 const licence = require('./routes/licence_modify');
-app.use('/v1', licence);
+app.use('/v1',validateCors, licence);
 const impoundments = require('./routes/Impoundments')
-app.use('/v1',impoundments)
+app.use('/v1',validateCors,impoundments)
 const denunciaAdd = require('./routes/denuncias/denuncias');
 app.use('/v1/denuncias', denunciaAdd);
 const runt = require('./routes/runt/login')
-app.use('/v1/runt',runt)
+app.use('/v1/runt',validateCors,runt)
 const cursospdf = require('./routes/add_course_pdf.js')
-app.use('/v1',cursospdf)
+app.use('/v1',validateCors,cursospdf)
 // Rutas públicas
 const mainpage = require('./routes/mainpage');
 app.use('/', mainpage);
 const get_records = require('./public_routes/get_records');
-app.use('/public/v1', get_records);
+app.use('/public/v1',validateCors, get_records);
 const economy = require('./routes/economy')
-app.use('/v1',economy)
+app.use('/v1',validateCors,economy)
 const services = require('./routes/runt/services.js')
-app.use('/v1/runt',services)
+app.use('/v1/runt',validateCors,services)
 // Configuración de sesiones con MySQL
 const sessionStore = new MySQLStore({}, db);
 sessionStore.on('error', function(error) {

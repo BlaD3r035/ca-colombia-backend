@@ -73,7 +73,6 @@ const fs = require('fs')
 const path = require('path');
 const puppeteer = require('puppeteer');
 const generateHtmlTicket = require('../functions/pdf/ticket-pdf');
-const { Console } = require('console');
 
 router.post('/sendticket', async (req, res) => {
   const { ticketData, agentName, pedData } = req.body;
@@ -140,12 +139,16 @@ router.post('/sendticket', async (req, res) => {
       },
     ],
   };
-  
-  
+      try{
+        await db.query('UPDATE wallet SET bank = (bank - ?) WHERE user_id = ?',[ticketData.value,pedData.user_id])
+
+      }catch(e){
+        console.log("Error debiting ticket value: " + e)
+      }
       await axios.post(discordWebhookUrl, discordMessage);
   
       /*await addTaxesTransaction(pedData.userId,ticketData.type,`Pago de ${ticketData.type} por ${ticketData.value}`, parseInt(ticketData.value)) */
-  
+      
       
       return res.status(200).json({ message: 'Ticket saved successfully', pdfUrl: `/pdfs/multas/${multaId}.pdf` });
 

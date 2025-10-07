@@ -52,6 +52,7 @@ router.post('/generate-certificate', async (req, res) => {
     });
 
   } catch (error) {
+    await browser.close();
     console.error('Error generando el certificado:', error);
     return res.status(500).json({ error: 'Hubo un problema al generar el certificado' });
   }

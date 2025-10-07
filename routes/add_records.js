@@ -85,6 +85,7 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
 
         await browser.close();
     } catch (err) {
+        await browser.close();
         console.error('Error generating PDF:', err);
         return res.status(500).json('Problem generating PDF');
     }

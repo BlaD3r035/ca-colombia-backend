@@ -92,29 +92,33 @@ router.post('/sendticket', async (req, res) => {
     const multaId = saveInfo.insertId; 
     const pdfPath = path.join(__dirname, `../public/pdfs/multas/${multaId}.pdf`);
     const htmlContent = generateHtmlTicket(ticketData, agentName, pedData);
+    try{
+      const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--disable-gpu',
+      '--no-zygote'
+    ]
+    });
+    const page = await browser.newPage();
+  
+    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+  
+    await page.pdf({
+      path: pdfPath,
+      format: 'A4',
+      printBackground: true,
+    });
+  
+    await browser.close();
 
-    const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-accelerated-2d-canvas',
-    '--disable-gpu',
-    '--no-zygote'
-  ]
-  });
-  const page = await browser.newPage();
-
-  await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-
-  await page.pdf({
-    path: pdfPath,
-    format: 'A4',
-    printBackground: true,
-  });
-
-  await browser.close();
+    }catch(e){
+      await browser.close()
+    }
 
   const discordWebhookUrl = process.env.TICKETS_URL_WEBHOOK;
   const discordMessage = {

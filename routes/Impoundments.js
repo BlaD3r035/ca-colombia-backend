@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const axios = require("axios")
+const sharp = require('sharp');
 
 
 const storage = multer.diskStorage({
@@ -20,7 +21,23 @@ const storage = multer.diskStorage({
     cb(null, 'temp-file.jpg');
   },
 });
-const upload = multer({ storage });
+
+const fileFilter = (req, file, cb) => {
+  // Aceptar solo imágenes
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Solo se permiten archivos de imagen'), false);
+  }
+};
+
+const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024 // 100 MB
+  },
+  fileFilter
+});
 
 
 router.post('/changevehiclestatus',upload.single('photo'), async(req ,res) =>{
@@ -59,9 +76,21 @@ router.post('/changevehiclestatus',upload.single('photo'), async(req ,res) =>{
             return res.status(404).json({message:"no vehicle finded"})
         }
 
-
-          const photoPath = path.join(__dirname, `../public/fotos-incautaciones/${veh[0].vehicle_id}.jpg`);
-                fs.renameSync(photo.path, photoPath); 
+        // Comprimir y redimensionar imagen
+        const photoPath = path.join(__dirname, `../public/fotos-incautaciones/${veh[0].vehicle_id}.jpg`);
+        try {
+          await sharp(photo.path)
+            .resize(1920, 1440, { 
+              fit: 'inside',
+              withoutEnlargement: true 
+            })
+            .jpeg({ quality: 80, progressive: true })
+            .toFile(photoPath);
+          fs.unlinkSync(photo.path);
+        } catch (imageError) {
+          console.error('Error procesando imagen:', imageError);
+          return res.status(400).json({message: "Error al procesar la imagen"});
+        } 
 
         await db.query('UPDATE vehicles SET state =? WHERE plate =?',[status,plate])
 

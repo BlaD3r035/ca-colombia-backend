@@ -10,6 +10,7 @@ const multer = require('multer');
 const puppeteer = require('puppeteer');
 const generateHtmlRecord = require('../functions/pdf/record-pdf');
 const {randomUUID}  = require('crypto')
+const sharp = require('sharp');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -24,7 +25,22 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const fileFilter = (req, file, cb) => {
+  // Aceptar solo imágenes
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Solo se permiten archivos de imagen'), false);
+  }
+};
+
+const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024 // 100 MB
+  },
+  fileFilter
+});
 
 router.post('/sendrecord', upload.single('photo'), async (req, res) => {
     const { ticketData, agentName, pedData } = JSON.parse(req.body.data); 
@@ -50,7 +66,21 @@ router.post('/sendrecord', upload.single('photo'), async (req, res) => {
         const multaId = id; 
 
         const photoPath = path.join(__dirname, `../public/fotos-antecedentes/${multaId}.jpg`);
-        fs.renameSync(photo.path, photoPath); 
+        
+        // Comprimir y redimensionar imagen
+        try {
+          await sharp(photo.path)
+            .resize(1920, 1440, { 
+              fit: 'inside',
+              withoutEnlargement: true 
+            })
+            .jpeg({ quality: 80, progressive: true })
+            .toFile(photoPath);
+          fs.unlinkSync(photo.path);
+        } catch (imageError) {
+          console.error('Error procesando imagen:', imageError);
+          return res.status(400).json({message: "Error al procesar la imagen"});
+        } 
 
         const pdfPath = path.join(__dirname, `../public/pdfs/antecedentes/${multaId}.pdf`);
         if (!fs.existsSync(path.dirname(pdfPath))) {

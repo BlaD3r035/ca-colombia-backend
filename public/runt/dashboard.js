@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   loadDriveTest();
   document.getElementById(
     "avatar"
-  ).src = `https://api.cacolombia.com/images/${userdata.user_id}/user`;
+  ).src = `/v1/images/${userdata.user_id}/user.png`;
   document.getElementById("name").innerText = userdata.first_names;
   document.getElementById("lastname").innerText = userdata.last_names;
   document.getElementById("sex").innerText = userdata.gender;

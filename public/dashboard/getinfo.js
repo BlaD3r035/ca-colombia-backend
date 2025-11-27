@@ -77,7 +77,7 @@ async function fetchUserData(userident) {
             const form2 = document.getElementById('form-arrestos');
             form.style.display = 'none';
             form2.style.display = 'none';
-            document.getElementById('avatar').src = `https://api.cacolombia.com/images/${documentData.user_id}/user` || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+            document.getElementById('avatar').src = `/v1/images/${documentData.user_id}/user.png`;
             document.getElementById('nombre').innerText = documentData.first_names || 'N/A';
             document.getElementById('apellido').innerText = documentData.last_names || 'N/A';
             document.getElementById('nacionalidad').innerText = documentData.nationality || 'N/A';

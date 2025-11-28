@@ -9,11 +9,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .chat-message {
-    word-wrap: break-word; /* Rompe la palabra si es muy larga */
-    overflow-wrap: break-word; /* Alternativa para navegadores modernos */
-    white-space: pre-wrap; /* Respeta saltos de línea y permite envolver texto */
-    max-width: 75%; /* Evita que el mensaje sea más ancho que el contenedor */
-}
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            max-width: 75%;
+        }
+
         .initial-loading {
             position: fixed;
             top: 0;
@@ -40,13 +41,6 @@
             padding: 2rem;
             max-width: 90%;
             width: 400px;
-        }
-
-        .loading-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 2rem;
-            animation: pulse 2s infinite;
         }
 
         .loading-spinner {
@@ -105,12 +99,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -126,11 +114,6 @@
             .loading-content {
                 padding: 1.5rem;
             }
-            
-            .loading-logo {
-                width: 90px;
-                height: 90px;
-            }
         }
 
         body {
@@ -141,29 +124,36 @@
             overflow: auto;
         }
 
-        /* Add these table styles */
+        /* Table styles */
         table {
             border-collapse: collapse;
             width: 100%;
         }
 
         th, td {
-            border: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e5e7eb;
             padding: 0.75rem;
             text-align: left;
         }
 
         th {
-            background-color: #f8fafc;
-            font-weight: 600;
+            background-color: #f3f4f6;
+            font-weight: 700;
+            color: #374151;
         }
 
-        tr:nth-child(even) {
-            background-color: #f8fafc;
+        tbody tr:hover {
+            background-color: #f9fafb;
         }
 
-        tr:hover {
-            background-color: #f1f5f9;
+        /* Card animations */
+        .bg-white {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .bg-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -206,241 +196,259 @@
     </nav>
     <div class="h-16"></div>
 
-    <main class="max-w-7xl mx-auto p-2 sm:p-4 my-4 sm:my-8 ">
-        <div class="bg-white rounded-[1rem] sm:rounded-[2rem] shadow-xl overflow-hidden border-4 sm:border-8 border-gray-800 max-w-4xl mx-auto">
-        <!-- Barra de búsqueda -->
-        <div class="p-4 bg-gray-50">
-            <div class="flex items-center bg-gray-100 rounded-lg p-2 mb-4">
-                <input type="text" id="input" placeholder="Buscar placa o documento" 
-                       class="w-full flex-1 bg-transparent border-none focus:outline-none px-2 sm:px-4 text-sm sm:text-base">
-                <button onclick="getIdByDoc()" 
-                        class="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition-colors">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-
-            <!-- Información Personal y Foto -->
-            <div class="flex flex-col md:flex-row gap-6 mb-6">
-                <div class="md:w-1/3">
-                    <div class="bg-white p-4 rounded-lg shadow-md">
-                        <div class="flex flex-col items-center">
-                            <img id="avatar" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
-                                 class="w-32 h-32 rounded-full mb-4 border-4 border-green-600 object-cover">
-                            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm w-full">
-                                <div><strong>Nombre:</strong></div>
-                                <div id="nombre"></div>
-                                <div><strong>Apellido:</strong></div>
-                                <div id="apellido"></div>
-                                <div><strong>Nacionalidad:</strong></div>
-                                <div id="nacionalidad"></div>
-                                <div><strong>Estatura:</strong></div>
-                                <div><span id="estatura"></span> cm</div>
-                                <div><strong>Sexo:</strong></div>
-                                <div id="sexo"></div>
-                                <div><strong>F. Nacimiento:</strong></div>
-                                <div id="fechanacimiento"></div>
-                                <div><strong>Edad:</strong></div>
-                                <div id="edad"></div>
-                                <div><strong>G.S:</strong></div>
-                                <div id="gs"></div>
-                                <div><strong>Username:</strong></div>
-                                <div id="username"></div>
-                                <div><strong>Documento:</strong></div>
-                                <div id="ndoc"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tablas de información -->
-                <div class="md:w-2/3 space-y-4">
-                    <!-- Aquí van las tablas existentes -->
-                    <!-- table-licencia, table-vehiculos, table-antecedentes, etc. -->
-                    <div class="space-y-4 sm:space-y-6">
-          
-                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
-                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">LICENCIA</h3>
-                    
-                            <div class="min-w-full inline-block align-middle">
-                                <div class="overflow-x-auto border rounded-lg">
-                                    <table id="table-licencia" class="min-w-full divide-y divide-gray-200 border">
-                                        <thead>
-                                            <tr>
-                                                <th class="border">LICENCIA DE CONDUCIR</th>
-                                                <th class="border">CATEGORIA</th>
-                                                <th class="border">FECHA DE EXPEDICIÓN</th>
-                                                <th class="border">RESTRICCIONES</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200">
-                                            <tr>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
-                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">VEHICULOS</h3>
-                            <div class="min-w-full inline-block align-middle">
-                                <div class="overflow-x-auto border rounded-lg">
-                                    <table id="table-vehiculos" class="min-w-full divide-y divide-gray-200 border">
-                                        <thead>
-                                            <tr>
-                                                <th class="border">NOMBRE</th>
-                                                <th class="border">PLACA</th>
-                                                <th class="border">COLOR</th>
-                                                <th class="border">SERVICIO</th>
-                                                <th class="border">ESTADO</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200">
-                                            <tr>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
-                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">ANTECEDENTES</h3>
-                            <div class="min-w-full inline-block align-middle">
-                                <div class="overflow-x-auto border rounded-lg">
-                                    <table id="table-antecedentes" class="min-w-full divide-y divide-gray-200 border">
-                                        <thead>
-                                            <tr>
-                                                <th class="border">ANTECEDENTES</th>
-                                                <th class="border">TIEMPO</th>
-                                                <th class="border">AGENTE</th>
-                                                <th class="border">FECHA DE REGISTRO</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200">
-                                            <tr>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
-                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">MULTAS</h3>
-                            <div class="min-w-full inline-block align-middle">
-                                <div class="overflow-x-auto border rounded-lg">
-                                    <table id="table-multas" class="min-w-full divide-y divide-gray-200 border">
-                                        <thead>
-                                            <tr>
-                                                <th class="border">ARTICULOS</th>
-                                                <th class="border">PLACA</th>
-                                                <th class="border">VALOR</th>
-                                                <th class="border">AGENTE</th>
-                                                <th class="border">FECHA DE REGISTRO</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200">
-                                            <tr>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                                <td class="border">---</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
-                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">OBSERVACIONES</h3>
-                            <div class="min-w-full inline-block align-middle">
-                                <div class="overflow-x-auto border rounded-lg">
-                                    <table id="table-observaciones" class="min-w-full divide-y divide-gray-200 border">
-                                        <thead>
-                                            <tr>
-                                                <th class="border">OBSERVACIONES</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200">
-                                            <tr>
-                                                <td class="border">---</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 overflow-x-auto">
-                            <h3 class="text-base sm:text-lg font-semibold text-green-600 mb-3 sm:mb-4">BUSQUEDA Y CAPTURA</h3>
-                            <div class="min-w-full inline-block align-middle">
-                                <div class="overflow-x-auto border rounded-lg">
-                                    <table id="table-byc" class="min-w-full divide-y divide-gray-200 border">
-                                        <thead>
-                                            <tr>
-                                                <th class="border">estado</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200">
-                                            <tr>
-                                                <td class="border">---</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <main class="max-w-full mx-auto p-4 sm:p-6 my-4 sm:my-6">
+        <!-- Barra de búsqueda Hero Section -->
+        <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-lg shadow-2xl p-8 mb-8">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-white text-3xl sm:text-4xl font-bold mb-2 text-center">Base de Datos PONAL</h1>
+                <p class="text-green-100 text-center mb-6">Sistema de Información Policial - Búsqueda de Registros</p>
+                
+                <div class="flex items-center bg-white rounded-lg p-3 shadow-lg">
+                    <i class="fas fa-search text-green-600 text-lg mr-3"></i>
+                    <input type="text" id="input" placeholder="Ingrese documento o placa vehicular..." 
+                           class="w-full flex-1 bg-transparent border-none focus:outline-none px-2 sm:px-4 text-sm sm:text-base">
+                    <button onclick="getIdByDoc()" 
+                            class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold ml-2">
+                        <i class="fas fa-search mr-2"></i>Buscar
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
-  
 
+        <!-- Contenedor Principal de Resultados -->
+        <div class="max-w-6xl mx-auto">
+            <!-- Card de Información Personal -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-green-600">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <!-- Foto y datos básicos -->
+                    <div class="md:w-1/4 flex flex-col items-center">
+                        <div class="relative mb-6">
+                            <img id="avatar" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" 
+                                 class="w-40 h-40 rounded-full border-4 border-green-600 object-cover shadow-md">
+                            <div class="absolute bottom-0 right-0 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                ACTIVO
+                            </div>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 text-center mb-2">
+                            <span id="nombre"></span> <span id="apellido"></span>
+                        </h2>
+                        <p class="text-green-600 font-semibold text-center">ID: <span id="ndoc"></span></p>
+                    </div>
 
-</main>
-                <div class="mt-6 border-t border-gray-200 pt-6">
-                    <div class="flex flex-wrap justify-center gap-3">
-                        <button onclick="toggleForm('form-multas', 'form-arrestos','form-licencia','form-incautacion')" 
-                                class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Subir Multa</span>
-                        </button>
-                        <button onclick="toggleForm('form-arrestos', 'form-multas','form-licencia','form-incautacion')"
-                                class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
-                            <i class="fas fa-handcuffs"></i>
-                            <span>Subir Arresto</span>
-                        </button>
-                        <button onclick="toggleForm('form-licencia','form-multas', 'form-arrestos','form-incautacion')"
-                        class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
-                    <i class="fas fa-file"></i>
-                    <span>Licencia de Conducción</span>
+                    <!-- Grid de información personal -->
+                    <div class="md:w-3/4">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-600">Información Personal</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">Nombre</p>
+                                <p class="text-gray-800 font-bold" id="nombre-info">---</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">Apellido</p>
+                                <p class="text-gray-800 font-bold" id="apellido-info">---</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">Edad</p>
+                                <p class="text-gray-800 font-bold" id="edad">---</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">Sexo</p>
+                                <p class="text-gray-800 font-bold" id="sexo">---</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">Estatura</p>
+                                <p class="text-gray-800 font-bold"><span id="estatura">---</span> cm</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">Tipo Sangre</p>
+                                <p class="text-gray-800 font-bold" id="gs">---</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">Nacionalidad</p>
+                                <p class="text-gray-800 font-bold" id="nacionalidad">---</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">F. Nacimiento</p>
+                                <p class="text-gray-800 font-bold text-sm" id="fechanacimiento">---</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-600 text-xs font-semibold uppercase">Usuario</p>
+                                <p class="text-gray-800 font-bold" id="username">---</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acciones Principales -->
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <button onclick="toggleForm('form-multas', 'form-arrestos','form-licencia','form-incautacion')" 
+                        class="flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">
+                    <i class="fas fa-file-invoice-dollar text-lg"></i>
+                    <span>Registrar Multa</span>
+                </button>
+                <button onclick="toggleForm('form-arrestos', 'form-multas','form-licencia','form-incautacion')"
+                        class="flex items-center justify-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">
+                    <i class="fas fa-handcuffs text-lg"></i>
+                    <span>Registrar Arresto</span>
+                </button>
+                <button onclick="toggleForm('form-licencia','form-multas', 'form-arrestos','form-incautacion')"
+                        class="flex items-center justify-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">
+                    <i class="fas fa-id-card text-lg"></i>
+                    <span>Licencia</span>
                 </button>
                 <button onclick="toggleForm('form-incautacion','form-multas', 'form-arrestos','form-licencia')"
-                        class="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-2.5 rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
-                    <i class="fas fa-file"></i>
-                    <span>Incautación</span>
+                        class="flex items-center justify-center gap-2 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">
+                    <i class="fas fa-car text-lg"></i>
+                    <span>Incautar</span>
                 </button>
-                        <button onclick="cerrarSesion()"
-                                class="flex items-center justify-center gap-2 bg-red-600 text-white px-6 py-2.5 rounded-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Cerrar sesión</span>
-                        </button>
+                <button onclick="cerrarSesion()"
+                        class="flex items-center justify-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold">
+                    <i class="fas fa-sign-out-alt text-lg"></i>
+                    <span>Salir</span>
+                </button>
+            </div>
+
+            <!-- Grid de Registros -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Licencias -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-purple-600">
+                    <div class="bg-purple-600 text-white p-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fas fa-id-card"></i> Licencias de Conducción
+                        </h3>
+                    </div>
+                    <div class="p-4 overflow-x-auto">
+                        <table id="table-licencia" class="w-full text-sm">
+                            <thead class="bg-gray-100 border-b-2 border-gray-300">
+                                <tr>
+                                    <th class="text-left p-2 font-semibold">LICENCIA</th>
+                                    <th class="text-left p-2 font-semibold">CATEGORÍA</th>
+                                    <th class="text-left p-2 font-semibold">EXPEDICIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-2">---</td>
+                                    <td class="p-2">---</td>
+                                    <td class="p-2">---</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Vehículos -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-blue-600">
+                    <div class="bg-blue-600 text-white p-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fas fa-car"></i> Vehículos Registrados
+                        </h3>
+                    </div>
+                    <div class="p-4 overflow-x-auto">
+                        <table id="table-vehiculos" class="w-full text-sm">
+                            <thead class="bg-gray-100 border-b-2 border-gray-300">
+                                <tr>
+                                    <th class="text-left p-2 font-semibold">PLACA</th>
+                                    <th class="text-left p-2 font-semibold">COLOR</th>
+                                    <th class="text-left p-2 font-semibold">ESTADO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-2">---</td>
+                                    <td class="p-2">---</td>
+                                    <td class="p-2">---</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Arrestos -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-red-600">
+                    <div class="bg-red-600 text-white p-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fas fa-handcuffs"></i> Antecedentes / Arrestos
+                        </h3>
+                    </div>
+                    <div class="p-4 overflow-x-auto">
+                        <table id="table-antecedentes" class="w-full text-sm">
+                            <thead class="bg-gray-100 border-b-2 border-gray-300">
+                                <tr>
+                                    <th class="text-left p-2 font-semibold">ARTÍCULOS</th>
+                                    <th class="text-left p-2 font-semibold">TIEMPO</th>
+                                    <th class="text-left p-2 font-semibold">AGENTE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-2">---</td>
+                                    <td class="p-2">---</td>
+                                    <td class="p-2">---</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Multas -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-yellow-600">
+                    <div class="bg-yellow-600 text-white p-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fas fa-money-bill-wave"></i> Multas / Comparendos
+                        </h3>
+                    </div>
+                    <div class="p-4 overflow-x-auto">
+                        <table id="table-multas" class="w-full text-sm">
+                            <thead class="bg-gray-100 border-b-2 border-gray-300">
+                                <tr>
+                                    <th class="text-left p-2 font-semibold">ARTÍCULOS</th>
+                                    <th class="text-left p-2 font-semibold">VALOR</th>
+                                    <th class="text-left p-2 font-semibold">AGENTE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-2">---</td>
+                                    <td class="p-2">---</td>
+                                    <td class="p-2">---</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-orange-600">
+                    <div class="bg-orange-600 text-white p-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fas fa-sticky-note"></i> Observaciones
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div id="table-observaciones" class="space-y-2">
+                            <p class="text-gray-500 italic">---</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Búsqueda y Captura -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-red-700">
+                    <div class="bg-red-700 text-white p-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fas fa-search"></i> Búsqueda y Captura
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div id="table-byc" class="space-y-2">
+                            <p class="text-gray-500 italic">---</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </main>
 
         <div class="registros mt-4 sm:mt-8 space-y-4">
     <!-- Formulario de Multas -->
@@ -1223,7 +1231,7 @@
                 'Conectando con la base de datos...',
                 'Cargando módulos...',
                 'Verificando credenciales...',
-                'centrando divs!!...',
+                'Finalizando carga...',
             ];
             let messageIndex = 0;
 

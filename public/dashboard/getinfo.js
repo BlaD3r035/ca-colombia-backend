@@ -80,6 +80,8 @@ async function fetchUserData(userident) {
             document.getElementById('avatar').src = `https://api.cacolombia.com/v1/images/${documentData.user_id}/user.png`;
             document.getElementById('nombre').innerText = documentData.first_names || 'N/A';
             document.getElementById('apellido').innerText = documentData.last_names || 'N/A';
+            document.getElementById('nombre-info').innerText = documentData.first_names || 'N/A';
+            document.getElementById('apellido-info').innerText = documentData.last_names || 'N/A';
             document.getElementById('nacionalidad').innerText = documentData.nationality || 'N/A';
             document.getElementById('estatura').innerText = documentData.height || 'N/A';
             document.getElementById('sexo').innerText = documentData.gender || 'N/A';
@@ -106,39 +108,53 @@ async function fetchUserData(userident) {
 function populateTable(tableId, dataArray, columns) {
     const table = document.getElementById(tableId);
 
-  
-    while (table.rows.length > 1) {
-        table.deleteRow(1);
-    }
+    // Si es observaciones o byc, manejarlos especialmente
+    if (tableId === 'table-observaciones' || tableId === 'table-byc') {
+        const container = document.getElementById(tableId);
+        container.innerHTML = '';
+        
+        if (!dataArray || dataArray.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 italic">Sin registros</p>';
+            return;
+        }
 
-   
-    if (!dataArray || dataArray.length === 0) {
-        const row = table.insertRow();
-        columns.forEach(() => {
-            const cell = row.insertCell();
-            cell.innerText = "N/A";
+        dataArray.forEach(data => {
+            const item = document.createElement('div');
+            item.className = 'bg-gray-50 p-3 rounded-lg border-l-4 ' + (tableId === 'table-byc' ? 'border-red-600' : 'border-orange-600');
+            
+            if (tableId === 'table-byc' && data.byc === 1) {
+                item.innerHTML = '<p class="text-red-600 font-bold text-sm">⚠️ EL SUJETO SE ENCUENTRA EN BÚSQUEDA Y CAPTURA</p>';
+            } else if (tableId === 'table-byc' && data.byc === 0) {
+                item.innerHTML = '<p class="text-green-600 text-sm">✓ No aparece en búsqueda y captura</p>';
+            } else {
+                item.innerHTML = `<p class="text-gray-700 text-sm">${data.observacion || 'Sin observación'}</p>`;
+            }
+            
+            container.appendChild(item);
         });
         setLoadingOff();
         return;
     }
 
-  
+    // Para tablas normales
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
+
+    if (!dataArray || dataArray.length === 0) {
+        const row = table.insertRow();
+        const cell = row.insertCell();
+        cell.innerText = "Sin registros";
+        cell.colSpan = columns.length;
+        setLoadingOff();
+        return;
+    }
+
     dataArray.forEach(data => {
         const row = table.insertRow();
         columns.forEach(column => {
             const cell = row.insertCell();
-            if (column === "byc" && data[column] !== undefined && data[column] === 1) {
-                cell.innerText = "EL SUJETO SE ENCUENTRA EN BÚSQUEDA Y CAPTURA, DETENGA AL SUJETO Y REALICE EL PROCEDIMIENTO PERTINENTE";
-                cell.style.color = "red";
-                cell.style.fontWeight = "bold";
-                cell.style.fontSize = "1.2em";
-            } else if (column === 'byc' && data[column] === 0) {
-                cell.innerText = "N/A";
-            } 
-            else{
-                cell.innerText = data[column] !== undefined ? data[column] : "N/A";
-
-            }
+            cell.innerText = data[column] !== undefined ? data[column] : "N/A";
         });
     });
     setLoadingOff();
